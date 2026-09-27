@@ -6,6 +6,7 @@ import type { BrandDocument, CollectionDocument, ProductDocument } from "@/serve
 import type { DurableCartDocument, DurableWishlistDocument } from "@/server/commerce/mongo-store";
 import type { UserDocument } from "@/identity/documents";
 import type { UserCredentialDocument } from "@/identity/credential-documents";
+import type { CheckoutDraftDocument } from "@/checkout/draft-document";
 
 /**
  * Idempotent catalog indexes. Invoke from a controlled deployment/migration
@@ -44,6 +45,15 @@ export async function ensureCommerceIndexes(): Promise<void> {
       { key: { expiresAt: 1 }, name: "wishlist_expiry_ttl", expireAfterSeconds: 0 },
     ]),
     (async () => { const merges = database.collection(databaseCollections.commerceMerges); await merges.dropIndex("commerce_merge_pair_unique").catch(() => undefined); return merges.createIndex({ userId: 1, guestId: 1, kind: 1 }, { name: "commerce_merge_pair_kind_unique", unique: true }); })(),
+  ]);
+}
+
+/** Checkout-draft indexes are explicit deployment work, never a request side effect. */
+export async function ensureCheckoutDraftIndexes(): Promise<void> {
+  const database = await getDatabase();
+  await database.collection<CheckoutDraftDocument>(databaseCollections.checkoutDrafts).createIndexes([
+    { key: { checkoutId: 1 }, name: "checkout_id_unique", unique: true },
+    { key: { expiresAt: 1 }, name: "checkout_draft_expiry_ttl", expireAfterSeconds: 0 },
   ]);
 }
 

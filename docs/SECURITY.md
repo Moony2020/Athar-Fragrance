@@ -72,3 +72,15 @@ availability, current integer-minor-unit price, and currency server-side. The
 public checkout projection is allow-listed and omits owner identity, Mongo
 `_id`, persistence metadata, and credentials. No checkout mutation, draft,
 payment credential, or new attack surface is introduced in Stage 7.1.
+
+## Stage 7.2 checkout draft boundary
+
+The checkout form's ID and revision are untrusted references, not authorization.
+The server resolves the owner from the Auth.js session or existing guest Cart
+cookie, scopes every lookup and compare-and-set write to that owner, validates
+the payload with strict schemas, and rechecks the current Stage 7.1 Cart before
+save. Public DTOs exclude Mongo `_id` and owner identity. Account email prefill
+is read-only; submitted contact email is checkout-scoped and never updates the
+User. Drafts contain no commerce totals or payment/order authority. PII is not
+placed in URLs/logs, cookies contain only opaque IDs, and drafts expire after
+30 days. No production database was used for test fixtures.

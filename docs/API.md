@@ -42,3 +42,18 @@ owner. Live production Atlas and live Brevo delivery remain unverified.
   from the eligible subtotal.
 - No Checkout POST/action, draft, address, shipping/tax/discount calculation,
   inventory reservation, payment, payment attempt, or Order exists in Stage 7.1.
+
+## Stage 7.2 checkout contact action
+
+- The checkout page presents a contact/address form only when the current
+  Stage 7.1 Cart read-model is eligible.
+- The Server Action accepts an opaque checkout ID, expected revision, email,
+  and shipping-address fields. It validates and normalizes fields, resolves
+  ownership from the authenticated session or existing guest Cart cookie, and
+  re-reads current Cart eligibility before a CAS save.
+- Browser-supplied owner/user IDs, Cart contents, prices, totals, shipping,
+  tax, discount, or payment data are never accepted as authority.
+- Contact email is required; address line 2 and region are optional. Account
+  email can prefill the checkout field but saving does not mutate the User.
+- Conflicts, foreign IDs, expiry, invalid input, and ineligible Cart state
+  return safe generic/form feedback. PII is not placed in URLs or logs.

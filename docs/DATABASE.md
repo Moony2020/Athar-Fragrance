@@ -114,3 +114,14 @@ transient, read-only projection. The persisted Cart remains identity and
 quantity only; no checkout-specific durable data is written. Any later Mongo
 integration tests must use only `athar_stage55_test` and remove disposable
 fixtures.
+
+## Stage 7.2 checkout drafts
+
+`checkout_drafts` stores only an opaque checkout ID, server-derived guest/user
+owner, revision, normalized checkout contact email, shipping address fields,
+timestamps, and expiry. It stores no price, subtotal, tax, delivery/rate,
+discount, inventory, payment, or Order authority. The owner/id pair is unique;
+an explicit TTL index expires drafts after 30 days. Index creation is a
+controlled setup operation, never an implicit page-read side effect. Runtime
+persistence is Mongo-only with no in-memory fallback. Integration tests may
+write only to `athar_stage55_test`, use disposable fixtures, and assert cleanup.

@@ -1,8 +1,32 @@
 # ATHAR Project Status
 
-**Last audited:** 2026-09-26
+**Last audited:** 2026-09-27
 **Current phase:** Phase 7 — Checkout Foundation
-**Overall status:** **PHASE 6 COMPLETE LOCALLY; STAGE 7.1 COMPLETE LOCALLY; STAGE 7.2+ NOT STARTED.**
+**Overall status:** **PHASE 6 COMPLETE LOCALLY; STAGE 7.1 CLOSED; STAGE 7.2 COMPLETE — READY FOR CHECKPOINT from official baseline `00b283151050fac514d1bc0f49bbe66eb26229cd`.**
+
+## Stage 7.2 current status
+
+Stage 7.2 — Contact & Shipping Address is complete and ready for checkpoint.
+The implementation adds
+an owner-bound Mongo checkout draft, strict normalized email/address parsing,
+and a server-first contact/address form behind the existing Stage 7.1
+eligibility gate. Draft lookups and revision-guarded saves resolve the owner
+from the Auth.js session or existing guest Cart cookie; no browser owner ID,
+price, or total is accepted. Draft data is checkout-scoped and expires after
+30 days. No phone requirement or supported-country allowlist is assumed.
+
+Scope excludes Stage 7.3+, shipping methods/rates, tax, discounts, inventory
+reservation, billing/saved account addresses, payment providers, payment
+attempts, webhooks, Orders, and order email. Domain/checkout regressions passed
+31/31; dedicated Mongo draft verification passed against `athar_stage55_test`
+with fixture-cleanup assertions. Isolated baseline and Stage-7.2-only production
+builds passed, full ESLint has zero errors with one existing auth-form warning,
+and the 2/2 guest/authenticated Browser E2E suite passed after secrets were
+rotated locally and the test server restarted. Fixture cleanup, no-secret Git
+audit, and `git diff --check` passed. The current-tree TypeScript check still
+reports the unrelated owner-local catalog `audience` type error; the official
+baseline and isolated Stage-7.2-only TypeScript/build checks pass. No commit or
+push was made; Stage 7.3 remains out of scope.
 
 ## Stage 7.1 current status
 

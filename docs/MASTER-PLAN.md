@@ -19,7 +19,7 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | 4 | Product detail and merchandising | Planned |
 | 5 | Cart and wishlist | Planned |
 | 6 | Authentication and customer account | Phase 6 complete locally |
-| 7 | Checkout foundation | Stage 7.1 complete locally |
+| 7 | Checkout foundation | Stage 7.1 complete locally; Stage 7.2 complete and ready for checkpoint |
 | 8 | Stripe cards, direct PayPal, webhooks | Planned |
 | 9 | Canonical orders and transactional email | Planned |
 | 10 | Admin platform | Planned |
@@ -43,7 +43,7 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | Stage | Scope | Status |
 | --- | --- | --- |
 | 7.1 | Checkout Domain & Server-Authoritative Foundation | Complete locally |
-| 7.2 | Contact & Shipping Address | Not started |
+| 7.2 | Contact & Shipping Address | Complete — ready for checkpoint from `00b283151050fac514d1bc0f49bbe66eb26229cd` |
 | 7.3 | Shipping Methods / Delivery Selection | Not started |
 | 7.4 | Totals, VAT & Discount Contract | Not started |
 | 7.5 | Inventory Reservation / Checkout Concurrency | Not started |
@@ -68,6 +68,25 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
   passed with one separately gated Mongo transaction test skipped; TypeScript,
   ESLint (0 errors, one existing warning), diff check, clean-baseline build, and
   Stage-7.1-only build passed. No checkout-specific persistence was introduced.
+
+### Stage 7.2 contract
+
+Stage 7.2 adds owner-bound, durable checkout contact/address drafts only for the
+current eligible Stage 7.1 Cart. The public checkout ID is opaque; authenticated
+owner identity comes from the Auth.js session and guest identity from the
+existing Cart cookie. Every lookup and revision-guarded save is scoped by that
+server-derived owner. Email is required and normalized; account email may
+prefill but remains checkout-only. First/last name, address line 1, postal
+code, city, and two-letter country code are required; line 2 and region are
+optional. No phone requirement or country allowlist is invented.
+
+Drafts contain no commerce totals or downstream authority. Empty, stale,
+unavailable, invalid, or mixed-currency Cart state blocks saving. The explicit
+Mongo collection/index contract has a 30-day expiry; tests use disposable data
+only in `athar_stage55_test`. Stage 7.3+, delivery methods/rates, tax, discounts,
+inventory reservation, billing, saved addresses, payments, webhooks, Orders,
+and transactional order email remain out of scope. Stage 7.2 must stop at
+`ATLAS_STOP`; no commit/push is authorized.
 
 ### Phase 6 fixed decisions
 

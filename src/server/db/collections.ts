@@ -6,6 +6,7 @@ export const databaseCollections = {
   products: "products",
   carts: "carts",
   wishlists: "wishlists",
+  checkoutDrafts: "checkout_drafts",
   users: "users",
   userCredentials: "user_credentials",
   passwordResetTokens: "password_reset_tokens",

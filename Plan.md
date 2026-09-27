@@ -1337,3 +1337,61 @@ passed. Agent Browser confirmed the empty-Cart state without browser errors.
 No checkout-specific Mongo collection, draft, or index was added. Any future
 Mongo tests must continue to use only `athar_stage55_test` and disposable data.
 Stage 7.2+ are out of scope.
+
+==================================================
+ATHAR — PHASE 7 / STAGE 7.2 CONTACT & SHIPPING ADDRESS
+==================================================
+
+Official Stage 7.2 baseline: `00b283151050fac514d1bc0f49bbe66eb26229cd`.
+Stage 7.1 remains closed; this section does not reopen or alter its contract.
+
+Stage 7.2 adds Checkout-scoped customer contact and shipping-address data to
+the eligible `/checkout` flow. Before every read or mutation that allows
+progress, the server re-reads the current owner Cart and canonical catalog
+projection from Stage 7.1. A blocked, empty, unavailable, stale, invalid, or
+mixed-currency Cart cannot proceed based on a previously saved draft.
+
+When persistence is available, a strict Mongo-backed draft stores only:
+opaque public `checkoutId`, server-derived owner type/id, revision, required
+contact email, a normalized shipping address, timestamps, and expiry. Phone is
+not required absent a documented owner policy. Mongo `_id` and owner
+identity never enter public DTOs. The browser may return the opaque checkout ID
+as a reference, but the server must resolve the authenticated owner from the
+Auth.js session or the guest owner from the existing opaque Cart cookie, then
+scope every lookup and CAS mutation by that owner. Browser input never chooses
+`userId` or owner. Drafts contain no price, subtotal, tax, shipping, discount,
+inventory, payment, or Order authority.
+
+Contact requires a trimmed, validated, normalized email. Account email may
+prefill from the canonical User record but remains editable checkout contact
+data and never mutates User. Address requires bounded trimmed `firstName`,
+`lastName`, `addressLine1`, `postalCode`, `city`, and uppercase two-letter
+`countryCode` shape; `addressLine2` and `region` are optional. Do not invent a
+supported-country list, rates, delivery promises, or address book. No billing
+address or canonical User profile address is created. Do not put PII in URLs
+or logs.
+
+Mongo persistence is explicit and durable; no production or runtime in-memory
+fallback is allowed. Checkout indexes are idempotently declared and run only
+as controlled deployment/test setup, not as implicit request side effects.
+Records expire after 30 days, matching the existing Cart/Wishlist inactivity
+policy. Tests that write Mongo use only `athar_stage55_test`, random disposable
+fixtures, verified cleanup, and no production database.
+
+Stage 7.2 explicitly excludes Stage 7.3+, shipping methods/rates, VAT/tax,
+discounts/coupons, inventory reservation/decrement, billing addresses, saved
+account addresses, Stripe, PayPal, payment attempts, webhooks, Orders, order
+numbers, and order email. No commit or push is part of this stage.
+
+Stage 7.2 verification gate: guest and authenticated read/create/update with
+reload persistence; field and optional-field validation; owner/guest isolation;
+tampered identity rejection; stale/expired draft; CAS concurrency; canonical
+email prefill without User mutation; no PII in URLs/logs/public metadata beyond
+the rendered form; empty/ineligible Cart blocking; expiry/index idempotency and
+verified cleanup. Run Stage 7.2 focused tests, relevant Stage 7.1/Phase 5/6
+regressions, dedicated Mongo integration, Browser E2E, full TypeScript, full
+ESLint, `git diff --check`, and isolated production builds for the official
+baseline and Stage-7.2-only source. Do not alter or absorb Owner/local changes,
+`next-env.d.ts`, `package-lock.json`, icons, caches, `debug.log`, `.env.local`,
+or global `AGENTS.md`. The stage closes only after all gates pass, then stops at
+`ATLAS_STOP` without starting Stage 7.3.

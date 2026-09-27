@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-09-27 — Phase 7 / Stage 7.2 final verification passed
+
+- Started Contact & Shipping Address from official baseline
+  `00b283151050fac514d1bc0f49bbe66eb26229cd`; Stage 7.1 remains closed.
+- Added owner-bound Mongo checkout drafts, strict checkout-only email/address
+  validation, revision-guarded saving after current Cart eligibility checks,
+  and a server-first checkout form. No phone/country policy is invented.
+- Added focused domain/Mongo and Playwright coverage. Dedicated test Mongo
+  checks are constrained to `athar_stage55_test`; dedicated Mongo assertions,
+  31/31 domain regressions, and both isolated production builds passed.
+- Following local credential rotation and test-server restart, Mongo ping,
+  2/2 Browser E2E, generated-fixture cleanup, secret Git audit, and final
+  `git diff --check` passed. Stage 7.2 is ready for checkpoint.
+- Stage 7.3+, payment/order work, commit, and push remain out of scope.
+
 ## 2026-09-26 — Phase 7 / Stage 7.1 completed locally
 
 - Accepted baseline `5c4ec8139a358568509bd1fffb6041d2925ac0e8` and recorded the

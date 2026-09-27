@@ -120,4 +120,35 @@ were restored with `npm ci` from the unchanged lock file using an isolated
 temporary npm cache. Next MCP reported no compilation
 issues; its runtime diagnostic remained the preserved Header/`not-found`
 dynamic-value issue outside Stage 7.1. Live production Atlas remains
-unverified; Stage 7.2+ remain not started.
+unverified; Stage 7.2 final verification is recorded below and has passed.
+
+## Stage 7.2 focused verification
+
+`tests/stage-07.2-domain.test.ts` covers strict contact/address normalization,
+optional fields, invalid data, owner binding, and the public DTO boundary.
+`tests/stage-07.2-mongo.test.ts` is gated to the exact non-production
+`athar_stage55_test` database and checks durable reload, indexes, owner
+isolation, compare-and-set conflicts, expiry, and cleanup. The Playwright
+coverage in `tests/STAGE-07.2.spec.ts` exercises guest/authenticated flow,
+Cart recheck, email prefill without User mutation, reload persistence, and
+tampered owner references. The final results are recorded below.
+
+### Stage 7.2 final verification gate (2026-09-27 — passed)
+
+- Domain + Stage 7.1 + Phase 5/6 domain regression: **31/31 passed**.
+- Dedicated Mongo draft integration against `athar_stage55_test`: **passed**;
+  index, ownership, reload persistence, CAS, expiry, and fixture cleanup checks
+  completed after credential rotation and test-server restart.
+- Isolated production builds: official baseline **passed**; baseline + only
+  Stage 7.2 source/docs/tests **passed**, including build TypeScript.
+- Full ESLint: **0 errors**, one pre-existing `SignInForm.tsx` warning.
+- Full current-tree `tsc --noEmit`: **fails outside Stage 7.2** at
+  `src/server/catalog/services.ts:91` (`audience` inferred as `string` rather
+  than the domain union); preserve that owner-local change.
+- Browser E2E: **2/2 passed** — guest persistence/reload, validation,
+  tampered checkout ID rejection, stale/expired draft, Cart ineligibility,
+  authenticated canonical-email prefill, user isolation, and no User mutation.
+- Security recovery gate: local credentials were rotated by the owner, a safe
+  Mongo ping passed, `.env.local` remained ignored/untracked, no current secret
+  appeared in tracked/diff/staged content, and only generated Stage-7.2
+  fixtures were removed. `git diff --check` passed.

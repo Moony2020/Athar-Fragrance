@@ -102,3 +102,16 @@ identity or Mongo metadata. No draft is
 persisted until a later stage defines a checkout lifecycle that requires it.
 Contact/address, shipping, tax/discount rules, inventory reservation, payments,
 and orders are outside Stage 7.1.
+
+## Stage 7.2 contact and shipping address
+
+The existing `/checkout` page remains server-first. After Stage 7.1 confirms
+the current Cart is eligible, a narrow client form submits to a validated
+Server Action. The action re-resolves the current owner and re-reads checkout
+eligibility before writing. Mongo checkout drafts are keyed by an opaque public
+ID but every read/save also filters on the server-derived `CommerceOwner`.
+Optimistic revision matching prevents stale concurrent updates; Mongo `_id` and
+owner identity stay server-only. A checkout-only contact email may be prefilled
+from the canonical User but is not written back to the User record. This stage
+does not add address-book/profile data, Cart pricing authority, delivery,
+payment, or Order lifecycle.
