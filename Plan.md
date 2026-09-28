@@ -1299,7 +1299,7 @@ Phase 7 stage map:
 - 7.1 — Checkout Domain & Server-Authoritative Foundation (COMPLETE LOCALLY)
 - 7.2 — Contact & Shipping Address (NOT STARTED)
 - 7.3 — Shipping Methods / Delivery Selection (NOT STARTED)
-- 7.4 — Totals, VAT & Discount Contract (NOT STARTED)
+- 7.4 — Totals, VAT & Discount Contract (COMPLETE — READY FOR CHECKPOINT)
 - 7.5 — Inventory Reservation / Checkout Concurrency (NOT STARTED)
 - 7.6 — Phase 7 Integration & Closure (NOT STARTED)
 
@@ -1357,6 +1357,24 @@ PostNord merchant-service configuration and perfume dangerous-goods/
 limited-quantity fulfillment acceptance are **NOT YET VERIFIED — REQUIRED
 BEFORE PRODUCTION SHIPPING GO-LIVE**. Stage 7.3 adds neither carrier API,
 labels, EDI, fulfillment, VAT, discounts, inventory, payment, nor Orders.
+
+==================================================
+ATHAR — PHASE 7 / STAGE 7.4 TOTALS, VAT & DISCOUNT CONTRACT
+==================================================
+
+Official Stage 7.4 baseline: `1d3549e238f1995357285e8fc60e8ca157d501b4`.
+The current Sweden-only Checkout derives a single server-authoritative,
+integer-minor-unit totals model from the canonical Cart, the approved selected
+PostNord method, and the owner-bound Checkout draft. Customer prices and the
+`5900` shipping charge are VAT-inclusive. At the current 25% policy rate, VAT
+is extracted with deterministic integer half-up arithmetic and is not added to
+the displayed price a second time. No production discount policy is approved:
+`discountTotal` is `0` and no promotion/coupon UI exists.
+
+Derived totals are not persisted as Checkout-draft authority. Browser subtotal,
+discount, VAT, shipping, threshold, grand-total, and owner claims are ignored.
+Inventory, payment, Order, invoice/receipt, and discount campaign work remain
+out of scope. **Stage 7.4 is COMPLETE — READY FOR CHECKPOINT.**
 
 ==================================================
 ATHAR — PHASE 7 / STAGE 7.2 CONTACT & SHIPPING ADDRESS

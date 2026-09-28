@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-09-28 — Phase 7 / Stage 7.4 totals, VAT, and discount contract complete — ready for checkpoint
+
+- Began from `1d3549e238f1995357285e8fc60e8ca157d501b4` with a
+  server-authoritative integer-minor-unit totals contract. Customer prices and
+  shipping remain VAT-inclusive; 25% VAT is extracted, not added. Production
+  discounts remain explicitly inactive; no payment, Order, or invoice behavior
+  was added. Focused tests, guest/authenticated Browser E2E, isolated
+  TypeScript, and isolated Webpack production build passed.
+
 ## 2026-09-28 — Phase 7 / Stage 7.3 shipping policy complete — ready for checkpoint
 
 - Completed Shipping Methods / Delivery Selection from official baseline

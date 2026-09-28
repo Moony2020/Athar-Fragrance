@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/Button/Button";
 import { CheckoutDetailsForm } from "@/components/checkout/CheckoutDetailsForm";
 import { ShippingMethodForm } from "@/components/checkout/ShippingMethodForm";
 import { resolveSelectedShippingMethod, resolveShippingAvailability } from "@/checkout/shipping";
-import { formatMoneyMinor } from "@/lib/money";
+import { resolveCheckoutTotals } from "@/checkout/totals";
+import { formatMoneyMinor, formatMoneyMinorExact } from "@/lib/money";
 import styles from "./CheckoutPage.module.css";
 
 export const metadata: Metadata = { title: "Checkout | ATHAR", robots: { index: false, follow: false } };
@@ -44,6 +45,9 @@ async function CheckoutContents() {
   const selectedShipping = shipping && checkoutDraft.status === "ready"
     ? resolveSelectedShippingMethod({ selectedShippingMethodId: checkoutDraft.draft.selectedShippingMethodId, shippingAddress: checkoutDraft.draft.shippingAddress, eligibleSubtotalMinor: checkout.eligibleSubtotalMinor, currency: checkout.currency ?? undefined })
     : undefined;
+  const totals = checkout.status === "ready" && checkoutDraft.status === "ready"
+    ? resolveCheckoutTotals({ checkout, draft: checkoutDraft.draft })
+    : { status: "blocked" as const, reason: "CHECKOUT_NOT_READY" as const };
 
   return <section aria-labelledby="checkout-title" className={styles.page}>
     <nav aria-label="Breadcrumb" className={styles.breadcrumb}><Link href="/cart">Your bag</Link><span aria-hidden="true">/</span><span aria-current="page">Checkout</span></nav>
@@ -67,10 +71,20 @@ async function CheckoutContents() {
       </section>
       <aside aria-label="Checkout summary" className={styles.summary}>
         <p className={styles.kicker}>CURRENT CART TOTAL</p>
-        <div><span>Eligible items</span><strong>{checkout.currency ? formatMoneyMinor(checkout.eligibleSubtotalMinor, checkout.currency) : "Unavailable"}</strong></div>
-        {selectedShipping ? <div><span>Delivery</span><strong>{selectedShipping.isFree ? "Free" : formatMoneyMinor(selectedShipping.shippingAmountMinor, selectedShipping.currency)}</strong></div> : null}
+        {totals.status === "ready"
+          ? <>
+            <div><span>Subtotal</span><strong>{formatMoneyMinor(totals.merchandiseSubtotal, totals.currency)}</strong></div>
+            <div><span>Shipping</span><strong>{totals.shippingTotal === 0 ? "Free" : formatMoneyMinor(totals.shippingTotal, totals.currency)}</strong></div>
+            <div><span>VAT included ({totals.vatRatePercent}%)</span><strong>{formatMoneyMinorExact(totals.vatTotal, totals.currency)}</strong></div>
+            <div className={styles.grandTotal}><span>Total</span><strong>{formatMoneyMinor(totals.grandTotal, totals.currency)}</strong></div>
+          </>
+          : <>
+            <div><span>Subtotal</span><strong>{checkout.currency ? formatMoneyMinor(checkout.eligibleSubtotalMinor, checkout.currency) : "Unavailable"}</strong></div>
+            {selectedShipping ? <div><span>Shipping</span><strong>{selectedShipping.isFree ? "Free" : formatMoneyMinor(selectedShipping.shippingAmountMinor, selectedShipping.currency)}</strong></div> : null}
+            {checkout.status === "ready" && totals.reason === "SHIPPING_SELECTION_REQUIRED" ? <p className={styles.totalNotice} role="status">Choose an available delivery method to calculate your final total.</p> : null}
+          </>}
         {checkout.blockReasons.length > 0 ? <div className={styles.blocked} role="status"><strong>Checkout can’t continue yet.</strong><span>{checkout.blockReasons.includes("MIXED_CURRENCIES") ? "Items use different currencies and can’t be combined." : "Review or update the items in your bag before continuing."}</span></div> : <div className={styles.ready} role="status"><strong>Your bag is eligible for checkout.</strong><span>Add your contact and shipping address to save these details.</span></div>}
-        <p className={styles.disclaimer}>Delivery is calculated from your current bag and shipping address. Tax, discounts, inventory reservation, payment, and order creation are not part of this step.</p>
+        <p className={styles.disclaimer}>Prices and delivery are VAT-inclusive. Totals are calculated from your current bag, address, and delivery selection. Discounts, inventory reservation, payment, and order creation are not part of this step.</p>
         <Link className={styles.return} href="/cart">Return to your bag</Link>
       </aside>
     </div>

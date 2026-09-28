@@ -67,3 +67,10 @@ owner. Live production Atlas and live Brevo delivery remain unverified.
   active policy method, currency, and current charge before a CAS save.
 - The production launch policy is `SE` + PostNord: `5900` minor SEK below
   `69900`, otherwise free. Non-SE addresses receive a safe unavailable state.
+
+## Stage 7.4 totals read contract
+
+`/checkout` derives public integer-minor-unit subtotal, zero production
+discount, re-resolved shipping, included VAT, and grand total only from current
+server state. It accepts no browser total, VAT, discount, shipping, threshold,
+or owner claim; its public DTO exposes no Checkout/Mongo ID or policy object.

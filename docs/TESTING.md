@@ -176,3 +176,22 @@ explicitly outside software-test evidence and remain not verified.
 - Isolated TypeScript and Webpack production build passed. Native Turbopack in
   the worktree was not executable because its `node_modules` Junction points
   outside the Turbopack filesystem root, before source evaluation.
+
+## Stage 7.4 verification plan
+
+Coverage verifies integer totals, included 25% VAT extraction and rounding,
+`59900 + 5900 = 65800`, exact `69900` free shipping, zero production discount,
+invalid selection/currency blocking, and ignored browser totals. Guest and
+authenticated Browser E2E use only `athar_stage55_test` with cleanup.
+
+### Stage 7.4 final verification gate (2026-09-28 — passed)
+
+- Focused Stage 7.4 plus affected Stage 7.1/7.3 domain/capability/fixture and
+  Mongo checks: **19/19 passed**.
+- Isolated Browser E2E: **2/2 passed**. Guest and authenticated owners both
+  rendered `59900 + 5900 = 65800`, including `13160` VAT minor units; an
+  above-threshold Cart re-read rendered free shipping and `25980` VAT minor
+  units. Submitted total fields could not alter server-derived totals.
+- Disposable User, Credential, Cart, and Checkout fixtures were removed by
+  each E2E `finally` block. Isolated TypeScript and Webpack production build
+  passed from the Stage 7.4-only worktree.

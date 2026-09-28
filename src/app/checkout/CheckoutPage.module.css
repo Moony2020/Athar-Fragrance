@@ -23,6 +23,9 @@
 .summary { background: rgba(255,255,255,.32); border: 1px solid var(--color-border); border-radius: var(--radius-md); display: grid; gap: var(--space-4); padding: var(--space-5); }
 .summary > div { align-items: center; display: flex; font-family: var(--font-ui); font-size: var(--text-ui-xs); justify-content: space-between; }
 .summary > div > strong { font-size: var(--text-body-sm); }
+.summary > .grandTotal { border-top: 1px solid var(--color-border); font-size: var(--text-body-sm); font-weight: 700; padding-top: var(--space-4); }
+.summary > .grandTotal > strong { font-size: var(--text-body-lg); }
+.totalNotice { color: var(--color-text-muted); font-family: var(--font-ui); font-size: var(--text-ui-xs); line-height: 1.55; margin: 0; }
 .blocked,.ready { align-items: start !important; border-block: 1px solid var(--color-border); display: grid !important; gap: .4rem; justify-content: stretch !important; padding-block: var(--space-4); }
 .blocked span,.ready span,.disclaimer { color: var(--color-text-muted); font-family: var(--font-ui); font-size: var(--text-ui-xs); line-height: 1.55; }
 .blocked strong { color: #755d2c; }

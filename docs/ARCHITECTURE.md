@@ -125,3 +125,11 @@ initial approved policy is Sweden (`SE`) only, PostNord, `5900` SEK minor units
 below `69900`, and free delivery at/above that subtotal. No shipping amount is
 persisted as authority and no delivery-time promise, carrier API, fulfillment,
 or order lifecycle is introduced.
+
+## Stage 7.4 totals, VAT, and discount boundary
+
+Totals remain transient and server-derived from the existing Cart projection,
+owner-bound draft, and Stage 7.3 shipping resolver. Gross customer prices stay
+gross; Swedish 25% VAT is extracted with integer arithmetic, never added again.
+The production discount boundary is an empty allow-list. No totals are persisted
+in `checkout_drafts`, and no payment or Order authority is introduced.

@@ -133,3 +133,9 @@ an explicit TTL index expires drafts after 30 days. Index creation is a
 controlled setup operation, never an implicit page-read side effect. Runtime
 persistence is Mongo-only with no in-memory fallback. Integration tests may
 write only to `athar_stage55_test`, use disposable fixtures, and assert cleanup.
+
+## Stage 7.4 totals boundary
+
+`checkout_drafts` stores no subtotal, discount, VAT, shipping amount, or grand
+total. Stage 7.4 derives them from current canonical state and adds no totals,
+discount, invoice, or payment collection or migration.

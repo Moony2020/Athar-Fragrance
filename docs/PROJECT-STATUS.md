@@ -1,8 +1,18 @@
 # ATHAR Project Status
 
-**Last audited:** 2026-09-27
+**Last audited:** 2026-09-28
 **Current phase:** Phase 7 — Checkout Foundation
-**Overall status:** **PHASE 6 COMPLETE LOCALLY; STAGE 7.1 CLOSED; STAGE 7.2 COMPLETE — READY FOR CHECKPOINT from official baseline `00b283151050fac514d1bc0f49bbe66eb26229cd`.**
+**Overall status:** **PHASE 6 COMPLETE LOCALLY; STAGES 7.1–7.3 CLOSED + PUSHED; STAGE 7.4 TOTALS, VAT & DISCOUNT CONTRACT COMPLETE — READY FOR CHECKPOINT from official baseline `1d3549e238f1995357285e8fc60e8ca157d501b4`.**
+
+## Stage 7.4 current status
+
+The Sweden-only Checkout summary now derives current Cart subtotal, zero
+production discount, current selected PostNord charge, included 25% VAT, and
+grand total from server state. Derived totals are not persisted in drafts;
+coupons, inventory, payment, Orders, and invoices remain out of scope.
+Focused domain/regression checks, guest and authenticated Browser E2E, isolated
+TypeScript, and isolated Webpack production build passed. **COMPLETE — READY
+FOR CHECKPOINT.**
 
 ## Stage 7.3 current status
 

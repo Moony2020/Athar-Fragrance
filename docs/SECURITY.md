@@ -98,3 +98,10 @@ address leaves the supported launch country. Production has no fictional
 shipping fallback. PostNord merchant/service and perfume dangerous-goods
 acceptance are **NOT YET VERIFIED**; no carrier API, label, EDI, fulfillment,
 payment, or order capability is implied.
+
+## Stage 7.4 totals authority boundary
+
+Totals are constructed only from the current Cart and current owner-bound draft.
+The browser cannot establish subtotal, discount, VAT, shipping, free-shipping,
+grand total, or owner identity. The public totals DTO omits internal policy,
+Checkout/Mongo IDs, and owner identity; production discount remains zero.
