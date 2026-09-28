@@ -18,7 +18,7 @@ export function SignInForm() {
     window.location.assign("/account");
   }
 
-  return <form onSubmit={submit} aria-label="Sign in">
+  return <form method="post" onSubmit={submit} aria-label="Sign in">
     <label htmlFor="signin-email">Email</label>
     <input id="signin-email" name="email" type="email" autoComplete="email" required />
     <label htmlFor="signin-password">Password</label>
