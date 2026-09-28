@@ -113,3 +113,11 @@ owner, stock, availability, expiry, ledger status, or Mongo identifier. The
 server re-resolves current checkout state and catalog before every prepare; a
 catalog-invalid compatible claim is released inside the transaction. Public
 results contain only an opaque reservation identifier and no ledger internals.
+
+## Stage 7.6 Phase 7 composed authority
+
+Phase 7 closure verifies the boundaries together: a guest cookie or session
+selects an owner but never grants browser authority over Cart identity, account
+email, draft ownership, shipping eligibility, price, VAT, total, inventory, or
+reservation state. Public checkout/reservation responses omit Mongo IDs and
+credentials. Payment and Order truth remain absent by design.

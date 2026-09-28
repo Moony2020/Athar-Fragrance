@@ -19,7 +19,7 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | 4 | Product detail and merchandising | Planned |
 | 5 | Cart and wishlist | Planned |
 | 6 | Authentication and customer account | Phase 6 complete locally |
-| 7 | Checkout foundation | Stages 7.1–7.4 closed + pushed; Stage 7.5 complete — ready for checkpoint |
+| 7 | Checkout foundation | Stages 7.1–7.5 closed + pushed; Stage 7.6 complete — ready for Phase closure checkpoint |
 | 8 | Stripe cards, direct PayPal, webhooks | Planned |
 | 9 | Canonical orders and transactional email | Planned |
 | 10 | Admin platform | Planned |
@@ -46,8 +46,8 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | 7.2 | Contact & Shipping Address | Complete — ready for checkpoint from `00b283151050fac514d1bc0f49bbe66eb26229cd` |
 | 7.3 | Shipping Methods / Delivery Selection | Closed + pushed in `1d3549e238f1995357285e8fc60e8ca157d501b4` |
 | 7.4 | Totals, VAT & Discount Contract | Closed / checkpointed and pushed at `ce13df789cda5b1938bfbe9994f16eacbd78c0a1` |
-| 7.5 | Inventory Reservation / Checkout Concurrency | Complete — ready for checkpoint |
-| 7.6 | Phase 7 Integration & Closure | Not started |
+| 7.5 | Inventory Reservation / Checkout Concurrency | Closed / checkpointed and pushed at `8e6f56ac19ae0c738d7acfcdceaba576e56ac112` |
+| 7.6 | Phase 7 Integration & Closure | Complete — ready for checkpoint |
 
 ### Phase 7 fixed boundaries
 

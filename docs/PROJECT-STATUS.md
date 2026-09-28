@@ -2,11 +2,19 @@
 
 **Last audited:** 2026-09-28
 **Current phase:** Phase 7 — Checkout Foundation
-**Overall status:** **PHASE 6 COMPLETE LOCALLY; STAGES 7.1–7.4 CLOSED + PUSHED; STAGE 7.5 INVENTORY RESERVATION / CHECKOUT CONCURRENCY COMPLETE — READY FOR CHECKPOINT from `ce13df789cda5b1938bfbe9994f16eacbd78c0a1`.**
+**Overall status:** **PHASE 7 COMPLETE — READY FOR PHASE CLOSURE CHECKPOINT. Stages 7.1–7.5 are closed + pushed; Stage 7.6 integration and closure verification is complete from official baseline `8e6f56ac19ae0c738d7acfcdceaba576e56ac112`.**
+
+## Stage 7.6 current status
+
+Stage 7.6 is **COMPLETE — READY FOR CHECKPOINT**. Phase 7 has been verified as
+one server-authoritative flow from the current Cart through contact/address,
+Swedish PostNord delivery, VAT-inclusive totals, and Prepare for payment to a
+temporary inventory reservation. No payment provider, payment attempt, Order,
+or fulfillment truth is introduced.
 
 ## Stage 7.5 current status
 
-Stage 7.5 is complete and ready for checkpoint from `ce13df789cda5b1938bfbe9994f16eacbd78c0a1`.
+Stage 7.5 is closed and pushed at `8e6f56ac19ae0c738d7acfcdceaba576e56ac112`.
 Prepare for payment creates a fixed, non-sliding 15-minute server-time
 reservation only after checkout gates pass. Mongo concurrency/reconciliation
 and guest/auth Browser evidence are passing; isolated TypeScript and Webpack

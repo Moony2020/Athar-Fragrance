@@ -146,3 +146,14 @@ logic excludes `expiresAt <= serverNow` immediately; Mongo TTL is housekeeping.
 locks and transactions serialize competing claims; an exact compatible retry is
 idempotent, while a changed Cart is reconciled as a full new claim or blocked.
 Reservation is not a sale and Stage 7.5 adds no provider, payment attempt, or Order.
+
+## Stage 7.6 Phase 7 integration closure
+
+Phase 7 closes one server-authoritative checkout chain: the current owner-bound
+Cart is reprojected from current catalog data; the owner-bound checkout draft
+holds contact, address, and a public shipping-method ID only; Sweden/SEK
+PostNord eligibility and VAT-inclusive totals are recalculated from that state;
+and only Prepare for payment may create a fixed 15-minute reservation. Cart or
+catalog changes require reconciliation, so no stale Cart, shipping, total, or
+reservation becomes payment authority. Reservations are not sales, and Phase 7
+does not introduce a provider, payment attempt, Order, or fulfillment.

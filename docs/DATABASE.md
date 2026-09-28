@@ -148,3 +148,12 @@ fixed `expiresAt`. Explicit controlled indexes cover checkout uniqueness,
 owner/status lookup, product-line availability lookup, and TTL cleanup. TTL
 deletion is not availability authority: server reads treat expired documents as
 inactive immediately. No price, VAT, shipping, payment, or Order data is stored.
+
+## Stage 7.6 Phase 7 integration closure
+
+Phase 7 introduces no additional collection or request-side index side effect.
+Its integration proof verifies the existing `carts`, `checkout_drafts`, and
+`inventory_reservations` contracts together: draft data never becomes totals or
+reservation authority, and reservation expiry/reconciliation remains a
+transactional server concern. All closure fixtures use `athar_stage55_test` and
+are deleted to zero after each run.

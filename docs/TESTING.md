@@ -207,3 +207,20 @@ Webpack production build passed with an explicit durable build exit code of `0`.
 Final Stage 7.1 checkout regression passed 3/3 and Stage 7.4 totals/VAT
 regression passed 2/2 after the reconciliation fix. Disposable fixtures and
 temporary browser/server evidence were cleaned after the runs.
+
+## Stage 7.6 Phase 7 integration closure (2026-09-28 — passed)
+
+- Isolated Phase 7 regression: Stage 7.1 **9/9**, Stage 7.2 **7/7**, Stage
+  7.3 **9/9**, Stage 7.4 **8/8**, and Stage 7.5 **4/4** passed.
+- Guest and authenticated closure paths each reached the inventory-ready
+  Prepare for payment boundary: **2/2 passed**. The guest path retained the
+  `599 kr + 59 kr = 658 kr` total; authenticated shipping/totals coverage
+  retained account-email isolation, free-shipping re-resolution, and browser
+  input rejection.
+- Mongo closure checks used `athar_stage55_test` only. The stock-one concurrent
+  proof admitted exactly one reservation; fixture cleanup asserted zero records.
+- Isolated TypeScript passed. Webpack production build completed with terminal
+  exit code **0**. The worktree required a temporary `node_modules` Junction
+  because npm 11 rejected the existing lockfile before installation; this is an
+  environment/tooling limitation, not a source or dependency-graph change.
+- PostNord operational and dangerous-goods acceptance remains not verified.

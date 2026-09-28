@@ -1296,12 +1296,12 @@ Official baseline: `5c4ec8139a358568509bd1fffb6041d2925ac0e8`.
 
 Phase 7 stage map:
 
-- 7.1 — Checkout Domain & Server-Authoritative Foundation (COMPLETE LOCALLY)
-- 7.2 — Contact & Shipping Address (NOT STARTED)
-- 7.3 — Shipping Methods / Delivery Selection (NOT STARTED)
-- 7.4 — Totals, VAT & Discount Contract (COMPLETE — READY FOR CHECKPOINT)
-- 7.5 — Inventory Reservation / Checkout Concurrency (COMPLETE — READY FOR CHECKPOINT)
-- 7.6 — Phase 7 Integration & Closure (NOT STARTED)
+- 7.1 — Checkout Domain & Server-Authoritative Foundation (CLOSED + PUSHED)
+- 7.2 — Contact & Shipping Address (CLOSED + PUSHED)
+- 7.3 — Shipping Methods / Delivery Selection (CLOSED + PUSHED)
+- 7.4 — Totals, VAT & Discount Contract (CLOSED + PUSHED)
+- 7.5 — Inventory Reservation / Checkout Concurrency (CLOSED + PUSHED at `8e6f56ac19ae0c738d7acfcdceaba576e56ac112`)
+- 7.6 — Phase 7 Integration & Closure (COMPLETE — READY FOR CHECKPOINT)
 
 Stage 7.1 contract:
 

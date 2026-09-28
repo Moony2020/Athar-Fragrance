@@ -83,3 +83,11 @@ before an inventory claim. Browser input cannot set stock, reserved quantity,
 expiry, status, owner, or a Mongo ID. Success exposes only an opaque reservation
 ID and fixed server-derived expiry; unavailable or stale state returns safe
 generic feedback. No payment provider, payment attempt, or Order is created.
+
+## Stage 7.6 integration boundary
+
+Stage 7.6 adds no public route or action. It closes the composed contract:
+`/checkout` and its existing server actions resolve current owner, Cart,
+contact/address, shipping, VAT-inclusive totals, and reservation eligibility
+in that order. A browser cannot promote its own total, VAT, shipping amount,
+stock, reservation expiry, owner, or Order claim to authority.

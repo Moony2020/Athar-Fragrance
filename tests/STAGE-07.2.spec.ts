@@ -101,7 +101,7 @@ test.describe("Stage 7.2 contact and shipping address", () => {
       const otherDraft = { checkoutId: opaqueId(), ...otherGuest, revision: 1, createdAt: now, updatedAt: now, expiresAt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000) };
       draftIds.push(otherDraft.checkoutId);
       await drafts.insertOne(otherDraft);
-      await page.locator("form").evaluate((form, id) => {
+      await page.getByLabel("Email address").locator("xpath=ancestor::form").evaluate((form, id) => {
         form.addEventListener("formdata", (event) => event.formData.set("checkoutId", id), { once: true });
       }, otherDraft.checkoutId);
       await fillAddress(page, "attacker@example.invalid");
@@ -177,7 +177,7 @@ test.describe("Stage 7.2 contact and shipping address", () => {
       const ownCheckoutId = await page.locator('input[name="checkoutId"]').inputValue();
       draftIds.push(ownCheckoutId);
 
-      await page.locator("form").evaluate((form, id) => {
+      await page.getByLabel("Email address").locator("xpath=ancestor::form").evaluate((form, id) => {
         form.addEventListener("formdata", (event) => event.formData.set("checkoutId", id), { once: true });
       }, otherDraft.checkoutId);
       await fillAddress(page, email);
@@ -185,7 +185,7 @@ test.describe("Stage 7.2 contact and shipping address", () => {
       await expect(page.getByText("This checkout session has expired or changed. Reload the page and try again.")).toBeVisible();
       expect((await drafts.findOne({ checkoutId: otherDraft.checkoutId }))?.contact).toBeUndefined();
 
-      await page.locator("form").evaluate((form, id) => {
+      await page.getByLabel("Email address").locator("xpath=ancestor::form").evaluate((form, id) => {
         form.addEventListener("formdata", (event) => event.formData.set("checkoutId", id), { once: true });
       }, ownCheckoutId);
       await fillAddress(page, "checkout-only@example.invalid");
