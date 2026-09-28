@@ -1339,6 +1339,26 @@ Mongo tests must continue to use only `athar_stage55_test` and disposable data.
 Stage 7.2+ are out of scope.
 
 ==================================================
+ATHAR — PHASE 7 / STAGE 7.3 SHIPPING METHODS / DELIVERY SELECTION
+==================================================
+
+Official Stage 7.3 baseline: `e9119bbaa4d275dcc203f2fbb49514ae5c220d54`.
+Owner-approved launch policy: Sweden (`SE`) only; PostNord service-point style
+delivery; `5900` SEK minor units below a `69900` eligible-cart subtotal and
+free delivery at or above it. No delivery-time promise is made.
+
+The server resolves the current owner, Cart, address, policy, method activity,
+currency, and charge on every read or selection. The browser submits only an
+opaque checkout reference, revision, and public method ID. The draft persists
+only that public ID; it never makes a shipping amount or carrier result
+authoritative. A non-SE address clears the selection and cannot progress.
+
+PostNord merchant-service configuration and perfume dangerous-goods/
+limited-quantity fulfillment acceptance are **NOT YET VERIFIED — REQUIRED
+BEFORE PRODUCTION SHIPPING GO-LIVE**. Stage 7.3 adds neither carrier API,
+labels, EDI, fulfillment, VAT, discounts, inventory, payment, nor Orders.
+
+==================================================
 ATHAR — PHASE 7 / STAGE 7.2 CONTACT & SHIPPING ADDRESS
 ==================================================
 

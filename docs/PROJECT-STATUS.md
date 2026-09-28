@@ -4,6 +4,17 @@
 **Current phase:** Phase 7 — Checkout Foundation
 **Overall status:** **PHASE 6 COMPLETE LOCALLY; STAGE 7.1 CLOSED; STAGE 7.2 COMPLETE — READY FOR CHECKPOINT from official baseline `00b283151050fac514d1bc0f49bbe66eb26229cd`.**
 
+## Stage 7.3 current status
+
+Stage 7.3 — Shipping Methods / Delivery Selection is complete and ready for
+checkpoint from official baseline `e9119bbaa4d275dcc203f2fbb49514ae5c220d54`. Owner policy permits only
+Sweden (`SE`), `SEK`, and PostNord at `5900` minor units below `69900`, then
+free shipping. No delivery estimate is promised. PostNord operational contract
+and perfume dangerous-goods acceptance remain **NOT YET VERIFIED** and are
+required before production shipping go-live. Authenticated and guest Browser
+E2E passed; focused domain/Mongo/fixture/capability checks passed 7/7; fixture
+cleanup, isolated TypeScript, and isolated Webpack production build passed.
+
 ## Stage 7.2 current status
 
 Stage 7.2 — Contact & Shipping Address is complete and ready for checkpoint.

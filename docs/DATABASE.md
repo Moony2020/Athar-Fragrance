@@ -115,6 +115,14 @@ quantity only; no checkout-specific durable data is written. Any later Mongo
 integration tests must use only `athar_stage55_test` and remove disposable
 fixtures.
 
+## Stage 7.3 shipping selection
+
+`checkout_drafts.selectedShippingMethodId` is an optional public method ID
+scoped by the existing server-derived owner and revision. It contains no price,
+carrier quote, threshold result, tax, payment, or order authority. Saving an
+address outside `SE` clears it; current shipping price is derived from current
+Cart subtotal and the owner-approved policy at read/action time.
+
 ## Stage 7.2 checkout drafts
 
 `checkout_drafts` stores only an opaque checkout ID, server-derived guest/user

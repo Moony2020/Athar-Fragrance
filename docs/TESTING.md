@@ -152,3 +152,27 @@ tampered owner references. The final results are recorded below.
   Mongo ping passed, `.env.local` remained ignored/untracked, no current secret
   appeared in tracked/diff/staged content, and only generated Stage-7.2
   fixtures were removed. `git diff --check` passed.
+
+## Stage 7.3 verification plan
+
+Stage 7.3 tests use only `athar_stage55_test` for Mongo writes. Focused domain
+coverage verifies the Sweden-only PostNord policy, `5900` minor-unit fee below
+`69900`, zero fee at/above that threshold, currency/country rejection, and
+server-derived selection. Mongo and Browser coverage verify guest and
+authenticated owner isolation, CAS conflicts, reload persistence, tampered
+method/price rejection or non-authority, subtotal re-resolution, address
+invalidation, expiry, ineligible Cart blocking, no PII in URLs/logs, and
+fixture cleanup. PostNord operational and dangerous-goods acceptance are
+explicitly outside software-test evidence and remain not verified.
+
+### Stage 7.3 final verification gate (2026-09-28 — passed)
+
+- Authenticated Browser E2E and affected guest Browser E2E: **2/2 passed**.
+- Focused domain/Mongo/catalog-fixture/capability checks: **7/7 passed**.
+- The dedicated `59900` fixture produced `5900` shipping; current server Cart
+  re-resolution produced free shipping at/above `69900`. Tampered method and
+  browser price input were rejected or ignored; non-SE address invalidated the
+  selection. Disposable fixtures were rechecked to zero.
+- Isolated TypeScript and Webpack production build passed. Native Turbopack in
+  the worktree was not executable because its `node_modules` Junction points
+  outside the Turbopack filesystem root, before source evaluation.

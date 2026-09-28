@@ -11,6 +11,7 @@ export type CheckoutDraftDocument = {
   revision: number;
   contact?: CheckoutContact;
   shippingAddress?: CheckoutShippingAddress;
+  selectedShippingMethodId?: string;
   createdAt: Date;
   updatedAt: Date;
   expiresAt: Date;
@@ -21,6 +22,7 @@ export type CheckoutDraftPublic = {
   revision: number;
   contact?: CheckoutContact;
   shippingAddress?: CheckoutShippingAddress;
+  selectedShippingMethodId?: string;
 };
 
 export function toCheckoutDraftPublic(document: CheckoutDraftDocument): CheckoutDraftPublic {
@@ -29,5 +31,6 @@ export function toCheckoutDraftPublic(document: CheckoutDraftDocument): Checkout
     revision: document.revision,
     ...(document.contact ? { contact: document.contact } : {}),
     ...(document.shippingAddress ? { shippingAddress: document.shippingAddress } : {}),
+    ...(document.selectedShippingMethodId ? { selectedShippingMethodId: document.selectedShippingMethodId } : {}),
   };
 }

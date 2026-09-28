@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-09-28 — Phase 7 / Stage 7.3 shipping policy complete — ready for checkpoint
+
+- Completed Shipping Methods / Delivery Selection from official baseline
+  `e9119bbaa4d275dcc203f2fbb49514ae5c220d54`. The launch policy is Sweden only (`SE`), `SEK`, PostNord,
+  `5900` minor units below `69900`, and free shipping at/above `69900`.
+- Shipping selection is owner-bound and revision-guarded; current amount is
+  server-derived from the eligible Cart subtotal and is not browser authority.
+  Carrier APIs, labels, EDI, fulfillment, VAT, discounts, payment, and Orders
+  remain out of scope.
+- Authenticated and guest Browser E2E passed, as did the 7/7 focused
+  domain/Mongo/fixture/capability suite, cleanup, isolated TypeScript, and an
+  isolated Webpack production build. The Turbopack worktree build is blocked
+  before source evaluation by the local `node_modules` Junction constraint.
+- No delivery estimate is promised. PostNord operational contract and perfume
+  dangerous-goods/limited-quantity acceptance are **NOT YET VERIFIED** and
+  required before production shipping go-live. No commit or push is made.
+
 ## 2026-09-27 — Phase 7 / Stage 7.2 final verification passed
 
 - Started Contact & Shipping Address from official baseline

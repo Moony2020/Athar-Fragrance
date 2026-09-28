@@ -3,7 +3,7 @@ import "server-only";
 import { readGuestCartId } from "@/server/commerce/guest-cookie";
 import { getProductDetailData } from "@/server/catalog/services";
 import { getGuestCartStore } from "@/server/commerce/store";
-import { MongoGuestCartStore } from "@/server/commerce/mongo-store";
+import { isMongoGuestCartStore } from "@/server/commerce/mongo-store";
 import { userCommerceOwner } from "@/commerce/durable-contracts";
 import { readCurrentCommerceOwner } from "@/server/commerce/current-owner";
 
@@ -86,7 +86,7 @@ export async function readCurrentCommerceCart(): Promise<PublicCart> {
   const owner = await readCurrentCommerceOwner();
   if (owner.ownerType === "guest") return readCurrentGuestCart();
   const store = getGuestCartStore();
-  if (!(store instanceof MongoGuestCartStore)) return { availability: "unavailable", lines: [], subtotalMinor: 0, currency: null, totalQuantity: 0 };
+  if (!isMongoGuestCartStore(store)) return { availability: "unavailable", lines: [], subtotalMinor: 0, currency: null, totalQuantity: 0 };
   const state = await store.readOwner(userCommerceOwner(owner.ownerId));
   const lines = await Promise.all(state.lines.map(async (line): Promise<PublicCartLine> => {
     const result = await getProductDetailData(line.productSlug);

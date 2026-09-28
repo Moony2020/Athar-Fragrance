@@ -44,7 +44,7 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | --- | --- | --- |
 | 7.1 | Checkout Domain & Server-Authoritative Foundation | Complete locally |
 | 7.2 | Contact & Shipping Address | Complete — ready for checkpoint from `00b283151050fac514d1bc0f49bbe66eb26229cd` |
-| 7.3 | Shipping Methods / Delivery Selection | Not started |
+| 7.3 | Shipping Methods / Delivery Selection | Complete — ready for checkpoint from `e9119bbaa4d275dcc203f2fbb49514ae5c220d54` |
 | 7.4 | Totals, VAT & Discount Contract | Not started |
 | 7.5 | Inventory Reservation / Checkout Concurrency | Not started |
 | 7.6 | Phase 7 Integration & Closure | Not started |

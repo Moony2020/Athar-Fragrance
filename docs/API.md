@@ -57,3 +57,13 @@ owner. Live production Atlas and live Brevo delivery remain unverified.
   email can prefill the checkout field but saving does not mutate the User.
 - Conflicts, foreign IDs, expiry, invalid input, and ineligible Cart state
   return safe generic/form feedback. PII is not placed in URLs or logs.
+
+## Stage 7.3 delivery selection
+
+- The delivery action accepts only checkout ID, revision, and public
+  `shippingMethodId`; it never accepts a browser price, threshold result,
+  carrier quote, owner, Cart total, or eligibility claim.
+- The server re-resolves the current owner draft, valid address, current Cart,
+  active policy method, currency, and current charge before a CAS save.
+- The production launch policy is `SE` + PostNord: `5900` minor SEK below
+  `69900`, otherwise free. Non-SE addresses receive a safe unavailable state.

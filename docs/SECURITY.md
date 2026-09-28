@@ -84,3 +84,17 @@ is read-only; submitted contact email is checkout-scoped and never updates the
 User. Drafts contain no commerce totals or payment/order authority. PII is not
 placed in URLs/logs, cookies contain only opaque IDs, and drafts expire after
 30 days. No production database was used for test fixtures.
+
+## Stage 7.3 shipping selection boundary
+
+Shipping policy is resolved only on the server from the current owner-bound
+draft, current eligible Cart subtotal, canonical currency, and shipping address.
+The browser submits only an opaque checkout reference, its revision, and a
+public shipping-method ID. It cannot select an owner, country eligibility,
+carrier charge, threshold result, price, or currency. Mongo stores only the
+selected public method identity; a current shipping amount is re-derived on
+each read and never becomes draft authority. The selection is cleared if the
+address leaves the supported launch country. Production has no fictional
+shipping fallback. PostNord merchant/service and perfume dangerous-goods
+acceptance are **NOT YET VERIFIED**; no carrier API, label, EDI, fulfillment,
+payment, or order capability is implied.

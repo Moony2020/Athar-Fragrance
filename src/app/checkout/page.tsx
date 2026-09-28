@@ -8,6 +8,8 @@ import { CatalogShell } from "@/components/catalog/CatalogShell/CatalogShell";
 import { Container } from "@/components/ui/Container/Container";
 import { Button } from "@/components/ui/Button/Button";
 import { CheckoutDetailsForm } from "@/components/checkout/CheckoutDetailsForm";
+import { ShippingMethodForm } from "@/components/checkout/ShippingMethodForm";
+import { resolveSelectedShippingMethod, resolveShippingAvailability } from "@/checkout/shipping";
 import { formatMoneyMinor } from "@/lib/money";
 import styles from "./CheckoutPage.module.css";
 
@@ -36,6 +38,12 @@ async function CheckoutContents() {
   const checkoutDraft = checkout.status === "ready"
     ? await readCurrentCheckoutDraft()
     : { status: "unavailable" as const };
+  const shipping = checkout.status === "ready" && checkoutDraft.status === "ready"
+    ? resolveShippingAvailability({ shippingAddress: checkoutDraft.draft.shippingAddress, eligibleSubtotalMinor: checkout.eligibleSubtotalMinor, currency: checkout.currency ?? undefined })
+    : undefined;
+  const selectedShipping = shipping && checkoutDraft.status === "ready"
+    ? resolveSelectedShippingMethod({ selectedShippingMethodId: checkoutDraft.draft.selectedShippingMethodId, shippingAddress: checkoutDraft.draft.shippingAddress, eligibleSubtotalMinor: checkout.eligibleSubtotalMinor, currency: checkout.currency ?? undefined })
+    : undefined;
 
   return <section aria-labelledby="checkout-title" className={styles.page}>
     <nav aria-label="Breadcrumb" className={styles.breadcrumb}><Link href="/cart">Your bag</Link><span aria-hidden="true">/</span><span aria-current="page">Checkout</span></nav>
@@ -47,7 +55,12 @@ async function CheckoutContents() {
           {line.status === "eligible" ? <strong>{formatMoneyMinor(line.subtotalMinor, line.currency)}</strong> : <p className={styles.attention} role="status">This item needs review and is not included as an eligible checkout item.</p>}
         </article>)}
         {checkout.status === "ready" && checkoutDraft.status === "ready"
-          ? <CheckoutDetailsForm draft={checkoutDraft.draft} email={checkoutDraft.email} />
+          ? <><CheckoutDetailsForm draft={checkoutDraft.draft} email={checkoutDraft.email} />
+            {shipping?.status === "available" ? <ShippingMethodForm draft={checkoutDraft.draft} methods={shipping.methods} /> : null}
+            {shipping?.status === "unsupported-country" ? <p className={styles.blocked} role="status">Shipping is not available to this country yet.</p> : null}
+            {shipping?.status === "currency-mismatch" ? <p className={styles.blocked} role="status">Delivery is unavailable because your bag currency cannot be matched.</p> : null}
+            {shipping?.status === "needs-address" ? <p className={styles.ready} role="status">Save your shipping address to see delivery options.</p> : null}
+          </>
           : checkout.status === "ready"
             ? <p className={styles.blocked} role="status">Contact and shipping details can’t be loaded right now. Please try again shortly.</p>
             : null}
@@ -55,8 +68,9 @@ async function CheckoutContents() {
       <aside aria-label="Checkout summary" className={styles.summary}>
         <p className={styles.kicker}>CURRENT CART TOTAL</p>
         <div><span>Eligible items</span><strong>{checkout.currency ? formatMoneyMinor(checkout.eligibleSubtotalMinor, checkout.currency) : "Unavailable"}</strong></div>
+        {selectedShipping ? <div><span>Delivery</span><strong>{selectedShipping.isFree ? "Free" : formatMoneyMinor(selectedShipping.shippingAmountMinor, selectedShipping.currency)}</strong></div> : null}
         {checkout.blockReasons.length > 0 ? <div className={styles.blocked} role="status"><strong>Checkout can’t continue yet.</strong><span>{checkout.blockReasons.includes("MIXED_CURRENCIES") ? "Items use different currencies and can’t be combined." : "Review or update the items in your bag before continuing."}</span></div> : <div className={styles.ready} role="status"><strong>Your bag is eligible for checkout.</strong><span>Add your contact and shipping address to save these details.</span></div>}
-        <p className={styles.disclaimer}>This review uses current catalog prices. Shipping, tax, discounts, inventory reservation, payment, and order creation are not part of this step.</p>
+        <p className={styles.disclaimer}>Delivery is calculated from your current bag and shipping address. Tax, discounts, inventory reservation, payment, and order creation are not part of this step.</p>
         <Link className={styles.return} href="/cart">Return to your bag</Link>
       </aside>
     </div>

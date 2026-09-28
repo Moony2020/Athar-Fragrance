@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { commerceOwnerSchema, type CommerceOwner } from "@/commerce/durable-contracts";
 import { checkoutContactSchema, checkoutIdSchema, checkoutShippingAddressSchema } from "./contact-address";
+import { shippingMethodIdSchema } from "./shipping";
 import type { CheckoutDraftDocument } from "./draft-document";
 
 const draftDocumentSchema = z.object({
@@ -13,6 +14,7 @@ const draftDocumentSchema = z.object({
   revision: z.number().int().positive(),
   contact: checkoutContactSchema.optional(),
   shippingAddress: checkoutShippingAddressSchema.optional(),
+  selectedShippingMethodId: shippingMethodIdSchema.optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
   expiresAt: z.date(),

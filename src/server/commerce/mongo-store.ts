@@ -13,6 +13,9 @@ import { parseCartDocument, parseWishlistDocument } from "@/commerce/durable-par
 export type { DurableCartDocument, DurableWishlistDocument } from "@/commerce/durable-contracts";
 const durableTtlMs = DURABLE_COMMERCE_TTL_DAYS * 24 * 60 * 60 * 1000;
 const maxCasAttempts = 25;
+// Symbol.for survives separately-bundled server modules while ordinary objects
+// with similarly named methods cannot accidentally satisfy this boundary.
+const durableCartStoreCapability = Symbol.for("athar.mongo-guest-cart-store.v1");
 function ownerFilter(owner: CommerceOwner) {
   return { ownerType: owner.ownerType, ownerId: owner.ownerId };
 }
@@ -22,6 +25,8 @@ function isDuplicateKey(error: unknown): boolean {
 }
 
 export class MongoGuestCartStore implements GuestCartStore {
+  readonly [durableCartStoreCapability] = true;
+
   constructor(private readonly database: () => Promise<Db> = getDatabase) {}
 
   async read(guestId: string): Promise<CartState> {
@@ -58,6 +63,16 @@ export class MongoGuestCartStore implements GuestCartStore {
     }
     throw new Error("Durable Cart changed concurrently; retry the operation.");
   }
+}
+
+/** Runtime-safe across Webpack module boundaries; intentionally not structural. */
+export function isMongoGuestCartStore(store: unknown): store is MongoGuestCartStore {
+  return Boolean(
+    store
+    && typeof store === "object"
+    && (store as { [durableCartStoreCapability]?: unknown })[durableCartStoreCapability] === true
+    && typeof (store as { readOwner?: unknown }).readOwner === "function",
+  );
 }
 
 export class MongoGuestWishlistStore implements GuestWishlistStore {

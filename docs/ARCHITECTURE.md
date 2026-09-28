@@ -115,3 +115,13 @@ owner identity stay server-only. A checkout-only contact email may be prefilled
 from the canonical User but is not written back to the User record. This stage
 does not add address-book/profile data, Cart pricing authority, delivery,
 payment, or Order lifecycle.
+
+## Stage 7.3 delivery selection
+
+Stage 7.3 retains the owner-bound draft and adds only a public selected shipping
+method ID. A server-only policy resolver rechecks the current eligible Cart,
+address, method activity, currency, and price on each read or mutation. The
+initial approved policy is Sweden (`SE`) only, PostNord, `5900` SEK minor units
+below `69900`, and free delivery at/above that subtotal. No shipping amount is
+persisted as authority and no delivery-time promise, carrier API, fulfillment,
+or order lifecycle is introduced.

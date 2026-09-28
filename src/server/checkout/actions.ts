@@ -4,6 +4,7 @@ import { refresh } from "next/cache";
 import { cookies } from "next/headers";
 import { DURABLE_COMMERCE_TTL_DAYS } from "@/commerce/durable-contracts";
 import { checkoutContactAddressSchema, checkoutIdSchema, type CheckoutContactAddress } from "@/checkout/contact-address";
+import { resolveShippingAvailability, shippingMethodIdSchema } from "@/checkout/shipping";
 import { readCurrentCheckout } from "./read-model";
 import { checkoutIdCookieName, resolveCurrentCheckoutOwner } from "./current-draft";
 import { MongoCheckoutDraftStore } from "./draft-store";
@@ -14,6 +15,8 @@ export type CheckoutFormState = {
   message?: string;
   errors?: Partial<Record<CheckoutField, string>>;
 };
+
+export type ShippingSelectionState = { status: "idle" | "saved" | "blocked" | "expired" | "conflict" | "invalid" | "unavailable"; message?: string };
 
 const cookieMaxAge = DURABLE_COMMERCE_TTL_DAYS * 24 * 60 * 60;
 
@@ -87,5 +90,35 @@ export async function saveCheckoutDetailsAction(_previous: CheckoutFormState, fo
   } catch {
     // Do not put PII or raw database errors in logs or action responses.
     return { status: "unavailable", message: "We couldn’t save your details right now. Please try again shortly." };
+  }
+}
+
+export async function saveShippingSelectionAction(_previous: ShippingSelectionState, formData: FormData): Promise<ShippingSelectionState> {
+  const checkoutId = checkoutIdSchema.safeParse(formText(formData, "checkoutId"));
+  const shippingMethodId = shippingMethodIdSchema.safeParse(formText(formData, "shippingMethodId"));
+  const revisionValue = formText(formData, "revision");
+  const revision = typeof revisionValue === "string" && /^\d+$/.test(revisionValue) ? Number(revisionValue) : null;
+  if (!checkoutId.success || !shippingMethodId.success || revision === null || !Number.isSafeInteger(revision) || revision < 1) {
+    return { status: "invalid", message: "Choose an available delivery method and try again." };
+  }
+
+  try {
+    const owner = await resolveCurrentCheckoutOwner();
+    if (!owner) return { status: "blocked", message: "Your bag is no longer available for checkout. Please review it again." };
+    const checkout = await readCurrentCheckout();
+    if (checkout.status !== "ready") return { status: "blocked", message: "Your bag has changed and can’t continue yet. Please review it again." };
+    const draft = await new MongoCheckoutDraftStore().get(owner, checkoutId.data);
+    if (!draft?.shippingAddress) return { status: "blocked", message: "Save a Swedish shipping address before choosing delivery." };
+    const availability = resolveShippingAvailability({ shippingAddress: draft.shippingAddress, eligibleSubtotalMinor: checkout.eligibleSubtotalMinor, currency: checkout.currency ?? undefined });
+    if (availability.status !== "available" || !availability.methods.some((method) => method.shippingMethodId === shippingMethodId.data)) {
+      return { status: "blocked", message: availability.status === "unsupported-country" ? "Shipping is not available to this country yet." : "This delivery method is no longer available. Review your address and bag." };
+    }
+    const result = await new MongoCheckoutDraftStore().saveShippingSelection(owner, checkoutId.data, revision, shippingMethodId.data);
+    if (result === "not-found") return { status: "expired", message: "This checkout session has expired or changed. Reload the page and try again." };
+    if (result === "conflict") return { status: "conflict", message: "These details changed in another session. Reload and try again." };
+    refresh();
+    return { status: "saved", message: "Delivery method saved." };
+  } catch {
+    return { status: "unavailable", message: "We couldn’t save delivery right now. Please try again shortly." };
   }
 }
