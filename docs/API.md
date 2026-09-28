@@ -91,3 +91,13 @@ Stage 7.6 adds no public route or action. It closes the composed contract:
 contact/address, shipping, VAT-inclusive totals, and reservation eligibility
 in that order. A browser cannot promote its own total, VAT, shipping amount,
 stock, reservation expiry, owner, or Order claim to authority.
+
+## Stage 8.1 payment-attempt service boundary
+
+Stage 8.1 adds server-only `preparePaymentAttempt`, not a browser endpoint or
+payment UI. It re-resolves the current owner, Cart/catalog, Checkout revision,
+contact/address, shipping, VAT-inclusive totals and compatible unexpired
+reservation. Browser input cannot select provider, amount, currency,
+reservation, status, or payment outcome. Its safe result exposes only an opaque
+local attempt ID, SEK amount, local state and existing reservation expiry. No
+provider request, redirect, PaymentIntent, PayPal Order, webhook or Order exists.

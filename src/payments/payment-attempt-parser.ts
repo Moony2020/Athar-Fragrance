@@ -1,0 +1,36 @@
+import { ObjectId } from "mongodb";
+import { z } from "zod";
+
+import { commerceOwnerSchema } from "@/commerce/durable-contracts";
+import { checkoutIdSchema } from "@/checkout/contact-address";
+import type { PaymentAttemptDocument } from "./payment-attempt-document";
+
+const opaqueId = z.string().min(32).max(128).regex(/^[A-Za-z0-9_-]+$/);
+const fingerprint = z.string().min(16).max(128).regex(/^[A-Za-z0-9_-]+$/);
+
+export const paymentAttemptDocumentSchema = z.object({
+  _id: z.instanceof(ObjectId).optional(),
+  paymentAttemptId: opaqueId,
+  ownerType: z.enum(["guest", "user"]),
+  ownerId: z.string().trim().min(32).max(128).regex(/^[A-Za-z0-9_-]+$/),
+  checkoutId: checkoutIdSchema,
+  checkoutRevision: z.number().int().positive(),
+  reservationId: opaqueId,
+  reservationExpiresAt: z.date(),
+  cartFingerprint: fingerprint,
+  amountMinor: z.number().int().nonnegative().safe(),
+  currency: z.literal("SEK"),
+  shippingMethodId: z.string().trim().min(3).max(80).regex(/^[a-z0-9-]+$/),
+  idempotencyKey: fingerprint,
+  providerRequestKey: opaqueId,
+  provider: z.enum(["stripe", "paypal"]).nullable(),
+  status: z.enum(["local_created", "provider_waiting", "customer_action_required", "processing", "succeeded", "failed", "cancelled", "superseded"]),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+}).strict();
+
+export function parsePaymentAttemptDocument(raw: unknown): PaymentAttemptDocument {
+  const document = paymentAttemptDocumentSchema.parse(raw);
+  commerceOwnerSchema.parse({ ownerType: document.ownerType, ownerId: document.ownerId });
+  return document;
+}

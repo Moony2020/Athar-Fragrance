@@ -8,6 +8,7 @@ import type { UserDocument } from "@/identity/documents";
 import type { UserCredentialDocument } from "@/identity/credential-documents";
 import type { CheckoutDraftDocument } from "@/checkout/draft-document";
 import type { InventoryReservationDocument } from "@/inventory/reservation-document";
+import type { PaymentAttemptDocument } from "@/payments/payment-attempt-document";
 
 /**
  * Idempotent catalog indexes. Invoke from a controlled deployment/migration
@@ -66,6 +67,17 @@ export async function ensureInventoryReservationIndexes(): Promise<void> {
     { key: { status: 1, expiresAt: 1, "lines.productSlug": 1 }, name: "inventory_reservation_active_lookup" },
     { key: { expiresAt: 1 }, name: "inventory_reservation_expiry_ttl", expireAfterSeconds: 0 },
     { key: { ownerType: 1, ownerId: 1, status: 1 }, name: "inventory_reservation_owner_status" },
+  ]);
+}
+
+/** Payment-attempt indexes are explicit deployment work, never request work. */
+export async function ensurePaymentAttemptIndexes(): Promise<void> {
+  const database = await getDatabase();
+  await database.collection<PaymentAttemptDocument>(databaseCollections.paymentAttempts).createIndexes([
+    { key: { paymentAttemptId: 1 }, name: "payment_attempt_public_id_unique", unique: true },
+    { key: { ownerType: 1, ownerId: 1, checkoutId: 1, idempotencyKey: 1 }, name: "payment_attempt_checkout_idempotency_unique", unique: true },
+    { key: { ownerType: 1, ownerId: 1, checkoutId: 1, status: 1 }, name: "payment_attempt_owner_checkout_status" },
+    { key: { reservationId: 1 }, name: "payment_attempt_reservation" },
   ]);
 }
 

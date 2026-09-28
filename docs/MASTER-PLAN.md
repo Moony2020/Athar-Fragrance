@@ -20,7 +20,7 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | 5 | Cart and wishlist | Planned |
 | 6 | Authentication and customer account | Phase 6 complete locally |
 | 7 | Checkout foundation | Stages 7.1–7.5 closed + pushed; Stage 7.6 complete — ready for Phase closure checkpoint |
-| 8 | Stripe cards, direct PayPal, webhooks | Planned |
+| 8 | Stripe cards, direct PayPal, webhooks | Stage 8.1 complete — ready for checkpoint; provider execution remains planned |
 | 9 | Canonical orders and transactional email | Planned |
 | 10 | Admin platform | Planned |
 | 11 | Content, journal, legal, customer experience | Planned |

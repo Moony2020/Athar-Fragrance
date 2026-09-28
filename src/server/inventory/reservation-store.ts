@@ -194,4 +194,19 @@ export class MongoInventoryReservationStore {
       .findOne({ checkoutId: checkoutId.data, ...ownerFilter(owner), status: "active", expiresAt: { $gt: now } });
     return document ? toInventoryReservationPublic(document) : null;
   }
+
+  /** Internal binding read for a downstream server-only payment boundary. */
+  async readActiveBinding(owner: CommerceOwner, rawCheckoutId: unknown, now = new Date()): Promise<Pick<InventoryReservationDocument, "reservationId" | "checkoutId" | "expiresAt" | "cartFingerprint" | "lines"> | null> {
+    const checkoutId = checkoutIdSchema.safeParse(rawCheckoutId);
+    if (!checkoutId.success) return null;
+    const document = await (await this.database()).collection<InventoryReservationDocument>(databaseCollections.inventoryReservations)
+      .findOne({ checkoutId: checkoutId.data, ...ownerFilter(owner), status: "active", expiresAt: { $gt: now } });
+    return document ? {
+      reservationId: document.reservationId,
+      checkoutId: document.checkoutId,
+      expiresAt: document.expiresAt,
+      cartFingerprint: document.cartFingerprint,
+      lines: document.lines.map((line) => ({ ...line })),
+    } : null;
+  }
 }

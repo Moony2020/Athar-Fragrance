@@ -39,6 +39,14 @@ control.
 - Use secure session handling through the approved authentication design.
 - Verify Stripe and PayPal webhook signatures; persist and deduplicate provider events.
 - Never persist raw card data.
+
+## Stage 8.1 payment-attempt boundary
+
+PaymentAttempt creation is server-only and Mongo-only. Strict parsing rejects
+unknown fields, unsafe money, non-SEK currency, provider identifiers and card
+data. Public DTOs omit Mongo IDs, owner IDs, idempotency keys, provider request
+keys and terminal-state authority. **PAYMENT CAPTURE POLICY — OWNER DECISION
+REQUIRED BEFORE PROVIDER EXECUTION.**
 - Apply security headers, rate limits where appropriate, dependency review, and least-privilege access before production.
 
 Stage 6.5 password recovery stores only SHA-256 hashes of 256-bit random

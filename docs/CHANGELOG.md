@@ -11,6 +11,14 @@
 - Reconciled the Phase 7 status: Stages 7.1–7.5 are closed + pushed, Stage 7.6
   is complete and ready for a separate Phase closure checkpoint.
 
+## 2026-09-29 — Stage 8.1 PaymentAttempt foundation complete — ready for checkpoint
+
+- Added a provider-neutral Mongo-only `payment_attempts` contract and explicit
+  index declaration.
+- Added server-only current-state preparation binding the active reservation,
+  current Cart, Checkout revision, shipping and immutable SEK totals.
+- Added no provider API, payment UI, webhook, canonical Order, or capture policy.
+
 ## 2026-09-28 — Phase 7 / Stage 7.5 reservation boundary complete — ready for checkpoint
 
 - Added a server-authoritative, Mongo transaction-backed inventory reservation

@@ -157,3 +157,13 @@ Its integration proof verifies the existing `carts`, `checkout_drafts`, and
 reservation authority, and reservation expiry/reconciliation remains a
 transactional server concern. All closure fixtures use `athar_stage55_test` and
 are deleted to zero after each run.
+
+## Stage 8.1 payment attempts
+
+`payment_attempts` is a Mongo-only provider-neutral ledger. It holds an opaque
+local ID, owner scope, Checkout revision, reservation identity/expiry, Cart
+fingerprint, selected shipping method, immutable SEK minor-unit total, private
+idempotency/provider-request keys, state and timestamps. It holds no raw card
+data, provider secret, payment credential, or canonical Order. Its indexes are
+explicit deployment work, never request-side effects; test writes are limited
+to disposable records in `athar_stage55_test`.

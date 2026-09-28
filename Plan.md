@@ -1433,3 +1433,18 @@ baseline and Stage-7.2-only source. Do not alter or absorb Owner/local changes,
 `next-env.d.ts`, `package-lock.json`, icons, caches, `debug.log`, `.env.local`,
 or global `AGENTS.md`. The stage closes only after all gates pass, then stops at
 `ATLAS_STOP` without starting Stage 7.3.
+
+## Stage 8.1 — Payment Domain & Durable PaymentAttempt Foundation
+
+Stage 8.1 creates only the provider-neutral local payment-attempt foundation.
+The server re-resolves current owner, canonical Cart/catalog, Checkout revision,
+contact/address, delivery, VAT-inclusive totals, and a compatible active
+15-minute reservation before creating an opaque durable attempt. The immutable
+binding uses integer SEK minor units and a private idempotency identity; stale
+or changed inputs supersede a pending local attempt. Mongo persistence and
+indexes are explicit and production has no in-memory fallback.
+
+No Stripe/PayPal API call, Payment Element, PaymentIntent, PayPal Order,
+provider webhook, canonical Order, browser payment truth, or capture decision
+is in scope. **PAYMENT CAPTURE POLICY — OWNER DECISION REQUIRED BEFORE PROVIDER
+EXECUTION.**

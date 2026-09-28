@@ -1,8 +1,18 @@
 # ATHAR Project Status
 
 **Last audited:** 2026-09-28
-**Current phase:** Phase 7 — Checkout Foundation
-**Overall status:** **PHASE 7 COMPLETE — READY FOR PHASE CLOSURE CHECKPOINT. Stages 7.1–7.5 are closed + pushed; Stage 7.6 integration and closure verification is complete from official baseline `8e6f56ac19ae0c738d7acfcdceaba576e56ac112`.**
+**Current phase:** Phase 8 — Payments
+**Overall status:** **STAGE 8.1 COMPLETE — READY FOR CHECKPOINT. Phase 7 is closed at official baseline `957bde6ab7ac80c82096098f75aa7e8f9933e4f0`; provider execution remains out of scope.**
+
+## Stage 8.1 current status
+
+Stage 8.1 is **COMPLETE — READY FOR CHECKPOINT** from official baseline
+`957bde6ab7ac80c82096098f75aa7e8f9933e4f0`. It adds only a durable,
+provider-neutral PaymentAttempt foundation after the fixed reservation boundary.
+No Stripe/PayPal call, Payment Element, PaymentIntent, webhook, canonical Order,
+or capture/authorize decision is implemented. Focused contract/Mongo tests,
+affected Phase 7 regression, TypeScript, ESLint, and isolated Webpack build
+passed; the production build has an explicit durable exit code of `0`.
 
 ## Stage 7.6 current status
 

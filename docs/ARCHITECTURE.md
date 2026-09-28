@@ -157,3 +157,13 @@ and only Prepare for payment may create a fixed 15-minute reservation. Cart or
 catalog changes require reconciliation, so no stale Cart, shipping, total, or
 reservation becomes payment authority. Reservations are not sales, and Phase 7
 does not introduce a provider, payment attempt, Order, or fulfillment.
+
+## Stage 8.1 durable payment-attempt foundation
+
+Payment preparation is a server-only provider-neutral boundary after the active
+reservation. A local `payment_attempts` record binds CommerceOwner, Checkout
+revision, reservation, canonical Cart fingerprint, shipping method and immutable
+SEK minor-unit total. Exact retries reuse it; a changed Cart, Checkout, totals,
+shipping or reservation supersedes a pending local attempt instead of silently
+reusing it. The reservation remains fixed for 15 minutes. No provider is chosen
+by default and browser redirects are never payment proof.

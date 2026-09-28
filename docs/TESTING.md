@@ -224,3 +224,13 @@ temporary browser/server evidence were cleaned after the runs.
   because npm 11 rejected the existing lockfile before installation; this is an
   environment/tooling limitation, not a source or dependency-graph change.
 - PostNord operational and dangerous-goods acceptance remains not verified.
+
+## Stage 8.1 payment-attempt verification (complete)
+
+Focused tests cover opaque public IDs, strict parser rejection, SEK integer
+minor-unit bindings, binding-sensitive idempotency and safe DTOs. The Mongo
+test is gated to `athar_stage55_test`, creates a disposable record, proves
+concurrent duplicate idempotency and superseding, then verifies cleanup. No
+Stripe or PayPal call is made. The focused suite passed 4/4; affected Stage 7.4
+and Stage 7.5 regression passed 8/8. TypeScript, affected ESLint, and isolated
+Webpack production build passed; build evidence records terminal exit code `0`.
