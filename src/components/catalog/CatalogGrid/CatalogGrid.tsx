@@ -19,7 +19,7 @@ export function CatalogGrid({ availability, emptyMessage, products }: CatalogGri
 
   return (
     <ul className={styles.grid} aria-label="Catalog products">
-      {products.map((product) => <li key={product.slug}><ProductCard product={product} /></li>)}
+      {products.map((product, index) => <li key={product.slug}><ProductCard priority={index === 0} product={product} /></li>)}
     </ul>
   );
 }

@@ -52,7 +52,9 @@ test.describe("Stage 7.1 server-authoritative checkout", () => {
       await page.goto("/checkout?ownerId=attacker&priceMinor=1&total=1");
 
       await expect(page.getByRole("heading", { name: "Review your bag" })).toBeVisible();
+      await expect(page.getByRole("img", { name: "Eros front view" })).toBeVisible();
       await expect(page.getByRole("article").filter({ hasText: "Eros" })).toContainText("Quantity 2");
+      await expect(page.getByRole("article").filter({ hasText: "Eros" })).toContainText("Eau de Parfum · 50 ml");
       await expect(page.getByRole("article").filter({ hasText: "Eros" })).toContainText("2 598 kr");
       await expect(page.getByText("This item needs review and is not included as an eligible checkout item.")).toBeVisible();
       await expect(page.getByText("Checkout can’t continue yet.")).toBeVisible();

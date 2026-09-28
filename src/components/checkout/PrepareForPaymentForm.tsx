@@ -8,7 +8,7 @@ import styles from "./CheckoutDetailsForm.module.css";
 
 const initialState: PrepareForPaymentState = { status: "idle" };
 
-/** A truthful pre-payment boundary; Stage 7.5 intentionally has no payment route. */
+/** Reservation remains the truthful boundary before the later card-only step. */
 export function PrepareForPaymentForm({ draft }: { draft: CheckoutDraftPublic }) {
   const [state, formAction, pending] = useActionState(prepareCheckoutForPaymentAction, initialState);
   return (
@@ -18,7 +18,7 @@ export function PrepareForPaymentForm({ draft }: { draft: CheckoutDraftPublic })
         {pending ? "Preparing your items…" : state.status === "reserved" ? "Items reserved" : "Prepare for payment"}
       </button>
       <p className={styles.helper} role="status">
-        {state.message ?? "Items are reserved for 15 minutes only after this step. Payment is not available yet."}
+        {state.message ?? "Items are reserved for 15 minutes only after this step. Secure card payment becomes available after reservation."}
       </p>
     </form>
   );

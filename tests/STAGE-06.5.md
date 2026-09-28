@@ -16,7 +16,8 @@ Baseline: `87b9993d9d0a6bb76d6eb88b3909f90591750ff0`.
   per-user replacement, one-time transactional consume, sibling-token cleanup.
 - Explicit idempotent unique `userId`/`tokenHash` indexes and expiry TTL index
   through `ensurePasswordResetIndexes()`.
-- Existing 15–128 password policy, Argon2id `m=65536,t=3,p=4`, and private
+- Existing 12–128 password policy with at least one letter, Argon2id
+  `m=65536,t=3,p=4`, and private
   credential security-version increment to invalidate old Auth.js JWT sessions.
 - Server-only Brevo REST adapter; no raw token, URL, provider key, or password
   is logged. `.env.example` documents variables without secrets.

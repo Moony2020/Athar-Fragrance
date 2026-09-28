@@ -18,6 +18,7 @@ export type PaymentAttemptStatus =
   | "superseded";
 
 export type PaymentProvider = "stripe" | "paypal";
+export type StripePaymentIntentStatus = "requires_payment_method" | "requires_action" | "processing" | "succeeded" | "canceled";
 
 export type PaymentAttemptDocument = {
   _id?: ObjectId;
@@ -35,6 +36,8 @@ export type PaymentAttemptDocument = {
   idempotencyKey: string;
   providerRequestKey: string;
   provider: PaymentProvider | null;
+  providerExternalId?: string;
+  providerStatus?: StripePaymentIntentStatus;
   status: PaymentAttemptStatus;
   createdAt: Date;
   updatedAt: Date;

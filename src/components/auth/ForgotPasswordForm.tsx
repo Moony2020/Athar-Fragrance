@@ -16,7 +16,7 @@ export function ForgotPasswordForm() {
     } catch { setError("Password reset is temporarily unavailable. Please try again later."); }
     finally { setPending(false); }
   }
-  return <form onSubmit={submit} aria-label="Forgot password">
+  return <form method="post" onSubmit={submit} aria-label="Forgot password" aria-busy={pending}>
     <label htmlFor="forgot-email">Email</label><input id="forgot-email" name="email" type="email" autoComplete="email" required />
     {message && <p role="status">{message}</p>}{error && <p role="alert">{error}</p>}
     <button type="submit" disabled={pending}>{pending ? "Sending…" : "Send reset link"}</button>

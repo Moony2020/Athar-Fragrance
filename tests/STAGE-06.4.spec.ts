@@ -14,14 +14,14 @@ test("browser registration reconciles disposable guest cart and wishlist", async
     await database.collection("carts").insertOne({ ownerType: "guest", ownerId: guestId, revision: 1, state: { lines: [{ productSlug: "athar-test-no-01", variantId, quantity: 2 }] }, createdAt: now, updatedAt: now, expiresAt: new Date(now.getTime() + 86400000) });
     await database.collection("wishlists").insertOne({ ownerType: "guest", ownerId: guestId, revision: 1, state: { productSlugs: ["athar-test-no-01"] }, createdAt: now, updatedAt: now, expiresAt: new Date(now.getTime() + 86400000) });
     await context.addCookies([
-      { name: "athar_guest_cart", value: guestId, url: "http://127.0.0.1:3000" },
-      { name: "athar_guest_wishlist", value: guestId, url: "http://127.0.0.1:3000" },
+      { name: "athar_guest_cart", value: guestId, url: process.env.BASE_URL ?? "http://127.0.0.1:3100" },
+      { name: "athar_guest_wishlist", value: guestId, url: process.env.BASE_URL ?? "http://127.0.0.1:3100" },
     ]);
     await page.goto("/account/register");
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill(password);
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page.getByRole("status")).toContainText("Account created");
+    await expect(page).toHaveURL(/\/account$/);
     const user = await database.collection("users").findOne({ normalizedEmail: email });
     expect(user?.userId).toBeTruthy();
     const cart = await database.collection("carts").findOne({ ownerType: "user", ownerId: user?.userId });

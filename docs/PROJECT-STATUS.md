@@ -2,7 +2,19 @@
 
 **Last audited:** 2026-09-28
 **Current phase:** Phase 8 — Payments
-**Overall status:** **STAGE 8.1 COMPLETE — READY FOR CHECKPOINT. Phase 7 is closed at official baseline `957bde6ab7ac80c82096098f75aa7e8f9933e4f0`; provider execution remains out of scope.**
+**Overall status:** **STAGE 8.2 IMPLEMENTED — STRIPE SANDBOX VERIFICATION PENDING. Stage 8.1 is closed at official baseline `863f3fe0bed7a4be5fbadbc9577c58393d50f45c`; no provider finalization or Order exists.**
+
+## Stage 8.2 current status
+
+Stage 8.2 is **IMPLEMENTED — STRIPE SANDBOX VERIFICATION PENDING**. Stripe card
+PaymentIntent preparation uses owner-approved immediate capture
+(`capture_method = automatic`) after the current owner, Cart, Checkout, totals,
+and compatible active reservation are revalidated. The Payment Element receives
+only a transient owner-bound client secret; browser confirmation cannot create
+an Order or consume final inventory. `STRIPE_SECRET_KEY` and
+`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` are not configured in the current
+environment, so no sandbox call, live charge, or provider/browser PASS is
+claimed. PayPal, webhooks, and Orders remain out of scope.
 
 ## Stage 8.1 current status
 
@@ -55,7 +67,8 @@ cleanup, isolated TypeScript, and isolated Webpack production build passed.
 
 ## Stage 7.2 current status
 
-Stage 7.2 — Contact & Shipping Address is complete and ready for checkpoint.
+Stage 7.2 — Contact & Shipping Address is closed and pushed in baseline
+`653cd9da4cb21fd34336b21d67ef9574e1a5e3eb`.
 The implementation adds
 an owner-bound Mongo checkout draft, strict normalized email/address parsing,
 and a server-first contact/address form behind the existing Stage 7.1
@@ -75,7 +88,7 @@ rotated locally and the test server restarted. Fixture cleanup, no-secret Git
 audit, and `git diff --check` passed. The current-tree TypeScript check still
 reports the unrelated owner-local catalog `audience` type error; the official
 baseline and isolated Stage-7.2-only TypeScript/build checks pass. No commit or
-push was made; Stage 7.3 remains out of scope.
+push was made at the Stage 7.2 checkpoint; Stage 7.3 now owns delivery selection.
 
 ## Stage 7.1 current status
 

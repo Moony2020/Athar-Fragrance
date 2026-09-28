@@ -29,7 +29,7 @@ No local font files are present. The existing prototype's Cormorant Garamond and
 
 ### Shared primitives
 
-`src/components/ui/` contains only reusable primitives justified by planned homepage and commerce surfaces: `Button`, `Container`, `Section`, `SectionHeading`, `TextLink`, and `IconButton`. They use semantic native elements and tokenized states; they are not homepage sections.
+`src/components/ui/` contains only reusable primitives justified by planned homepage and commerce surfaces: `Button`, `Container`, `Section`, `SectionHeading`, and `TextLink`. They use semantic native elements and tokenized states; they are not homepage sections.
 
 ### Responsive, accessibility, and motion conventions
 

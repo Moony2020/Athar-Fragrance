@@ -1,0 +1,6 @@
+.section { border-top: 1px solid var(--color-border); display: grid; gap: var(--space-4); padding-top: var(--space-5); }
+.kicker { color: #705921; font-family: var(--font-ui); font-size: var(--text-ui-xs); font-weight: 700; letter-spacing: var(--tracking-label); margin: 0; text-transform: uppercase; }
+.form { display: grid; gap: var(--space-4); }
+.form button { background: var(--color-text); border: 0; color: var(--color-text-inverse); cursor: pointer; font-family: var(--font-ui); font-size: var(--text-ui-xs); font-weight: 700; letter-spacing: var(--tracking-label); min-height: 3rem; padding-inline: var(--space-5); text-transform: uppercase; }
+.form button:disabled { cursor: wait; opacity: .58; }
+.status { color: var(--color-text-muted); font-family: var(--font-ui); font-size: var(--text-ui-xs); line-height: 1.55; margin: 0; }

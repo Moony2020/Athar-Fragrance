@@ -8,11 +8,6 @@ test("authenticated account reads and updates canonical display name", async ({ 
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page.getByRole("status")).toContainText("Account created");
-  await page.goto("/account/sign-in");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
-  await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/account$/);
   await expect(page.getByLabel("Email")).toHaveValue(email);
   await expect(page.getByLabel("Email")).toHaveAttribute("readonly", "");
@@ -46,5 +41,5 @@ test("credentials sign-in keeps submitted values out of URLs", async ({ page }) 
     const decodedUrl = decodeURIComponent(url);
     return decodedUrl.includes(email) || decodedUrl.includes(password);
   })).toBe(false);
-  await expect(page.locator('p[role="alert"]')).toHaveText("Unable to sign in with those details.");
+  await expect(page.locator('p[role="alert"]')).toHaveText("Invalid email or password. Please check your credentials and try again.");
 });

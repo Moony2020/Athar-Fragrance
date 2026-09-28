@@ -1448,3 +1448,18 @@ No Stripe/PayPal API call, Payment Element, PaymentIntent, PayPal Order,
 provider webhook, canonical Order, browser payment truth, or capture decision
 is in scope. **PAYMENT CAPTURE POLICY — OWNER DECISION REQUIRED BEFORE PROVIDER
 EXECUTION.**
+
+## Stage 8.2 — Stripe PaymentIntent & Payment Element
+
+Stage 8.2 integrates only Stripe card payment preparation after the durable
+PaymentAttempt boundary. The owner-approved launch policy is immediate capture:
+PaymentIntents explicitly set `capture_method: "automatic"`; later PayPal will
+use `intent = CAPTURE`. Stripe receives only immutable server-derived SEK minor
+units and opaque identifiers. The durable provider-operation key is reused for
+retries and recovery, while an existing compatible PaymentIntent is retrieved
+and validated rather than duplicated.
+
+The client secret is transient to the current owner for Stripe.js/Payment
+Element and is never persisted, logged, or put in a URL. Browser confirmation
+is not payment truth: no Order, final inventory consumption, email, webhook
+finalization, or PayPal work is introduced.

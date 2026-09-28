@@ -8,12 +8,16 @@ export const customerCreateInputSchema = z.object({
   email: emailSchema,
 }).strict();
 
+const passwordInputSchema = z.string().min(12).max(128).refine((value) => /[A-Za-z]/.test(value), {
+  message: "Password must contain at least one letter.",
+});
+
 export const registrationInputSchema = z.object({
   email: emailSchema,
-  password: z.string().min(15).max(128),
+  password: passwordInputSchema,
 }).strict();
 
-export const passwordSchema = z.string().min(15).max(128);
+export const passwordSchema = passwordInputSchema;
 
 export const userPublicSchema = z.object({
   userId: publicUserIdSchema,

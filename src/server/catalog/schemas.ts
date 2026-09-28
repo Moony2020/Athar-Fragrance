@@ -159,3 +159,14 @@ export const publicDiscoveryQuerySchema = z.object({
   sort: discoverySortSchema.default("name-asc"),
 }).strict();
 export type PublicDiscoveryQuery = z.output<typeof publicDiscoveryQuerySchema>;
+
+export type CatalogDiscoveryScope = { audience?: z.infer<typeof audienceSchema>; brandSlug?: string; collectionSlug?: string };
+
+export function hasUnscopedDiscoveryQuery(query: PublicDiscoveryQuery, scope: CatalogDiscoveryScope = {}): boolean {
+  return Boolean(
+    query.q || query.family || query.sort !== "name-asc" ||
+    (!scope.audience && query.audience) ||
+    (!scope.brandSlug && query.brand) ||
+    (!scope.collectionSlug && query.collection),
+  );
+}

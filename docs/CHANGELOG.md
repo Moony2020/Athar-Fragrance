@@ -19,6 +19,16 @@
   current Cart, Checkout revision, shipping and immutable SEK totals.
 - Added no provider API, payment UI, webhook, canonical Order, or capture policy.
 
+## 2026-09-29 — Stage 8.2 Stripe PaymentIntent integration (implemented; sandbox pending)
+
+- Added card-only Stripe PaymentIntent preparation behind the durable local
+  PaymentAttempt, with explicit immediate `automatic` capture and durable
+  idempotency/recovery semantics.
+- Added owner-bound transient Payment Element client-secret delivery without
+  storing secrets, card data, or browser payment truth.
+- No Stripe sandbox key is configured, so provider and browser verification are
+  pending; no PayPal, webhook finalization, Order, or final stock transition was added.
+
 ## 2026-09-28 — Phase 7 / Stage 7.5 reservation boundary complete — ready for checkpoint
 
 - Added a server-authoritative, Mongo transaction-backed inventory reservation

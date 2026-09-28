@@ -19,7 +19,17 @@ import {
   getCollectionRepository,
   getProductRepository,
 } from "@/server/catalog/repositories";
-import { publicDiscoveryQuerySchema, publicProductListQuerySchema, slugSchema, type PublicDiscoveryQuery, type PublicProductListQuery } from "@/server/catalog/schemas";
+import {
+  hasUnscopedDiscoveryQuery,
+  publicDiscoveryQuerySchema,
+  publicProductListQuerySchema,
+  slugSchema,
+  type CatalogDiscoveryScope,
+  type PublicDiscoveryQuery,
+  type PublicProductListQuery,
+} from "@/server/catalog/schemas";
+
+export { hasUnscopedDiscoveryQuery, type CatalogDiscoveryScope };
 
 export type CatalogAvailability = "available" | "unavailable";
 
@@ -62,16 +72,7 @@ export type CatalogDiscoveryResult = CatalogBrowseResult & {
   scope: CatalogDiscoveryScope;
 };
 
-type CatalogDiscoveryScope = { audience?: Audience; brandSlug?: string; collectionSlug?: string };
 
-export function hasUnscopedDiscoveryQuery(query: PublicDiscoveryQuery, scope: CatalogDiscoveryScope = {}): boolean {
-  return Boolean(
-    query.q || query.family || query.sort !== "name-asc" ||
-    (!scope.audience && query.audience) ||
-    (!scope.brandSlug && query.brand) ||
-    (!scope.collectionSlug && query.collection),
-  );
-}
 
 function isDevelopmentCatalogSource(): boolean {
   return process.env.NODE_ENV !== "production";

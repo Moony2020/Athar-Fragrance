@@ -1,26 +1,83 @@
 .shell {
-  width: min(100% - 2rem, 70rem);
+  width: min(100% - 2rem, 74rem);
   margin: 0 auto;
-  padding: clamp(4rem, 10vw, 8rem) 0;
+  padding: clamp(2rem, 4vw, 4rem) 0;
 }
 
-.shell h1 {
-  margin: 0 0 .75rem;
+.intro {
+  max-width: 44rem;
+  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.intro h1 {
+  margin: .35rem 0 .9rem;
   font-family: var(--font-display);
   font-size: clamp(2.75rem, 7vw, 5.5rem);
   font-weight: 400;
   letter-spacing: -.04em;
 }
 
+.intro > p:last-child {
+  max-width: 37rem;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--color-accent);
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(18rem, .8fr);
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+.sidebar {
+  display: grid;
+  gap: 1rem;
+}
+
+.panel {
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.panelHeading h2 {
+  margin: .35rem 0 .9rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 3vw, 2.3rem);
+  font-weight: 400;
+  letter-spacing: -.025em;
+}
+
+.panelCopy {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: .92rem;
+  line-height: 1.6;
+}
+
 .email {
   display: grid;
   gap: .45rem;
-  max-width: 34rem;
+  min-width: 0;
   color: var(--color-muted);
 }
 
 .email input,
 .profile input {
+  box-sizing: border-box;
+  max-width: 100%;
   width: 100%;
   border: 1px solid var(--color-border);
   border-radius: .75rem;
@@ -29,22 +86,204 @@
   color: var(--color-text);
 }
 
+.email input:focus-visible,
+.profile input:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--color-focus-ring);
+}
+
 .profile {
   display: grid;
   gap: .55rem;
-  max-width: 34rem;
-  margin: 2rem 0;
+  min-width: 0;
+  margin: 1.25rem 0 0;
 }
 
 .profile button,
-.signOut {
+.primaryLink,
+.secondaryLink {
   width: fit-content;
   border-radius: 999px;
   background: var(--color-text);
   color: var(--color-background);
   padding: .8rem 1.4rem;
+  text-decoration: none;
 }
 
 .profile button:disabled { opacity: .55; cursor: wait; }
 
-.publicId { color: var(--color-muted); font-size: .85rem; word-break: break-all; }
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  margin-top: 1.35rem;
+}
+
+.secondaryLink {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.primaryLink:hover {
+  background: var(--color-accent);
+}
+
+.secondaryLink:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.profileActions {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-top: .2rem;
+  width: 100%;
+}
+
+.profileSecondaryAction {
+  margin-left: auto;
+}
+
+.profileSecondaryAction button {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.profileSecondaryAction button:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+@media (max-width: 760px) {
+  .shell {
+    width: min(100% - 1.5rem, 74rem);
+    padding: 2.75rem 0 4rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    padding: 1.25rem;
+  }
+}
+
+.authShell {
+  align-items: center;
+  display: grid;
+  min-height: 100svh;
+  padding: clamp(1.25rem, 4vw, 3rem);
+}
+
+.authCard {
+  width: min(100%, 31rem);
+  margin: 0 auto;
+  border: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  padding: clamp(1.35rem, 4vw, 2.5rem);
+  box-shadow: 0 1.25rem 4rem color-mix(in srgb, var(--color-text) 8%, transparent);
+}
+
+.authBrand {
+  color: inherit;
+  font-family: var(--font-logo);
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: .18em;
+  text-decoration: none;
+}
+
+.authCard h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 9vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: -.04em;
+}
+
+.authCard .forgotTitle {
+  font-size: clamp(2rem, 6.5vw, 3.5rem);
+  white-space: nowrap;
+}
+
+.authCard .registerTitle {
+  font-size: clamp(1.85rem, 6vw, 3.25rem);
+  white-space: nowrap;
+}
+
+.authIntro {
+  margin: .75rem 0 1.4rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+}
+
+.authFooter {
+  margin: 1.25rem 0 0;
+  color: var(--color-muted);
+}
+
+.authFooter a {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.authFooter a:hover {
+  color: var(--color-accent);
+}
+
+.authCard form {
+  display: grid;
+  gap: .65rem;
+}
+
+.authCard label {
+  margin-top: .5rem;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.authCard input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: .5rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: .9rem 1rem;
+}
+
+.authCard form > button[type="submit"] {
+  width: 100%;
+  margin-top: 1.25rem;
+  border-radius: .5rem;
+  background: var(--color-text);
+  color: var(--color-background);
+  padding: .95rem 1.25rem;
+}
+
+.authCard form > button[type="submit"]:disabled { cursor: wait; opacity: .6; }
+
+.authCard [role="alert"] { margin: .5rem 0 0; color: #a43830; }
+
+.authLinks {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  color: var(--color-muted);
+  font-size: .9rem;
+}
+
+.authLinks p { margin: 0; }
+.authLinks a {
+  color: var(--color-text);
+  font-weight: 700;
+  text-underline-offset: .2em;
+}
+.authLinks a:hover {
+  color: var(--color-accent);
+}

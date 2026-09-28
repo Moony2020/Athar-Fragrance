@@ -234,3 +234,12 @@ concurrent duplicate idempotency and superseding, then verifies cleanup. No
 Stripe or PayPal call is made. The focused suite passed 4/4; affected Stage 7.4
 and Stage 7.5 regression passed 8/8. TypeScript, affected ESLint, and isolated
 Webpack production build passed; build evidence records terminal exit code `0`.
+
+## Stage 8.2 Stripe verification (implemented; sandbox pending)
+
+Focused tests cover immutable SEK amount/currency, explicit automatic capture,
+card-only scope, metadata validation, provider-ID substitution rejection, and
+no client-secret persistence. Mongo uses `athar_stage55_test` only and verifies
+cleanup. Stage 8.1 and Stage 7.4/7.5 regressions remain required. Sandbox
+PaymentIntent, decline, 3DS, and browser Payment Element tests are pending until
+both Stripe environment keys are configured; no live charge is attempted.

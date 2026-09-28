@@ -13,7 +13,7 @@ export type CatalogProductCard = {
   priceLabel: string;
   variantLabel: string;
   badge: "New" | "Bestseller" | null;
-  variants: Array<{ sizeMl: number; priceLabel: string; availability: "available" | "unavailable" }>;
+  variants: Array<{ id: string; sizeMl: number; priceLabel: string; availability: "available" | "unavailable" }>;
   mediaAlt: string | null;
   isAvailable: boolean;
 };
@@ -99,6 +99,7 @@ export function toCatalogProductCard(product: Product, brand: Brand | null): Cat
     .slice()
     .sort((left, right) => left.sizeMl - right.sizeMl)
     .map((variant) => ({
+      id: publicVariantId(product, variant.id),
       sizeMl: variant.sizeMl,
       priceLabel: formatMoneyMinor(variant.priceMinor, product.currency),
       availability: variant.inventoryQuantity > 0 ? "available" as const : "unavailable" as const,

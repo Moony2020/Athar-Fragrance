@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { io } from "next/cache";
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { readCurrentCheckout } from "@/server/checkout/read-model";
@@ -10,23 +11,26 @@ import { Button } from "@/components/ui/Button/Button";
 import { CheckoutDetailsForm } from "@/components/checkout/CheckoutDetailsForm";
 import { ShippingMethodForm } from "@/components/checkout/ShippingMethodForm";
 import { PrepareForPaymentForm } from "@/components/checkout/PrepareForPaymentForm";
+import { StripePaymentSection } from "@/components/checkout/StripePaymentSection";
 import { resolveSelectedShippingMethod, resolveShippingAvailability } from "@/checkout/shipping";
 import { resolveCheckoutTotals } from "@/checkout/totals";
 import { formatMoneyMinor, formatMoneyMinorExact } from "@/lib/money";
+import { resolveCurrentCheckoutOwner } from "@/server/checkout/current-draft";
+import { MongoInventoryReservationStore } from "@/server/inventory/reservation-store";
 import styles from "./CheckoutPage.module.css";
 
 export const metadata: Metadata = { title: "Checkout | ATHAR", robots: { index: false, follow: false } };
 
 export default function CheckoutRoute() {
-  return <Suspense fallback={<section aria-label="Checkout" className={styles.loading}>Preparing your bag…</section>}><CheckoutShell /></Suspense>;
+  return <CatalogShell><Container><Suspense fallback={<CheckoutLoadingState />}><CheckoutContents /></Suspense></Container></CatalogShell>;
 }
 
-async function CheckoutShell() {
-  await io();
-  return <CatalogShell><Container><CheckoutContents /></Container></CatalogShell>;
+function CheckoutLoadingState() {
+  return <section aria-busy="true" aria-label="Loading checkout" className={styles.loading} role="status"><span>Loading checkout…</span></section>;
 }
 
 async function CheckoutContents() {
+  await io();
   const checkout = await readCurrentCheckout();
 
   if (checkout.blockReasons.includes("CART_UNAVAILABLE")) {
@@ -49,20 +53,28 @@ async function CheckoutContents() {
   const totals = checkout.status === "ready" && checkoutDraft.status === "ready"
     ? resolveCheckoutTotals({ checkout, draft: checkoutDraft.draft })
     : { status: "blocked" as const, reason: "CHECKOUT_NOT_READY" as const };
+  const owner = checkout.status === "ready" && checkoutDraft.status === "ready" ? await resolveCurrentCheckoutOwner() : null;
+  const reservation = owner && checkoutDraft.status === "ready"
+    ? await new MongoInventoryReservationStore().readActive(owner, checkoutDraft.draft.checkoutId)
+    : null;
 
   return <section aria-labelledby="checkout-title" className={styles.page}>
     <nav aria-label="Breadcrumb" className={styles.breadcrumb}><Link href="/cart">Your bag</Link><span aria-hidden="true">/</span><span aria-current="page">Checkout</span></nav>
     <header className={styles.heading}><div><h1 id="checkout-title">Review your bag</h1></div><Link href="/cart">Edit bag</Link></header>
     <div className={styles.layout}>
       <section aria-label="Checkout items" className={styles.items}>
-        {checkout.lines.map((line) => <article className={styles.line} data-status={line.status} key={`${line.productSlug}:${line.variantId}`}>
-          <div><p className={styles.brand}>{line.brandName ?? "ATHAR"}</p><h2>{line.productName ?? "Unavailable fragrance"}</h2><p>{line.sizeMl ? `${line.sizeMl} ml` : "Size unavailable"} · Quantity {line.quantity}</p></div>
+        {checkout.lines.map((line, index) => <article className={styles.line} data-status={line.status} key={`${line.productSlug}:${line.variantId}`}>
+          <div className={styles.product}>
+            {line.media ? <Link aria-label={`View ${line.productName ?? "fragrance"}`} className={styles.media} href={`/products/${line.productSlug}`}><Image alt={line.media.alt} fill loading={index === 0 ? "eager" : "lazy"} sizes="(max-width: 760px) 5.5rem, 6.5rem" src={line.media.src} /></Link> : <div aria-label="Product media unavailable" className={styles.placeholder} role="img">ATHAR</div>}
+            <div><p className={styles.brand}>{line.brandName ?? "ATHAR"}</p><h2>{line.productName ?? "Unavailable fragrance"}</h2><p>{line.fragranceType ? `${line.fragranceType} · ` : ""}{line.sizeMl ? `${line.sizeMl} ml` : "Size unavailable"} · Quantity {line.quantity}</p></div>
+          </div>
           {line.status === "eligible" ? <strong>{formatMoneyMinor(line.subtotalMinor, line.currency)}</strong> : <p className={styles.attention} role="status">This item needs review and is not included as an eligible checkout item.</p>}
         </article>)}
         {checkout.status === "ready" && checkoutDraft.status === "ready"
           ? <><CheckoutDetailsForm draft={checkoutDraft.draft} email={checkoutDraft.email} />
             {shipping?.status === "available" ? <ShippingMethodForm draft={checkoutDraft.draft} methods={shipping.methods} /> : null}
             {totals.status === "ready" ? <PrepareForPaymentForm draft={checkoutDraft.draft} /> : null}
+            {reservation ? <StripePaymentSection draft={checkoutDraft.draft} publishableKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() || null} /> : null}
             {shipping?.status === "unsupported-country" ? <p className={styles.blocked} role="status">Shipping is not available to this country yet.</p> : null}
             {shipping?.status === "currency-mismatch" ? <p className={styles.blocked} role="status">Delivery is unavailable because your bag currency cannot be matched.</p> : null}
             {shipping?.status === "needs-address" ? <p className={styles.ready} role="status">Save your shipping address to see delivery options.</p> : null}

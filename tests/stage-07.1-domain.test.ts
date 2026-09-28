@@ -6,8 +6,10 @@ const validLine = {
   productSlug: "cedar-study",
   productName: "Cedar Study",
   brandName: "ATHAR",
+  fragranceType: "Eau de Parfum",
   variantId: "cedar-50",
   sizeMl: 50,
+  media: { src: "/images/catalog/cedar-study-v1.webp", alt: "Cedar Study front view" },
   quantity: 2,
   priceMinor: 149_900,
   subtotalMinor: 149_900,
@@ -32,6 +34,8 @@ test("checkout reprojects only canonical current-price fields and recalculates m
   if (model.lines[0]?.status === "eligible") {
     assert.equal(model.lines[0].priceMinor, 131_250);
     assert.equal(model.lines[0].subtotalMinor, 262_500);
+    assert.deepEqual(model.lines[0].media, validLine.media);
+    assert.equal(model.lines[0].fragranceType, validLine.fragranceType);
   }
   assert.equal(model.eligibleSubtotalMinor, 262_500);
   assert.equal(JSON.stringify(model).includes("_id"), false);

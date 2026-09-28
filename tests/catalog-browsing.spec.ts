@@ -7,7 +7,7 @@ test.describe("development catalog fixture runtime", () => {
 
 test("shop renders the canonical active development catalog with normalized money", async ({ page }) => {
   await page.goto("/shop");
-  await expect(page.getByRole("heading", { name: "Shop ATHAR" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Shop Fragrances" })).toBeVisible();
   await expect(page.getByRole("list", { name: "Catalog products" })).toBeVisible();
   await expect(page.getByRole("article", { name: "Versace Eros Eau de Parfum" })).toBeVisible();
   await expect(page.getByText("1 299 kr", { exact: true })).toBeVisible();

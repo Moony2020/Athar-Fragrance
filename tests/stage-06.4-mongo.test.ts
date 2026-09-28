@@ -13,10 +13,10 @@ test("Stage 6.4 real Mongo merge is canonical, capped, cleared, and idempotent",
   const guestId = `g-stage64-${Date.now()}-${"x".repeat(24)}`.slice(0, 43);
   const variantId = "gy3VtF_WtJs2l9HTog";
   const database = await getDatabase();
-  await ensureCommerceIndexes();
   const cart = new MongoGuestCartStore(getDatabase);
   const wishlist = new MongoGuestWishlistStore(getDatabase);
   try {
+    await ensureCommerceIndexes();
     await database.collection(databaseCollections.commerceMerges).deleteMany({ userId, guestId });
     await cart.mutateOwner(guestCommerceOwner(guestId), async () => ({ lines: [{ productSlug: "athar-test-no-01", variantId, quantity: 8 }] }));
     await wishlist.mutateOwner(guestCommerceOwner(guestId), async () => ({ productSlugs: ["athar-test-no-01", "athar-test-no-01"] }));
@@ -38,5 +38,6 @@ test("Stage 6.4 real Mongo merge is canonical, capped, cleared, and idempotent",
     await database.collection(databaseCollections.carts).deleteMany({ ownerId: { $in: [userId, guestId] } });
     await database.collection(databaseCollections.wishlists).deleteMany({ ownerId: { $in: [userId, guestId] } });
     await database.collection(databaseCollections.commerceMerges).deleteMany({ userId, guestId });
+    await database.client.close();
   }
 });

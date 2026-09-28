@@ -1,0 +1,32 @@
+.loading {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100svh;
+}
+
+.loadingIndicator {
+  align-items: center;
+  color: var(--color-text);
+  display: inline-flex;
+  font-family: var(--font-ui);
+  font-size: .72rem;
+  font-weight: 700;
+  gap: .75rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.loadingIndicator::before {
+  animation: spin .8s linear infinite;
+  border: 2px solid rgba(155, 122, 56, .24);
+  border-radius: 50%;
+  border-top-color: #9b7a38;
+  content: "";
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

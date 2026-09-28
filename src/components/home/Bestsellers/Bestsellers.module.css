@@ -1,13 +1,12 @@
 .section {
-  padding-block: clamp(2.75rem, 5vw, 4.5rem) clamp(2.75rem, 5vw, 4.5rem);
+  padding-block: clamp(2.75rem, 5vw, 4.5rem);
 }
 
 .headingRow {
   align-items: end;
   display: flex;
   gap: var(--space-5);
-  justify-content: space-between;
-  margin-bottom: clamp(2rem, 3.5vw, 3rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
 }
 
 .heading :global(h2) {
@@ -20,11 +19,58 @@
   background: var(--color-text-muted);
   content: "";
   height: 1px;
-  opacity: 0.65;
+  opacity: .65;
   width: 2rem;
 }
 
 .heading :global(p) { font-size: var(--text-body); }
+
+.carouselToolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 .7rem;
+}
+
+.carouselStage {
+  position: relative;
+}
+
+.carouselButton {
+  align-items: center;
+  background: var(--color-text);
+  border: 1px solid rgba(255, 255, 255, .85);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+  color: var(--color-surface);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1.1rem;
+  height: 2.5rem;
+  justify-content: center;
+  position: absolute;
+  top: calc(clamp(11rem, 18vw, 15rem) / 2);
+  transform: translateY(-50%);
+  transition: opacity var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
+  width: 2.5rem;
+  z-index: 2;
+}
+
+.carouselButtonLeft { left: -2.6rem; }
+.carouselButtonRight { right: -2.6rem; }
+
+.carouselButton:not(:disabled):hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.carouselButton:disabled {
+  cursor: default;
+  opacity: .62;
+}
+
+.carouselButton:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
 
 .exploreAll {
   flex: 0 0 auto;
@@ -34,97 +80,125 @@
   text-transform: uppercase;
 }
 
-.stageViewport {
-  max-width: 100%;
-  min-width: 0;
+.productGrid {
+  --card-gap: clamp(.75rem, 1.5vw, 1.4rem);
+  display: flex;
+  gap: var(--card-gap);
+  list-style: none;
+  margin: 0;
   overflow-x: auto;
-  position: relative;
-  scrollbar-width: none;
+  padding: 0;
+  scroll-padding-inline: .1rem;
+  scroll-snap-type: x mandatory;
 }
 
-.stageViewport::-webkit-scrollbar { display: none; }
+.productGrid::-webkit-scrollbar { display: none; }
 
-.stage {
-  background: linear-gradient(180deg, rgba(255, 250, 242, 0.6), rgba(247, 239, 229, 0.95));
-  border-radius: 1.25rem;
-  box-shadow: 0 0.875rem 2.5rem rgba(68, 40, 14, 0.06);
-  min-width: 38rem;
+.productItem {
+  flex: 0 0 calc((100% - 3 * var(--card-gap)) / 4);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.productCard {
+  background: rgba(255, 255, 255, .26);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  height: 100%;
+  overflow: hidden;
+  transition: box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.productCard:hover {
+  box-shadow: 0 .8rem 2rem rgba(36, 27, 17, .09);
+}
+
+.productVisual {
+  background: #fffdfa;
+  height: clamp(11rem, 18vw, 15rem);
   overflow: hidden;
   position: relative;
 }
 
-.stageImage {
-  display: block;
-  height: auto;
-  width: 100%;
+.productImage { object-fit: contain; padding: 1rem; }
+
+.productDetails {
+  display: flex;
+  flex-direction: column;
+  min-height: 7.8rem;
+  padding: .8rem clamp(.7rem, 1.1vw, 1rem) .9rem;
 }
 
-.productLinks {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  inset: 0;
-  position: absolute;
+.brand {
+  color: var(--color-text-muted);
+  font-family: var(--font-ui);
+  font-size: var(--text-ui-xs);
+  letter-spacing: .12em;
+  margin: 0 0 .35rem;
+  text-transform: uppercase;
 }
 
-.productLink {
-  border-radius: 1rem;
-  display: block;
-  transition: background-color var(--duration-standard) var(--ease-standard);
+.productDetails h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.7vw, 1.45rem);
+  font-weight: 500;
+  line-height: 1.06;
+  margin: 0;
 }
 
-.productLink:hover,
-.productLink:focus-visible {
-  background: radial-gradient(circle at center 60%, rgba(216, 185, 63, 0.1), transparent 70%);
+.concentration {
+  color: var(--color-text-muted);
+  font-family: var(--font-ui);
+  font-size: clamp(.63rem, .8vw, .74rem);
+  line-height: 1.45;
+  margin: .32rem 0 0;
 }
 
-.productLink:focus-visible { outline-offset: -0.25rem; }
-
-.direction {
-  align-items: center;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.95);
-  border-radius: 50%;
-  box-shadow: 0 0.25rem 0.875rem rgba(68, 40, 14, 0.12);
-  color: var(--color-text);
-  display: grid;
-  font-size: 1.1rem;
-  height: 2.4rem;
-  justify-content: center;
-  pointer-events: none;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 2.4rem;
+@media (min-width: 1500px) {
+  .productItem { flex-basis: calc((100% - 4 * var(--card-gap)) / 5); }
 }
 
-.previous { left: var(--space-4); }
-.next { right: var(--space-4); }
+@media (max-width: 1200px) {
+  .carouselButtonLeft { left: -1.75rem; }
+  .carouselButtonRight { right: -1.75rem; }
+}
 
-.srOnly {
-  clip: rect(0, 0, 0, 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
+@media (max-width: 1000px) {
+  .productItem { flex-basis: calc((100% - 2 * var(--card-gap)) / 3); }
+  .productVisual { height: clamp(10.5rem, 22vw, 14rem); }
+  .carouselButton { top: calc(clamp(10.5rem, 22vw, 14rem) / 2); }
+  .carouselButtonLeft { left: -1.6rem; }
+  .carouselButtonRight { right: -1.6rem; }
 }
 
 @media (max-width: 768px) {
-  .headingRow {
-    align-items: start;
-    flex-direction: column;
-    margin-bottom: var(--space-6);
+  .carouselButton {
+    font-size: 0.8rem;
+    height: 1.95rem;
+    top: calc(clamp(8.5rem, 30vw, 12rem) / 2);
+    transform: translateY(-50%);
+    width: 1.95rem;
   }
+  .carouselButtonLeft { left: -0.85rem; }
+  .carouselButtonRight { right: -0.85rem; }
+}
 
-  .exploreAll {
-    align-self: flex-end;
-    margin-top: calc(var(--space-4) * -1);
-  }
-
-  .direction { display: none; }
+@media (max-width: 600px) {
+  .section { padding-block: 2.5rem; }
+  .headingRow { margin-bottom: var(--space-5); }
+  .heading :global(h2) { flex-wrap: wrap; }
+  .productGrid { --card-gap: .7rem; }
+  .productItem { flex-basis: calc((100% - var(--card-gap)) / 2); }
+  .productVisual { height: clamp(8.5rem, 36vw, 11rem); }
+  .carouselButton { font-size: 0.75rem; height: 1.85rem; top: calc(clamp(8.5rem, 36vw, 11rem) / 2); transform: translateY(-50%); width: 1.85rem; }
+  .carouselButtonLeft { left: -0.6rem; }
+  .carouselButtonRight { right: -0.6rem; }
+  .productDetails { min-height: 6.8rem; padding: .6rem; }
+  .productDetails h3 { font-size: clamp(1.05rem, 5vw, 1.35rem); }
+  .brand { font-size: .62rem; }
+  .concentration { font-size: .63rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .productLink { transition: none; }
+  .productCard { transition: none; }
 }

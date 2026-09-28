@@ -127,7 +127,7 @@ test("forgot-password email capture, reset, and old-session invalidation", async
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill(oldPassword);
     await page.getByRole("button", { name: "Sign in" }).click();
-    await expect(page.getByText("Unable to sign in with those details.", { exact: true })).toBeVisible();
+    await expect(page.getByText("Invalid email or password. Please check your credentials and try again.", { exact: true })).toBeVisible();
     await page.getByLabel("Password").fill(newPassword);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/account$/, { timeout: 30_000 });

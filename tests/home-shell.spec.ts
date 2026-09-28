@@ -11,7 +11,7 @@ test("the public homepage shell contains the ATHAR hero", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Watch our story is not available yet" })).toBeDisabled();
   await expect(page.getByRole("link", { name: "Shopping bag, 0 items" })).toHaveAttribute("href", "/cart");
   await expect(page.getByRole("heading", { name: "Shop by Collection" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Bestselling Fragrances" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Fragrance Icons" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Discover Your Signature" })).toBeVisible();
 });
 
@@ -41,19 +41,43 @@ test("Shop by Collection provides reachable presentation links without viewport 
   }
 });
 
-test("Bestselling Fragrances preserves the prototype product presentation with deferred links", async ({ page }) => {
+test("Fragrance Icons presents separate fragrance cards with clearly labeled visual and price references", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Bestselling Fragrances" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Dior Sauvage prototype presentation/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Versace Eros prototype presentation/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Yves Saint Laurent Libre prototype presentation/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Lancôme La Vie Est Belle prototype presentation/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Armani Acqua di Giò prototype presentation/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Fragrance Icons" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Explore fragrances" })).toHaveAttribute("href", "/shop");
+  const fragranceList = page.getByRole("list", { name: "Selected fragrance references" });
+  await expect(fragranceList.getByRole("listitem")).toHaveCount(5);
+  await expect(page.getByRole("button", { name: "Scroll fragrances left" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Scroll fragrances right" })).toBeEnabled();
+  for (const fragrance of ["Sauvage", "Eros", "Libre", "La Vie Est Belle", "Acqua di Giò"]) {
+    await expect(page.getByRole("heading", { name: fragrance, level: 3 })).toBeVisible();
+  }
+  const diorImage = page.getByRole("img", { name: /Dior Sauvage Eau de Toilette, 100 ml/ });
+  await expect(diorImage).toBeVisible();
+  await expect.poll(() => diorImage.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  const armaniImage = page.getByRole("img", { name: /Giorgio Armani Acqua di Giò Eau de Toilette, 100 ml/ });
+  await expect.poll(() => armaniImage.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await expect(page.getByText(/Retail reference prices from KICKS Sweden.*not ATHAR sale prices/i)).toBeVisible();
 
-  for (const width of [360, 430, 768, 1280, 1600]) {
+  await page.getByRole("button", { name: "Scroll fragrances right" }).click();
+  await expect(page.getByRole("button", { name: "Scroll fragrances left" })).toBeEnabled();
+  await expect.poll(() => fragranceList.evaluate((list) => list.scrollLeft)).toBeGreaterThan(0);
+  await page.getByRole("button", { name: "Scroll fragrances left" }).click();
+  await expect.poll(() => fragranceList.evaluate((list) => list.scrollLeft)).toBe(0);
+
+  for (const [width, expectedVisibleCards] of [[360, 2], [430, 2], [768, 3], [1280, 4], [1600, 5]]) {
     await page.setViewportSize({ width, height: 900 });
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await expect(fragranceList.getByRole("listitem")).toHaveCount(5);
+    const visibleCards = await fragranceList.evaluate((list) => {
+      const track = list.getBoundingClientRect();
+      return Array.from(list.children).filter((item) => {
+        const card = item.getBoundingClientRect();
+        return card.right > track.left + 1 && card.left < track.right - 1;
+      }).length;
+    });
+    expect(visibleCards).toBe(expectedVisibleCards);
   }
 });
 

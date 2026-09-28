@@ -5,7 +5,7 @@ import styles from "./Footer.module.css";
 const availableLinks = [
   { href: "#collections", label: "Collections" },
   { href: "#bestsellers", label: "Bestsellers" },
-  { href: "#story", label: "Our Story" },
+  { href: "/story", label: "Our Story" },
   { href: "#guide", label: "Fragrance Guide" },
 ] as const;
 

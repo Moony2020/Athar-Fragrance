@@ -151,7 +151,7 @@ test.describe("Stage 7.2 contact and shipping address", () => {
       await page.getByLabel("Password").fill(testPassword);
       const accountCreated = page.waitForResponse((response) => response.url().includes("/api/auth/register") && response.status() === 201);
       await page.getByRole("button", { name: "Create account" }).click();
-      await expect(page.getByRole("status")).toHaveText("Account created. You can now sign in.");
+      await expect(page).toHaveURL(/\/account$/);
       const created = await (await accountCreated).json() as { user?: { userId?: string } };
       userId = created.user?.userId ?? "";
       expect(userId.length >= 32).toBe(true);

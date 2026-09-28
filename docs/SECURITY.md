@@ -47,6 +47,16 @@ unknown fields, unsafe money, non-SEK currency, provider identifiers and card
 data. Public DTOs omit Mongo IDs, owner IDs, idempotency keys, provider request
 keys and terminal-state authority. **PAYMENT CAPTURE POLICY — OWNER DECISION
 REQUIRED BEFORE PROVIDER EXECUTION.**
+
+## Stage 8.2 Stripe boundary
+
+`STRIPE_SECRET_KEY` is server-only; only
+`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` may enter the browser. Client secrets are
+transient owner-bound responses and must not be persisted, logged, included in
+URLs, fixtures, or documentation. ATHAR never accepts raw card data, CVC,
+browser amount/currency, browser PaymentIntent IDs, or browser final-payment
+claims. `STRIPE_WEBHOOK_SECRET` is deliberately not introduced before webhook
+work.
 - Apply security headers, rate limits where appropriate, dependency review, and least-privilege access before production.
 
 Stage 6.5 password recovery stores only SHA-256 hashes of 256-bit random

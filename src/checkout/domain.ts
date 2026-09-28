@@ -4,8 +4,10 @@ export type CheckoutCartLineSnapshot = {
   productSlug: string;
   productName: string | null;
   brandName: string | null;
+  fragranceType: string | null;
   variantId: string;
   sizeMl: number | null;
+  media: { src: string; alt: string } | null;
   quantity: number;
   priceMinor: number | null;
   subtotalMinor: number | null;
@@ -26,13 +28,13 @@ export type CheckoutBlockReason =
   | "INVALID_CART_DATA";
 
 export type CheckoutLine =
-  | (Pick<CheckoutCartLineSnapshot, "productSlug" | "productName" | "brandName" | "variantId" | "sizeMl" | "quantity"> & {
+  | (Pick<CheckoutCartLineSnapshot, "productSlug" | "productName" | "brandName" | "fragranceType" | "variantId" | "sizeMl" | "media" | "quantity"> & {
       status: "eligible";
       priceMinor: number;
       subtotalMinor: number;
       currency: string;
     })
-  | (Pick<CheckoutCartLineSnapshot, "productSlug" | "productName" | "brandName" | "variantId" | "sizeMl" | "quantity"> & {
+  | (Pick<CheckoutCartLineSnapshot, "productSlug" | "productName" | "brandName" | "fragranceType" | "variantId" | "sizeMl" | "media" | "quantity"> & {
       status: "needs-attention";
       reason: "STALE_PRODUCT" | "UNAVAILABLE_VARIANT" | "INVALID_LINE";
     });
@@ -61,8 +63,10 @@ export function buildCheckoutReadModel(cart: CheckoutCartSnapshot): CheckoutRead
       productSlug: line.productSlug,
       productName: line.productName,
       brandName: line.brandName,
+      fragranceType: line.fragranceType,
       variantId: line.variantId,
       sizeMl: line.sizeMl,
+      media: line.media,
       quantity: line.quantity,
     };
 

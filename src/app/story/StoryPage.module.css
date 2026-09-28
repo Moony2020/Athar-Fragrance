@@ -1,0 +1,599 @@
+.main {
+  background: #fbf8f3;
+  color: var(--color-text);
+  min-height: 100vh;
+  padding-top: var(--header-height, 5.5rem);
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+.heroSection {
+  position: relative;
+  padding-block: clamp(4.5rem, 8vw, 7.5rem);
+  background: radial-gradient(circle at 50% 30%, #f6ecdc 0%, #fbf8f3 75%);
+  border-bottom: 1px solid rgba(223, 202, 157, 0.4);
+  text-align: center;
+  overflow: hidden;
+}
+
+.heroAmbientGlow {
+  position: absolute;
+  top: -10rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50rem;
+  height: 25rem;
+  background: radial-gradient(circle, rgba(223, 202, 157, 0.35) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.heroContent {
+  max-width: 48rem;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.heroEyebrow {
+  color: #92753d;
+  font-family: var(--font-ui);
+  font-size: clamp(0.7rem, 0.85vw, 0.82rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.heroTitle {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: #17130e;
+  margin: 0 0 1.5rem;
+}
+
+.heroSubtitle {
+  color: #554839;
+  font-family: var(--font-ui);
+  font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+  line-height: 1.75;
+  margin: 0 0 2.5rem;
+  max-width: 42rem;
+}
+
+.heroSeal {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.sealLine {
+  width: 3.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c5a059);
+}
+
+.sealLine:last-child {
+  background: linear-gradient(90deg, #c5a059, transparent);
+}
+
+.sealMonogram {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #8c6e38;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   CHAPTER 1: EDITORIAL GRID (Portrait & Genesis)
+   ========================================================================== */
+.chapterSection {
+  padding-block: clamp(4.5rem, 8vw, 7rem);
+}
+
+.editorialGrid {
+  display: grid;
+  grid-template-columns: minmax(18rem, 1.1fr) minmax(20rem, 1.25fr);
+  gap: clamp(2.5rem, 5vw, 5rem);
+  align-items: center;
+}
+
+.portraitCol {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.portraitFrame {
+  position: relative;
+  width: 100%;
+  max-width: 26rem;
+  aspect-ratio: 1 / 1.18;
+  border-radius: 54% 46% 48% 52% / 48% 55% 45% 52%;
+  overflow: hidden;
+  box-shadow: 0 1.5rem 3.5rem rgba(45, 30, 15, 0.16);
+  border: 2px solid rgba(223, 202, 157, 0.85);
+  background: #1c1813;
+}
+
+.portraitImg {
+  object-fit: cover;
+}
+
+.quoteCard {
+  margin-top: -2rem;
+  position: relative;
+  z-index: 2;
+  width: min(92%, 24rem);
+  background: rgba(255, 253, 249, 0.94);
+  border: 1px solid rgba(223, 202, 157, 0.75);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.4rem;
+  box-shadow: 0 0.75rem 2rem rgba(45, 30, 15, 0.1);
+  text-align: center;
+}
+
+.quoteSymbol {
+  color: #c5a059;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  line-height: 0.8;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.quoteBody {
+  color: #3b3126;
+  font-family: var(--font-display);
+  font-size: clamp(0.88rem, 1.05vw, 1rem);
+  font-style: italic;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.narrativeCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.chapterLabel {
+  color: #92753d;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.chapterHeading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.2vw, 2.9rem);
+  font-weight: 500;
+  line-height: 1.18;
+  color: #18140f;
+  margin: 0 0 1.25rem;
+}
+
+.decorativeDivider {
+  width: 3.5rem;
+  height: 2px;
+  background: linear-gradient(90deg, #c5a059, transparent);
+  margin-bottom: 1.5rem;
+}
+
+.narrativeText {
+  color: #554839;
+  font-family: var(--font-ui);
+  font-size: clamp(0.92rem, 1.05vw, 1.02rem);
+  line-height: 1.8;
+  margin: 0 0 1.25rem;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.75rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(223, 202, 157, 0.4);
+  width: 100%;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.statNum {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.2vw, 1.9rem);
+  font-weight: 600;
+  color: #8c6e38;
+  line-height: 1;
+  margin-bottom: 0.35rem;
+}
+
+.statLabel {
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #72624e;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+/* ==========================================================================
+   CHAPTER 2: NOBLE INGREDIENTS
+   ========================================================================== */
+.botanicalsSection {
+  padding-block: clamp(4.5rem, 8vw, 7rem);
+  background: linear-gradient(180deg, #f7efe4 0%, #fbf8f3 100%);
+  border-top: 1px solid rgba(223, 202, 157, 0.35);
+  border-bottom: 1px solid rgba(223, 202, 157, 0.35);
+}
+
+.sectionHeader {
+  text-align: center;
+  max-width: 38rem;
+  margin-inline: auto;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chapterHeadingCenter {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  font-weight: 500;
+  line-height: 1.18;
+  color: #18140f;
+  margin: 0 0 1rem;
+}
+
+.sectionSubtext {
+  color: #5d503f;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.botanicalGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1rem, 2vw, 1.75rem);
+}
+
+.botanicalCard {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(223, 202, 157, 0.5);
+  border-radius: var(--radius-md);
+  padding: 1.75rem 1.4rem;
+  box-shadow: 0 6px 18px rgba(45, 30, 15, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.botanicalCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(197, 160, 89, 0.9);
+}
+
+.botanicalIcon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fbf4ea, #ecdcc8);
+  border: 1px solid rgba(197, 160, 89, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8c6e38;
+  margin-bottom: 1.25rem;
+}
+
+.botanicalIcon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.botanicalTitle {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1d1812;
+  margin: 0 0 0.35rem;
+  line-height: 1.25;
+}
+
+.botanicalOrigin {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #947743;
+  text-transform: uppercase;
+  margin-bottom: 0.85rem;
+}
+
+.botanicalDesc {
+  color: #554839;
+  font-family: var(--font-ui);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ==========================================================================
+   CHAPTER 3: THE FLACON
+   ========================================================================== */
+.flaconSection {
+  padding-block: clamp(4.5rem, 8vw, 7rem);
+}
+
+.flaconGrid {
+  display: grid;
+  grid-template-columns: minmax(20rem, 1.2fr) minmax(18rem, 1.1fr);
+  gap: clamp(2.5rem, 5vw, 5rem);
+  align-items: center;
+}
+
+.flaconTextCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.craftBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.75rem;
+}
+
+.craftBadge {
+  background: #f4ecdf;
+  border: 1px solid rgba(223, 202, 157, 0.65);
+  border-radius: var(--radius-pill);
+  padding: 0.45rem 0.95rem;
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #524434;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.flaconVisualCol {
+  display: flex;
+  justify-content: center;
+}
+
+.flaconImageFrame {
+  position: relative;
+  width: 100%;
+  max-width: 26rem;
+  aspect-ratio: 1 / 1.15;
+  border-radius: 46% 54% 52% 48% / 54% 46% 54% 46%;
+  overflow: hidden;
+  box-shadow: 0 1.5rem 3.5rem rgba(45, 30, 15, 0.16);
+  border: 2px solid rgba(223, 202, 157, 0.85);
+  background: #1c1813;
+}
+
+.flaconImg {
+  object-fit: cover;
+}
+
+/* ==========================================================================
+   CHAPTER 4: 4 PILLARS
+   ========================================================================== */
+.pillarsSection {
+  padding-block: clamp(4.5rem, 8vw, 7rem);
+  background: #f7efe4;
+  border-top: 1px solid rgba(223, 202, 157, 0.35);
+}
+
+.pillarsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1rem, 2vw, 2rem);
+}
+
+.pillarItem {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(223, 202, 157, 0.6);
+  border-radius: var(--radius-md);
+  padding: 2rem 1.5rem;
+  box-shadow: 0 4px 14px rgba(45, 30, 15, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.pillarIcon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fbf4ea, #ecdcc8);
+  border: 1px solid rgba(197, 160, 89, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8c6e38;
+  margin-bottom: 1.25rem;
+}
+
+.pillarIcon svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.pillarTitle {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1a1610;
+  margin: 0 0 0.65rem;
+  line-height: 1.25;
+}
+
+.pillarDesc {
+  color: #554839;
+  font-family: var(--font-ui);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ==========================================================================
+   CTA SECTION
+   ========================================================================== */
+.ctaSection {
+  padding-block: clamp(4rem, 7vw, 6rem);
+}
+
+.ctaCard {
+  background: radial-gradient(circle at 50% 30%, #2b231a 0%, #15120f 100%);
+  border: 1.5px solid rgba(223, 202, 157, 0.45);
+  border-radius: var(--radius-lg);
+  padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 4rem);
+  text-align: center;
+  color: #fffdfa;
+  box-shadow: 0 1.5rem 4rem rgba(25, 17, 8, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 52rem;
+  margin-inline: auto;
+}
+
+.ctaEyebrow {
+  color: #dfca9d;
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.ctaTitle {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.8vw, 3.2rem);
+  font-weight: 500;
+  line-height: 1.15;
+  color: #fff;
+  margin: 0 0 1.25rem;
+}
+
+.ctaText {
+  color: #d1c5b4;
+  font-family: var(--font-ui);
+  font-size: clamp(0.92rem, 1.1vw, 1.05rem);
+  line-height: 1.7;
+  max-width: 36rem;
+  margin: 0 0 2.25rem;
+}
+
+.ctaBtnRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.ctaPrimaryBtn {
+  background: #dfca9d;
+  color: #17130e;
+  border-radius: var(--radius-pill);
+  padding: 0.85rem 2rem;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: transform var(--duration-fast) var(--ease-standard),
+              background var(--duration-fast) var(--ease-standard);
+}
+
+.ctaPrimaryBtn:hover {
+  background: #f0dfba;
+  transform: translateY(-2px);
+}
+
+.ctaSecondaryBtn {
+  background: transparent;
+  color: #dfca9d;
+  border: 1.5px solid rgba(223, 202, 157, 0.6);
+  border-radius: var(--radius-pill);
+  padding: 0.85rem 1.85rem;
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: transform var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+
+.ctaSecondaryBtn:hover {
+  border-color: #fff;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .botanicalGrid,
+  .pillarsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .editorialGrid,
+  .flaconGrid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .portraitCol,
+  .flaconVisualCol {
+    order: -1;
+  }
+
+  .statsRow {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .botanicalGrid,
+  .pillarsGrid {
+    grid-template-columns: 1fr;
+  }
+}

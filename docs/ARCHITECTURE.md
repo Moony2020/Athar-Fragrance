@@ -167,3 +167,13 @@ SEK minor-unit total. Exact retries reuse it; a changed Cart, Checkout, totals,
 shipping or reservation supersedes a pending local attempt instead of silently
 reusing it. The reservation remains fixed for 15 minutes. No provider is chosen
 by default and browser redirects are never payment proof.
+
+## Stage 8.2 Stripe card preparation
+
+Stripe is an adapter behind the durable PaymentAttempt record, not authority for
+Cart, VAT, shipping, or stock. A compatible active reservation and current
+server Checkout chain are required before creation/reuse. Stripe card scope is
+explicitly `payment_method_types: ["card"]` and immediate capture is explicitly
+`capture_method: "automatic"`. A Stripe client secret travels only transiently
+to the owner-bound Payment Element. Client confirmation has no Order or final
+inventory transition; trusted webhook finalization remains later.

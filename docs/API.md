@@ -101,3 +101,14 @@ reservation. Browser input cannot select provider, amount, currency,
 reservation, status, or payment outcome. Its safe result exposes only an opaque
 local attempt ID, SEK amount, local state and existing reservation expiry. No
 provider request, redirect, PaymentIntent, PayPal Order, webhook or Order exists.
+
+## Stage 8.2 Stripe payment boundary
+
+The server-only Stripe preparation action accepts only the opaque Checkout
+reference. It reuses the compatible local PaymentAttempt, then creates or
+retrieves one card-only PaymentIntent with the durable provider-operation key.
+Amount and `sek` currency are read exclusively from the local immutable
+snapshot; `capture_method` is explicitly `automatic`. Its minimal response
+returns an opaque local attempt ID and transient client secret only to the
+current owner. No browser amount, currency, PaymentIntent ID, provider status,
+or payment result is trusted.

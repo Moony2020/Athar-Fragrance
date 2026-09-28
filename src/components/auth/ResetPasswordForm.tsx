@@ -16,8 +16,8 @@ export function ResetPasswordForm({ token }: { token: string }) {
     finally { setPending(false); }
   }
   return <form onSubmit={submit} aria-label="Reset password">
-    <label htmlFor="new-password">New password</label><input id="new-password" name="password" type="password" minLength={15} maxLength={128} autoComplete="new-password" required />
-    <label htmlFor="confirm-password">Confirm new password</label><input id="confirm-password" name="confirmPassword" type="password" minLength={15} maxLength={128} autoComplete="new-password" required />
+    <label htmlFor="new-password">New password</label><input id="new-password" name="password" type="password" minLength={12} maxLength={128} autoComplete="new-password" required />
+    <label htmlFor="confirm-password">Confirm new password</label><input id="confirm-password" name="confirmPassword" type="password" minLength={12} maxLength={128} autoComplete="new-password" required />
     {message && <p role="status">{message} <Link href="/account/sign-in">Sign in</Link></p>}{error && <p role="alert">{error}</p>}
     <button type="submit" disabled={pending || !token}>{pending ? "Updating…" : "Update password"}</button>
   </form>;

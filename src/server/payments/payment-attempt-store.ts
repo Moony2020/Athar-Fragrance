@@ -7,6 +7,7 @@ import { databaseCollections } from "@/server/db/collections";
 import { getDatabase } from "@/server/db/mongodb";
 import { parsePaymentAttemptDocument } from "@/payments/payment-attempt-parser";
 import type { PaymentAttemptDocument } from "@/payments/payment-attempt-document";
+import type { StripePaymentIntentStatus } from "@/payments/payment-attempt-document";
 
 function ownerFilter(owner: CommerceOwner) {
   return { ownerType: owner.ownerType, ownerId: owner.ownerId };
@@ -55,5 +56,19 @@ export class MongoPaymentAttemptStore {
     const document = await (await this.database()).collection<PaymentAttemptDocument>(databaseCollections.paymentAttempts)
       .findOne({ ...ownerFilter(owner), paymentAttemptId });
     return document ? parsePaymentAttemptDocument(document) : null;
+  }
+
+  /** Binds exactly one Stripe intent to an attempt; a different ID is rejected. */
+  async bindStripePaymentIntent(owner: CommerceOwner, paymentAttemptId: string, paymentIntentId: string, status: StripePaymentIntentStatus, now = new Date()): Promise<PaymentAttemptDocument | null> {
+    const collection = (await this.database()).collection<PaymentAttemptDocument>(databaseCollections.paymentAttempts);
+    const result = await collection.findOneAndUpdate(
+      {
+        ...ownerFilter(owner), paymentAttemptId, status: "local_created",
+        $or: [{ provider: null }, { provider: "stripe", providerExternalId: paymentIntentId }],
+      },
+      { $set: { provider: "stripe", providerExternalId: paymentIntentId, providerStatus: status, updatedAt: now } },
+      { returnDocument: "after" },
+    );
+    return result ? parsePaymentAttemptDocument(result) : null;
   }
 }

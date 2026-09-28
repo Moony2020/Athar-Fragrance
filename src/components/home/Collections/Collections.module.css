@@ -83,9 +83,15 @@
 
 .hasImage .arrow {
   background: rgba(20, 15, 10, 0.4);
-  backdrop-filter: blur(4px);
   border-color: rgba(223, 202, 157, 0.6);
   color: #fff;
+}
+
+@supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+  .hasImage .arrow {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
 }
 
 .her.hasImage {

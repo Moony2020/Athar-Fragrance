@@ -9,7 +9,7 @@ const swedishAddress = { firstName: "Ada", lastName: "Lovelace", addressLine1: "
 function checkout(subtotalMinor: number, currency = "SEK") {
   const cart: CheckoutCartSnapshot = {
     availability: "available",
-    lines: [{ productSlug: "test-fragrance", productName: "Test fragrance", brandName: "ATHAR", variantId: "test-50", sizeMl: 50, quantity: 1, priceMinor: subtotalMinor, subtotalMinor: 1, currency, availability: "available" }],
+    lines: [{ productSlug: "test-fragrance", productName: "Test fragrance", brandName: "ATHAR", fragranceType: "Eau de Parfum", variantId: "test-50", sizeMl: 50, media: null, quantity: 1, priceMinor: subtotalMinor, subtotalMinor: 1, currency, availability: "available" }],
   };
   return buildCheckoutReadModel(cart);
 }

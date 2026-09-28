@@ -18,14 +18,18 @@
   font-size: var(--text-body);
 }
 
-@media (min-width: 62rem) {
+@media (min-width: 48rem) {
   .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
-@media (min-width: 80rem) {
+@media (min-width: 68.75rem) {
   .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
-@media (max-width: 34rem) {
+@media (max-width: 22.5rem) {
   .grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 34rem) and (min-width: 22.51rem) {
+  .grid { column-gap: .45rem; row-gap: .35rem; }
 }

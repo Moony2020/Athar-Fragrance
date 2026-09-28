@@ -119,10 +119,9 @@
 .notesShell {
   width: 100%;
   overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
   
   /* Glassy styles moved to the scrolling container */
+  -webkit-backdrop-filter: blur(1.2rem) saturate(140%);
   backdrop-filter: blur(1.2rem) saturate(140%);
   background: linear-gradient(120deg, rgba(255, 255, 255, 0.35), rgba(213, 190, 155, 0.15));
   border: 1px solid rgba(255, 255, 255, 0.55);
@@ -279,7 +278,7 @@
 /* Tablet to small desktop */
 @media (max-width: 960px) {
   .root {
-    min-height: auto;
+    min-height: 0;
     padding-top: calc(5.75rem + clamp(1rem, 3vw, 2rem));
   }
 
@@ -336,7 +335,7 @@
 /* Breakpoint 686px (686px): Smooth padding, calm right-aligned bottle, no jump to navbar */
 @media (max-width: 686px) {
   .root {
-    min-height: auto;
+    min-height: 0;
     padding-top: calc(5.75rem + clamp(0.5rem, 2vw, 1.25rem));
   }
 
@@ -359,7 +358,7 @@
     align-self: end;
     display: flex;
     justify-content: flex-end;
-    min-height: auto;
+    min-height: 0;
     width: 100%;
   }
 
@@ -503,7 +502,7 @@
   .bottleStage {
     align-self: end;
     justify-content: flex-end;
-    min-height: auto;
+    min-height: 0;
     width: 100%;
   }
 

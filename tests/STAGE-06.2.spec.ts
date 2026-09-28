@@ -8,11 +8,13 @@ const password = "Correct horse battery staple 42";
 
 test("registration, sign-in, protected account, and sign-out work through the browser", async ({ page }) => {
   await page.goto("/account/register");
-  await expect(page.getByRole("heading", { name: "Create your ATHAR account" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Create your account" })).toBeVisible();
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page.getByRole("status")).toContainText("Account created");
+  await expect(page).toHaveURL(/\/account$/);
+  await expect(page.getByRole("heading", { name: "Your account" })).toBeVisible();
+  await page.getByRole("button", { name: "Sign out" }).click();
 
   await page.goto("/account/register");
   await page.getByLabel("Email").fill(email);
@@ -20,12 +22,11 @@ test("registration, sign-in, protected account, and sign-out work through the br
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page.locator("p[role=alert]")).toHaveText("Unable to create account.");
 
-  await page.goto("/account/sign-in");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill("wrong password");
   await page.getByRole("button", { name: "Sign in" }).click();
   const signInError = await page.locator("p[role=alert]").textContent().catch(() => null);
-  expect(signInError).toBe("Unable to sign in with those details.");
+  expect(signInError).toBe("Invalid email or password. Please check your credentials and try again.");
 
   const mongo = new MongoClient(process.env.MONGODB_URI!);
   await mongo.connect();
@@ -39,7 +40,7 @@ test("registration, sign-in, protected account, and sign-out work through the br
   await page.getByLabel("Email").fill(disabledEmail);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.locator("p[role=alert]")).toHaveText("Unable to sign in with those details.");
+  await expect(page.locator("p[role=alert]")).toHaveText("Invalid email or password. Please check your credentials and try again.");
   await credentials.deleteOne({ userId: disabledUserId });
   await users.deleteOne({ userId: disabledUserId });
   await mongo.close();
@@ -48,11 +49,8 @@ test("registration, sign-in, protected account, and sign-out work through the br
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/account$/);
-  await expect(page.getByRole("heading", { name: "Your ATHAR account" })).toBeVisible();
-  const publicId = await page.getByTestId("public-user-id").textContent();
-  expect(publicId).toMatch(/^User ID: [A-Za-z0-9_-]{32,128}$/);
-  expect(publicId).not.toContain("passwordHash");
-  expect(publicId).not.toContain("_id");
+  await expect(page.getByRole("heading", { name: "Your account" })).toBeVisible();
+  await expect(page.getByText(/^User ID:/)).toHaveCount(0);
 
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/account\/sign-in$/);
@@ -60,9 +58,18 @@ test("registration, sign-in, protected account, and sign-out work through the br
   await expect(page).toHaveURL(/\/account\/sign-in$/);
 });
 
-test("registration enforces the 15-character password policy", async ({ page }) => {
+test("registration enforces the 12-character password policy", async ({ page }) => {
   await page.goto("/account/register");
   await page.getByLabel("Email").fill(`stage62-policy-${Date.now()}@example.invalid`);
   await page.getByLabel("Password").fill("short");
-  await expect(page.getByLabel("Password")).toHaveAttribute("minlength", "15");
+  await expect(page.getByLabel("Password")).toHaveAttribute("minlength", "12");
+});
+
+test("registration rejects a password made only of digits", async ({ page }) => {
+  await page.goto("/account/register");
+  await page.getByLabel("Email").fill(`stage62-numeric-${Date.now()}@example.invalid`);
+  await page.getByLabel("Password").fill("123456789012");
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page.locator('p[role="alert"]')).toHaveText("Unable to create account.");
+  await expect(page.getByText("Account created. You can now sign in.")).toHaveCount(0);
 });

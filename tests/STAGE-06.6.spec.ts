@@ -30,16 +30,11 @@ test("Phase 6 account reset preserves authenticated user-owned Cart and Wishlist
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill(oldPassword);
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page.getByRole("status")).toContainText("Account created");
+    await expect(page).toHaveURL(/\/account$/);
     const user = await users.findOne({ normalizedEmail: email.toLowerCase() });
     expect(user?.userId).toBeTruthy();
     userId = user!.userId;
 
-    await page.goto("/account/sign-in");
-    await page.getByLabel("Email").fill(email);
-    await page.getByLabel("Password").fill(oldPassword);
-    await page.getByRole("button", { name: "Sign in" }).click();
-    await expect(page).toHaveURL(/\/account$/);
     staleContext = await browser.newContext();
     await staleContext.addCookies(await page.context().cookies());
 
@@ -80,11 +75,6 @@ test("Phase 6 account reset preserves authenticated user-owned Cart and Wishlist
     await isolationPage.getByLabel("Email").fill(isolationEmail);
     await isolationPage.getByLabel("Password").fill("Second isolated account password");
     await isolationPage.getByRole("button", { name: "Create account" }).click();
-    await expect(isolationPage.getByRole("status")).toContainText("Account created");
-    await isolationPage.goto("/account/sign-in");
-    await isolationPage.getByLabel("Email").fill(isolationEmail);
-    await isolationPage.getByLabel("Password").fill("Second isolated account password");
-    await isolationPage.getByRole("button", { name: "Sign in" }).click();
     await expect(isolationPage).toHaveURL(/\/account$/);
     const isolationUser = await users.findOne({ normalizedEmail: isolationEmail.toLowerCase() }, { projection: { userId: 1 } });
     expect(isolationUser?.userId).toBeTruthy();
@@ -131,7 +121,7 @@ test("Phase 6 account reset preserves authenticated user-owned Cart and Wishlist
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill(oldPassword);
     await page.getByRole("button", { name: "Sign in" }).click();
-    await expect(page.getByText("Unable to sign in with those details.", { exact: true })).toBeVisible();
+    await expect(page.getByText("Invalid email or password. Please check your credentials and try again.", { exact: true })).toBeVisible();
     await page.getByLabel("Password").fill(newPassword);
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/account$/);

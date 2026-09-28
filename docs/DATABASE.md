@@ -167,3 +167,11 @@ idempotency/provider-request keys, state and timestamps. It holds no raw card
 data, provider secret, payment credential, or canonical Order. Its indexes are
 explicit deployment work, never request-side effects; test writes are limited
 to disposable records in `athar_stage55_test`.
+
+## Stage 8.2 Stripe binding
+
+The existing `payment_attempts` record may store one internal Stripe
+PaymentIntent ID and a narrow safe provider-status observation after a matching
+server-side create/retrieve operation. It never stores a Stripe client secret,
+raw card data, CVC, Stripe secret, webhook secret, or final Order state. A
+different provider ID cannot replace an existing local binding.

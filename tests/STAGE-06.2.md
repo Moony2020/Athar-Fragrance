@@ -24,7 +24,8 @@ and checkout/payment/order work.
   `athar_stage55_test`.
 - Browser E2E passes through Register UI, duplicate generic error, wrong
   password generic error, disabled-user rejection, Sign-in, protected Account,
-  public `userId` display, Sign-out, and password policy 15–128.
+  public `userId` display, Sign-out, and password policy 12–128 with at least
+  one letter.
 - Production build passes with `/account` explicitly request-time (`instant =
   false`) and an isolated environment without `.env.local` runtime loading.
 

@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toggleGuestWishlistAction } from "@/server/commerce/actions";
+import { HeartIcon } from "@/components/icons/HeartIcon";
 
 type WishlistButtonProps = {
   productSlug: string;
@@ -43,9 +44,7 @@ export function WishlistButton({ productSlug, productName, className, initialWis
       onClick={toggle}
       type="button"
     >
-      <svg aria-hidden="true" fill={saved ? "currentColor" : "none"} viewBox="0 0 24 24">
-        <path d="M12 20.1 5.8 14.3a4.9 4.9 0 1 6.2 7.5 4.9 4.9 0 1 6.2 7.5L12 20.1Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
-      </svg>
+      <HeartIcon filled={saved} />
     </button>
   );
 }
