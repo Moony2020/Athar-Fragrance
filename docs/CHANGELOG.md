@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-28 — Phase 7 / Stage 7.5 reservation boundary complete — ready for checkpoint
+
+- Added a server-authoritative, Mongo transaction-backed inventory reservation
+  boundary at Prepare for payment. Claims are fixed at 15 minutes, non-sliding,
+  logically expired by server time, idempotent per checkout intent, and do not
+  create payment, Order, or final inventory consumption. Mongo concurrency and
+  reconciliation evidence, guest/auth Browser flows, isolated TypeScript, and
+  isolated Webpack production build passed. Final Checkout foundation regression
+  passed 3/3 and final totals/VAT regression passed 2/2.
+
 ## 2026-09-28 — Phase 7 / Stage 7.4 totals, VAT, and discount contract complete — ready for checkpoint
 
 - Began from `1d3549e238f1995357285e8fc60e8ca157d501b4` with a

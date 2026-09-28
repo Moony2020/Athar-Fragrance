@@ -2,7 +2,17 @@
 
 **Last audited:** 2026-09-28
 **Current phase:** Phase 7 — Checkout Foundation
-**Overall status:** **PHASE 6 COMPLETE LOCALLY; STAGES 7.1–7.3 CLOSED + PUSHED; STAGE 7.4 TOTALS, VAT & DISCOUNT CONTRACT COMPLETE — READY FOR CHECKPOINT from official baseline `1d3549e238f1995357285e8fc60e8ca157d501b4`.**
+**Overall status:** **PHASE 6 COMPLETE LOCALLY; STAGES 7.1–7.4 CLOSED + PUSHED; STAGE 7.5 INVENTORY RESERVATION / CHECKOUT CONCURRENCY COMPLETE — READY FOR CHECKPOINT from `ce13df789cda5b1938bfbe9994f16eacbd78c0a1`.**
+
+## Stage 7.5 current status
+
+Stage 7.5 is complete and ready for checkpoint from `ce13df789cda5b1938bfbe9994f16eacbd78c0a1`.
+Prepare for payment creates a fixed, non-sliding 15-minute server-time
+reservation only after checkout gates pass. Mongo concurrency/reconciliation
+and guest/auth Browser evidence are passing; isolated TypeScript and Webpack
+production build passed; final Stage 7.1 regression passed 3/3 and final Stage
+7.4 totals/VAT regression passed 2/2.
+Reservation is not payment, sale, or Order creation.
 
 ## Stage 7.4 current status
 
@@ -11,8 +21,8 @@ production discount, current selected PostNord charge, included 25% VAT, and
 grand total from server state. Derived totals are not persisted in drafts;
 coupons, inventory, payment, Orders, and invoices remain out of scope.
 Focused domain/regression checks, guest and authenticated Browser E2E, isolated
-TypeScript, and isolated Webpack production build passed. **COMPLETE — READY
-FOR CHECKPOINT.**
+TypeScript, and isolated Webpack production build passed. **CLOSED /
+CHECKPOINTED AND PUSHED at `ce13df789cda5b1938bfbe9994f16eacbd78c0a1`.**
 
 ## Stage 7.3 current status
 

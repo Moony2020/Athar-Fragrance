@@ -1300,7 +1300,7 @@ Phase 7 stage map:
 - 7.2 — Contact & Shipping Address (NOT STARTED)
 - 7.3 — Shipping Methods / Delivery Selection (NOT STARTED)
 - 7.4 — Totals, VAT & Discount Contract (COMPLETE — READY FOR CHECKPOINT)
-- 7.5 — Inventory Reservation / Checkout Concurrency (NOT STARTED)
+- 7.5 — Inventory Reservation / Checkout Concurrency (COMPLETE — READY FOR CHECKPOINT)
 - 7.6 — Phase 7 Integration & Closure (NOT STARTED)
 
 Stage 7.1 contract:

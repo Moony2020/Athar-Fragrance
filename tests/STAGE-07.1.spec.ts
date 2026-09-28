@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test";
-import argon2 from "argon2";
 import { randomBytes } from "node:crypto";
 import { MongoClient, ObjectId } from "mongodb";
+import { registerCustomer } from "../src/server/auth/registration";
 
 const testDatabaseReady = Boolean(process.env.MONGODB_URI && process.env.MONGODB_DB_NAME === "athar_stage55_test");
 const fixtureSlug = "athar-test-no-01";
 const availableVariantId = "gy3VtF_WtJs2l9HTog";
 const unavailableVariantId = "not-a-current-variant";
-const testPassword = "Stage seven checkout account 12345";
+const testPassword = "Stage71-CheckoutFixture-a1";
 
 test.describe("Stage 7.1 server-authoritative checkout", () => {
   test.skip(!testDatabaseReady, "requires the dedicated athar_stage55_test Mongo database");
@@ -78,24 +78,21 @@ test.describe("Stage 7.1 server-authoritative checkout", () => {
     const users = database.collection("users");
     const credentials = database.collection("user_credentials");
     const carts = database.collection("carts");
-    const targetUserId = randomBytes(32).toString("base64url");
-    const otherUserId = randomBytes(32).toString("base64url");
+    let targetUserId = "";
+    let otherUserId = "";
     const targetEmail = `stage71-checkout-${randomBytes(8).toString("hex")}@example.invalid`;
     const otherEmail = `stage71-other-${randomBytes(8).toString("hex")}@example.invalid`;
     const now = new Date();
     const expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
     let connected = false;
 
-    async function createAccount(userId: string, email: string, displayName: string) {
-      await users.insertOne({ _id: new ObjectId(), userId, normalizedEmail: email.toLowerCase(), displayName, createdAt: now, updatedAt: now });
-      await credentials.insertOne({ _id: new ObjectId(), userId, passwordHash: await argon2.hash(testPassword, { type: argon2.argon2id, timeCost: 3, memoryCost: 65_536, parallelism: 4 }), disabledAt: null, securityVersion: 0, createdAt: now, updatedAt: now });
-    }
-
     try {
       await mongo.connect();
       connected = true;
-      await createAccount(targetUserId, targetEmail, "Checkout Test Customer");
-      await createAccount(otherUserId, otherEmail, "Isolated Other Customer");
+      const targetAccount = await registerCustomer({ email: targetEmail, password: testPassword });
+      const otherAccount = await registerCustomer({ email: otherEmail, password: testPassword });
+      targetUserId = targetAccount.userId;
+      otherUserId = otherAccount.userId;
       await carts.insertMany([
         { _id: new ObjectId(), ownerType: "user", ownerId: targetUserId, revision: 1, state: { lines: [{ productSlug: fixtureSlug, variantId: availableVariantId, quantity: 1 }] }, createdAt: now, updatedAt: now, expiresAt },
         { _id: new ObjectId(), ownerType: "user", ownerId: otherUserId, revision: 1, state: { lines: [{ productSlug: "cedar-study", variantId: "cedar-50", quantity: 1 }] }, createdAt: now, updatedAt: now, expiresAt },
@@ -117,7 +114,7 @@ test.describe("Stage 7.1 server-authoritative checkout", () => {
       expect(rendered).not.toContain(targetEmail);
     } finally {
       try {
-        if (connected) {
+        if (connected && targetUserId && otherUserId) {
           const userIds = { $in: [targetUserId, otherUserId] };
           await database.collection("password_reset_tokens").deleteMany({ userId: userIds });
           const removedCarts = await carts.deleteMany({ ownerType: "user", ownerId: userIds });

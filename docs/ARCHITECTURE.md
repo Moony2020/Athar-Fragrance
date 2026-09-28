@@ -133,3 +133,16 @@ owner-bound draft, and Stage 7.3 shipping resolver. Gross customer prices stay
 gross; Swedish 25% VAT is extracted with integer arithmetic, never added again.
 The production discount boundary is an empty allow-list. No totals are persisted
 in `checkout_drafts`, and no payment or Order authority is introduced.
+
+## Stage 7.5 inventory reservation boundary
+
+Only the explicit Prepare for payment server transition may reserve inventory.
+The Mongo-backed ledger holds an opaque public reservation ID, a server-derived
+owner and checkout identity, canonical variant quantities, status, revision and
+timestamps; it holds no price, VAT, shipping, payment, or Order authority.
+Reservations are fixed at 15 minutes from server creation time. Application
+logic excludes `expiresAt <= serverNow` immediately; Mongo TTL is housekeeping.
+`availableToReserve` is canonical inventory minus active reservations. Product
+locks and transactions serialize competing claims; an exact compatible retry is
+idempotent, while a changed Cart is reconciled as a full new claim or blocked.
+Reservation is not a sale and Stage 7.5 adds no provider, payment attempt, or Order.

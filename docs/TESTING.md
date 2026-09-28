@@ -194,4 +194,16 @@ authenticated Browser E2E use only `athar_stage55_test` with cleanup.
   units. Submitted total fields could not alter server-derived totals.
 - Disposable User, Credential, Cart, and Checkout fixtures were removed by
   each E2E `finally` block. Isolated TypeScript and Webpack production build
-  passed from the Stage 7.4-only worktree.
+passed from the Stage 7.4-only worktree.
+
+## Stage 7.5 verification complete — ready for checkpoint
+
+Mongo tests use only `athar_stage55_test` and disposable cleanup. Current
+evidence covers two real concurrent owner-matrix tests, fixed logical expiry,
+idempotent retries, release/re-reserve, quantity reconciliation, duplicate-line
+rejection, and stale unavailable-variant invalidation. Guest and authenticated
+Browser prepare flows passed without a payment page. Isolated TypeScript and
+Webpack production build passed with an explicit durable build exit code of `0`.
+Final Stage 7.1 checkout regression passed 3/3 and Stage 7.4 totals/VAT
+regression passed 2/2 after the reconciliation fix. Disposable fixtures and
+temporary browser/server evidence were cleaned after the runs.

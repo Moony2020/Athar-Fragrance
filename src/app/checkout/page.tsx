@@ -9,6 +9,7 @@ import { Container } from "@/components/ui/Container/Container";
 import { Button } from "@/components/ui/Button/Button";
 import { CheckoutDetailsForm } from "@/components/checkout/CheckoutDetailsForm";
 import { ShippingMethodForm } from "@/components/checkout/ShippingMethodForm";
+import { PrepareForPaymentForm } from "@/components/checkout/PrepareForPaymentForm";
 import { resolveSelectedShippingMethod, resolveShippingAvailability } from "@/checkout/shipping";
 import { resolveCheckoutTotals } from "@/checkout/totals";
 import { formatMoneyMinor, formatMoneyMinorExact } from "@/lib/money";
@@ -61,6 +62,7 @@ async function CheckoutContents() {
         {checkout.status === "ready" && checkoutDraft.status === "ready"
           ? <><CheckoutDetailsForm draft={checkoutDraft.draft} email={checkoutDraft.email} />
             {shipping?.status === "available" ? <ShippingMethodForm draft={checkoutDraft.draft} methods={shipping.methods} /> : null}
+            {totals.status === "ready" ? <PrepareForPaymentForm draft={checkoutDraft.draft} /> : null}
             {shipping?.status === "unsupported-country" ? <p className={styles.blocked} role="status">Shipping is not available to this country yet.</p> : null}
             {shipping?.status === "currency-mismatch" ? <p className={styles.blocked} role="status">Delivery is unavailable because your bag currency cannot be matched.</p> : null}
             {shipping?.status === "needs-address" ? <p className={styles.ready} role="status">Save your shipping address to see delivery options.</p> : null}
@@ -84,7 +86,7 @@ async function CheckoutContents() {
             {checkout.status === "ready" && totals.reason === "SHIPPING_SELECTION_REQUIRED" ? <p className={styles.totalNotice} role="status">Choose an available delivery method to calculate your final total.</p> : null}
           </>}
         {checkout.blockReasons.length > 0 ? <div className={styles.blocked} role="status"><strong>Checkout can’t continue yet.</strong><span>{checkout.blockReasons.includes("MIXED_CURRENCIES") ? "Items use different currencies and can’t be combined." : "Review or update the items in your bag before continuing."}</span></div> : <div className={styles.ready} role="status"><strong>Your bag is eligible for checkout.</strong><span>Add your contact and shipping address to save these details.</span></div>}
-        <p className={styles.disclaimer}>Prices and delivery are VAT-inclusive. Totals are calculated from your current bag, address, and delivery selection. Discounts, inventory reservation, payment, and order creation are not part of this step.</p>
+        <p className={styles.disclaimer}>Prices and delivery are VAT-inclusive. Totals are calculated from your current bag, address, and delivery selection. Preparing for payment temporarily reserves available items; payment and order creation are not available yet.</p>
         <Link className={styles.return} href="/cart">Return to your bag</Link>
       </aside>
     </div>

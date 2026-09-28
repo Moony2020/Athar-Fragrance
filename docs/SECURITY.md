@@ -105,3 +105,11 @@ Totals are constructed only from the current Cart and current owner-bound draft.
 The browser cannot establish subtotal, discount, VAT, shipping, free-shipping,
 grand total, or owner identity. The public totals DTO omits internal policy,
 Checkout/Mongo IDs, and owner identity; production discount remains zero.
+
+## Stage 7.5 reservation authority
+
+Inventory claims are server-owned. The browser cannot select a reservation
+owner, stock, availability, expiry, ledger status, or Mongo identifier. The
+server re-resolves current checkout state and catalog before every prepare; a
+catalog-invalid compatible claim is released inside the transaction. Public
+results contain only an opaque reservation identifier and no ledger internals.

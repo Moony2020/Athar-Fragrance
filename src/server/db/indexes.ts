@@ -7,6 +7,7 @@ import type { DurableCartDocument, DurableWishlistDocument } from "@/server/comm
 import type { UserDocument } from "@/identity/documents";
 import type { UserCredentialDocument } from "@/identity/credential-documents";
 import type { CheckoutDraftDocument } from "@/checkout/draft-document";
+import type { InventoryReservationDocument } from "@/inventory/reservation-document";
 
 /**
  * Idempotent catalog indexes. Invoke from a controlled deployment/migration
@@ -54,6 +55,17 @@ export async function ensureCheckoutDraftIndexes(): Promise<void> {
   await database.collection<CheckoutDraftDocument>(databaseCollections.checkoutDrafts).createIndexes([
     { key: { checkoutId: 1 }, name: "checkout_id_unique", unique: true },
     { key: { expiresAt: 1 }, name: "checkout_draft_expiry_ttl", expireAfterSeconds: 0 },
+  ]);
+}
+
+/** Inventory reservation indexes are an explicit deployment operation, never a request side effect. */
+export async function ensureInventoryReservationIndexes(): Promise<void> {
+  const database = await getDatabase();
+  await database.collection<InventoryReservationDocument>(databaseCollections.inventoryReservations).createIndexes([
+    { key: { checkoutId: 1 }, name: "inventory_reservation_checkout_unique", unique: true },
+    { key: { status: 1, expiresAt: 1, "lines.productSlug": 1 }, name: "inventory_reservation_active_lookup" },
+    { key: { expiresAt: 1 }, name: "inventory_reservation_expiry_ttl", expireAfterSeconds: 0 },
+    { key: { ownerType: 1, ownerId: 1, status: 1 }, name: "inventory_reservation_owner_status" },
   ]);
 }
 

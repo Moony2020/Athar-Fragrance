@@ -74,3 +74,12 @@ owner. Live production Atlas and live Brevo delivery remain unverified.
 discount, re-resolved shipping, included VAT, and grand total only from current
 server state. It accepts no browser total, VAT, discount, shipping, threshold,
 or owner claim; its public DTO exposes no Checkout/Mongo ID or policy object.
+
+## Stage 7.5 prepare-for-payment contract
+
+The action accepts only an opaque checkout reference. It derives the owner,
+current Cart/catalog, draft contact/address, shipping and totals on the server
+before an inventory claim. Browser input cannot set stock, reserved quantity,
+expiry, status, owner, or a Mongo ID. Success exposes only an opaque reservation
+ID and fixed server-derived expiry; unavailable or stale state returns safe
+generic feedback. No payment provider, payment attempt, or Order is created.

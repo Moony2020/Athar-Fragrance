@@ -139,3 +139,12 @@ write only to `athar_stage55_test`, use disposable fixtures, and assert cleanup.
 `checkout_drafts` stores no subtotal, discount, VAT, shipping amount, or grand
 total. Stage 7.4 derives them from current canonical state and adds no totals,
 discount, invoice, or payment collection or migration.
+
+## Stage 7.5 inventory reservations
+
+`inventory_reservations` is a durable Mongo ledger with one unique checkout
+intent, owner scope, canonical line identity/quantity, status, revision and
+fixed `expiresAt`. Explicit controlled indexes cover checkout uniqueness,
+owner/status lookup, product-line availability lookup, and TTL cleanup. TTL
+deletion is not availability authority: server reads treat expired documents as
+inactive immediately. No price, VAT, shipping, payment, or Order data is stored.

@@ -22,7 +22,8 @@ if (process.env.NODE_ENV !== "production") {
   globalThis.atharMongoClientCache = globalCache;
 }
 
-async function getMongoClient(): Promise<MongoClient> {
+/** Server-only shared client used by explicit transactional persistence boundaries. */
+export async function getMongoClient(): Promise<MongoClient> {
   if (globalCache.client) {
     return globalCache.client;
   }

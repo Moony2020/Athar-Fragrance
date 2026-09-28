@@ -5,6 +5,8 @@ import { cookies } from "next/headers";
 import { DURABLE_COMMERCE_TTL_DAYS } from "@/commerce/durable-contracts";
 import { checkoutContactAddressSchema, checkoutIdSchema, type CheckoutContactAddress } from "@/checkout/contact-address";
 import { resolveShippingAvailability, shippingMethodIdSchema } from "@/checkout/shipping";
+import { resolveCheckoutTotals } from "@/checkout/totals";
+import { MongoInventoryReservationStore } from "@/server/inventory/reservation-store";
 import { readCurrentCheckout } from "./read-model";
 import { checkoutIdCookieName, resolveCurrentCheckoutOwner } from "./current-draft";
 import { MongoCheckoutDraftStore } from "./draft-store";
@@ -17,6 +19,11 @@ export type CheckoutFormState = {
 };
 
 export type ShippingSelectionState = { status: "idle" | "saved" | "blocked" | "expired" | "conflict" | "invalid" | "unavailable"; message?: string };
+export type PrepareForPaymentState = {
+  status: "idle" | "reserved" | "insufficient" | "blocked" | "expired" | "conflict" | "invalid" | "unavailable";
+  message?: string;
+  reservationId?: string;
+};
 
 const cookieMaxAge = DURABLE_COMMERCE_TTL_DAYS * 24 * 60 * 60;
 
@@ -120,5 +127,41 @@ export async function saveShippingSelectionAction(_previous: ShippingSelectionSt
     return { status: "saved", message: "Delivery method saved." };
   } catch {
     return { status: "unavailable", message: "We couldn’t save delivery right now. Please try again shortly." };
+  }
+}
+
+/**
+ * Stage 7.5's last pre-payment boundary. It has no payment provider, attempt,
+ * Order, or redirect behavior: it only creates an idempotent 15-minute claim
+ * after every current checkout gate has been re-resolved on the server.
+ */
+export async function prepareCheckoutForPaymentAction(_previous: PrepareForPaymentState, formData: FormData): Promise<PrepareForPaymentState> {
+  const checkoutId = checkoutIdSchema.safeParse(formText(formData, "checkoutId"));
+  if (!checkoutId.success) {
+    return { status: "invalid", message: "Your checkout session is invalid. Reload and try again." };
+  }
+
+  try {
+    const owner = await resolveCurrentCheckoutOwner();
+    if (!owner) return { status: "blocked", message: "Your bag is no longer available for checkout. Please review it again." };
+    const checkout = await readCurrentCheckout();
+    if (checkout.status !== "ready") return { status: "blocked", message: "Your bag has changed and can’t continue yet. Please review it again." };
+    const draft = await new MongoCheckoutDraftStore().get(owner, checkoutId.data);
+    if (!draft) return { status: "expired", message: "This checkout session has expired or changed. Reload the page and try again." };
+    const totals = resolveCheckoutTotals({ checkout, draft });
+    if (totals.status !== "ready") return { status: "blocked", message: "Complete your contact, address, and delivery details before preparing for payment." };
+    const lines = checkout.lines.flatMap((line) => line.status === "eligible" ? [{ productSlug: line.productSlug, variantId: line.variantId, quantity: line.quantity }] : []);
+    const reservation = await new MongoInventoryReservationStore().prepare(owner, checkoutId.data, lines);
+    if (reservation.status === "insufficient") return { status: "insufficient", message: "One or more items are no longer available in the requested quantity. Review your bag and try again." };
+    if (reservation.status === "invalid") return { status: "blocked", message: "Your bag changed and can’t be reserved. Review it and try again." };
+    if (reservation.status === "unavailable") return { status: "unavailable", message: "We couldn’t reserve your items right now. Please try again shortly." };
+    refresh();
+    return {
+      status: "reserved",
+      reservationId: reservation.reservation.reservationId,
+      message: reservation.idempotent ? "Your items remain reserved for this checkout." : "Your items are reserved for 15 minutes. Payment will be available soon.",
+    };
+  } catch {
+    return { status: "unavailable", message: "We couldn’t reserve your items right now. Please try again shortly." };
   }
 }
