@@ -83,8 +83,10 @@ export function PaymentMethodSection({ draft, paypalEnabled }: { draft: Checkout
                 <span className={styles.paypalBrand}>
                   {/* PayPal Double P Emblem */}
                   <svg className={styles.paypalEmblem} viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M4 0h9c3.8 0 7 2.8 6.6 6.8-.5 4.6-4.2 8-8.8 8H7.4L5.5 25.4c-.1.5-.6.9-1.1.9H0.8c-.6 0-1-.5-.9-1.1L4 0z" fill="#003087"/>
+                    {/* Cyan Blue P in back */}
                     <path d="M8.5 7.5h7c3.5 0 6.4 2.6 6.1 6.2-.5 4.2-3.8 7.3-8 7.3H9.7l-1.5 7.8c-.1.5-.6.9-1.1.9H3.5c-.6 0-1-.5-.9-1.1L8.5 7.5z" fill="#0079C1"/>
+                    {/* Dark Blue P on top */}
+                    <path d="M4 0h9c3.8 0 7 2.8 6.6 6.8-.5 4.6-4.2 8-8.8 8H7.4L5.5 25.4c-.1.5-.6.9-1.1.9H0.8c-.6 0-1-.5-.9-1.1L4 0z" fill="#003087"/>
                   </svg>
                   <span className={styles.paypalWordmark}>
                     <span className={styles.payBlue}>Pay</span>
