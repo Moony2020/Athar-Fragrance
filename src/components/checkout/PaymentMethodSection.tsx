@@ -38,6 +38,7 @@ export function PaymentMethodSection({ draft, paypalEnabled }: { draft: Checkout
               aria-label="Pay securely with Card via Stripe"
               className={`${styles.paymentButton} ${styles.stripeBtn}`}
               disabled={stripePending}
+              title="Pay with card via Stripe"
               type="submit"
             >
               <div className={styles.stripeContent}>
@@ -78,17 +79,18 @@ export function PaymentMethodSection({ draft, paypalEnabled }: { draft: Checkout
               title={paypalEnabled ? "Pay with PayPal" : "PayPal is not configured yet"}
             >
               <div className={styles.paypalContent}>
-                {/* PayPal Double P Icon */}
-                <svg className={styles.paypalIcon} viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M3.8 0h9.2c3.7 0 6.6 2.8 6.4 6.5-.4 4.3-3.8 7.5-8.1 7.5H7.1L5.3 24.2C5.2 24.7 4.7 25 4.2 25H0.6C0 25-.3 24.4-.2 23.9L4 1.1C4.1.5 4.6 0 5.2 0h-1.4z" fill="#003087"/>
-                  <path d="M8.5 7.2h6.5c3.2 0 5.8 2.4 5.6 5.6-.4 3.7-3.4 6.5-7.1 6.5H9.7l-1.3 6.9c-.1.4-.4.8-.9.8H4.6c-.5 0-.8-.5-.7-1l2.9-15.3c.1-.5.6-.9 1.1-.9h.6v-2.6z" fill="#0079C1"/>
-                  <path d="M9.7 19.3l.9-4.6c.3-.1.6-.2 1-.2 3.7 0 6.7-2.8 7.1-6.5.1-.9 0-1.7-.3-2.4-1.2 3.8-4.5 6.7-8.7 6.7z" fill="#00457C"/>
-                </svg>
-                {/* PayPal Text */}
-                <div className={styles.paypalTextWrap}>
-                  <span className={styles.paypalTextPay}>Pay</span>
-                  <span className={styles.paypalTextPal}>Pal</span>
-                </div>
+                <span className={styles.payWithText}>Pay with</span>
+                <span className={styles.paypalBrand}>
+                  {/* PayPal Double P Emblem */}
+                  <svg className={styles.paypalEmblem} viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M4 0h9c3.8 0 7 2.8 6.6 6.8-.5 4.6-4.2 8-8.8 8H7.4L5.5 25.4c-.1.5-.6.9-1.1.9H0.8c-.6 0-1-.5-.9-1.1L4 0z" fill="#003087"/>
+                    <path d="M8.5 7.5h7c3.5 0 6.4 2.6 6.1 6.2-.5 4.2-3.8 7.3-8 7.3H9.7l-1.5 7.8c-.1.5-.6.9-1.1.9H3.5c-.6 0-1-.5-.9-1.1L8.5 7.5z" fill="#0079C1"/>
+                  </svg>
+                  <span className={styles.paypalWordmark}>
+                    <span className={styles.payBlue}>Pay</span>
+                    <span className={styles.palCyan}>Pal</span>
+                  </span>
+                </span>
               </div>
             </button>
           </form>
