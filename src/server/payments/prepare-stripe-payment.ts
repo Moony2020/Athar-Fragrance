@@ -23,7 +23,7 @@ export async function prepareStripePayment(rawCheckoutId: unknown, dependencies:
   const checkoutId = checkoutIdSchema.safeParse(rawCheckoutId);
   if (!checkoutId.success) return { status: "blocked" };
   const now = dependencies.now ?? new Date();
-  const prepared = await preparePaymentAttempt(checkoutId.data, now);
+  const prepared = await preparePaymentAttempt(checkoutId.data, "stripe", now);
   if (prepared.status !== "created") return prepared;
 
   try {

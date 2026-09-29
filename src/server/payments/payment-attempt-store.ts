@@ -6,8 +6,7 @@ import type { CommerceOwner } from "@/commerce/durable-contracts";
 import { databaseCollections } from "@/server/db/collections";
 import { getDatabase } from "@/server/db/mongodb";
 import { parsePaymentAttemptDocument } from "@/payments/payment-attempt-parser";
-import type { PaymentAttemptDocument } from "@/payments/payment-attempt-document";
-import type { StripePaymentIntentStatus } from "@/payments/payment-attempt-document";
+import type { PaymentAttemptDocument, PaymentProvider, ProviderPaymentStatus, StripePaymentIntentStatus } from "@/payments/payment-attempt-document";
 
 function ownerFilter(owner: CommerceOwner) {
   return { ownerType: owner.ownerType, ownerId: owner.ownerId };
@@ -60,15 +59,35 @@ export class MongoPaymentAttemptStore {
 
   /** Binds exactly one Stripe intent to an attempt; a different ID is rejected. */
   async bindStripePaymentIntent(owner: CommerceOwner, paymentAttemptId: string, paymentIntentId: string, status: StripePaymentIntentStatus, now = new Date()): Promise<PaymentAttemptDocument | null> {
+    return this.bindProviderOperation(owner, paymentAttemptId, "stripe", paymentIntentId, status, now);
+  }
+
+  /** Binds one provider operation to its owner-bound attempt and never replaces it. */
+  async bindProviderOperation(owner: CommerceOwner, paymentAttemptId: string, provider: PaymentProvider, providerExternalId: string, providerStatus: ProviderPaymentStatus, now = new Date()): Promise<PaymentAttemptDocument | null> {
     const collection = (await this.database()).collection<PaymentAttemptDocument>(databaseCollections.paymentAttempts);
     const result = await collection.findOneAndUpdate(
       {
-        ...ownerFilter(owner), paymentAttemptId, status: "local_created",
-        $or: [{ provider: null }, { provider: "stripe", providerExternalId: paymentIntentId }],
+        ...ownerFilter(owner), paymentAttemptId, status: { $in: ["local_created", "provider_waiting"] },
+        $or: [{ provider: null }, { provider, providerExternalId }],
       },
-      { $set: { provider: "stripe", providerExternalId: paymentIntentId, providerStatus: status, updatedAt: now } },
+      { $set: { provider, providerExternalId, providerStatus, status: "provider_waiting", updatedAt: now } },
       { returnDocument: "after" },
     );
     return result ? parsePaymentAttemptDocument(result) : null;
+  }
+
+  async markProviderSucceeded(owner: CommerceOwner, paymentAttemptId: string, provider: PaymentProvider, providerExternalId: string, providerStatus: ProviderPaymentStatus, now = new Date()): Promise<PaymentAttemptDocument | null> {
+    const result = await (await this.database()).collection<PaymentAttemptDocument>(databaseCollections.paymentAttempts).findOneAndUpdate(
+      { ...ownerFilter(owner), paymentAttemptId, provider, providerExternalId, status: "provider_waiting" },
+      { $set: { providerStatus, status: "succeeded", updatedAt: now } },
+      { returnDocument: "after" },
+    );
+    return result ? parsePaymentAttemptDocument(result) : null;
+  }
+
+  async readByProviderExternalId(owner: CommerceOwner, provider: PaymentProvider, providerExternalId: string): Promise<PaymentAttemptDocument | null> {
+    const document = await (await this.database()).collection<PaymentAttemptDocument>(databaseCollections.paymentAttempts)
+      .findOne({ ...ownerFilter(owner), provider, providerExternalId });
+    return document ? parsePaymentAttemptDocument(document) : null;
   }
 }

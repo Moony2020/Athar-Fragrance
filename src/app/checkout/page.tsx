@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/Button/Button";
 import { CheckoutDetailsForm } from "@/components/checkout/CheckoutDetailsForm";
 import { ShippingMethodForm } from "@/components/checkout/ShippingMethodForm";
 import { PrepareForPaymentForm } from "@/components/checkout/PrepareForPaymentForm";
-import { StripePaymentSection } from "@/components/checkout/StripePaymentSection";
+import { PaymentMethodSection } from "@/components/checkout/PaymentMethodSection";
 import { resolveSelectedShippingMethod, resolveShippingAvailability } from "@/checkout/shipping";
 import { resolveCheckoutTotals } from "@/checkout/totals";
 import { formatMoneyMinor, formatMoneyMinorExact } from "@/lib/money";
@@ -59,22 +59,14 @@ async function CheckoutContents() {
     : null;
 
   return <section aria-labelledby="checkout-title" className={styles.page}>
-    <nav aria-label="Breadcrumb" className={styles.breadcrumb}><Link href="/cart">Your bag</Link><span aria-hidden="true">/</span><span aria-current="page">Checkout</span></nav>
-    <header className={styles.heading}><div><h1 id="checkout-title">Review your bag</h1></div><Link href="/cart">Edit bag</Link></header>
+    <nav aria-label="Breadcrumb" className={styles.breadcrumb}><Link href="/shop">Shop</Link><span aria-hidden="true">/</span><span aria-current="page">Checkout</span></nav>
+    <header className={styles.heading}><div><h1 id="checkout-title">Checkout</h1><p>Complete your order securely.</p></div></header>
+    <nav aria-label="Checkout progress" className={styles.progress}><span className={styles.progressActive}><b>1</b>Information</span><span><b>2</b>Delivery</span><span><b>3</b>Payment</span><span><b>4</b>Review</span></nav>
     <div className={styles.layout}>
-      <section aria-label="Checkout items" className={styles.items}>
-        {checkout.lines.map((line, index) => <article className={styles.line} data-status={line.status} key={`${line.productSlug}:${line.variantId}`}>
-          <div className={styles.product}>
-            {line.media ? <Link aria-label={`View ${line.productName ?? "fragrance"}`} className={styles.media} href={`/products/${line.productSlug}`}><Image alt={line.media.alt} fill loading={index === 0 ? "eager" : "lazy"} sizes="(max-width: 760px) 5.5rem, 6.5rem" src={line.media.src} /></Link> : <div aria-label="Product media unavailable" className={styles.placeholder} role="img">ATHAR</div>}
-            <div><p className={styles.brand}>{line.brandName ?? "ATHAR"}</p><h2>{line.productName ?? "Unavailable fragrance"}</h2><p>{line.fragranceType ? `${line.fragranceType} · ` : ""}{line.sizeMl ? `${line.sizeMl} ml` : "Size unavailable"} · Quantity {line.quantity}</p></div>
-          </div>
-          {line.status === "eligible" ? <strong>{formatMoneyMinor(line.subtotalMinor, line.currency)}</strong> : <p className={styles.attention} role="status">This item needs review and is not included as an eligible checkout item.</p>}
-        </article>)}
+      <section aria-label="Checkout information" className={styles.items}>
         {checkout.status === "ready" && checkoutDraft.status === "ready"
           ? <><CheckoutDetailsForm draft={checkoutDraft.draft} email={checkoutDraft.email} />
             {shipping?.status === "available" ? <ShippingMethodForm draft={checkoutDraft.draft} methods={shipping.methods} /> : null}
-            {totals.status === "ready" ? <PrepareForPaymentForm draft={checkoutDraft.draft} /> : null}
-            {reservation ? <StripePaymentSection draft={checkoutDraft.draft} publishableKey={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim() || null} /> : null}
             {shipping?.status === "unsupported-country" ? <p className={styles.blocked} role="status">Shipping is not available to this country yet.</p> : null}
             {shipping?.status === "currency-mismatch" ? <p className={styles.blocked} role="status">Delivery is unavailable because your bag currency cannot be matched.</p> : null}
             {shipping?.status === "needs-address" ? <p className={styles.ready} role="status">Save your shipping address to see delivery options.</p> : null}
@@ -84,7 +76,13 @@ async function CheckoutContents() {
             : null}
       </section>
       <aside aria-label="Checkout summary" className={styles.summary}>
-        <p className={styles.kicker}>CURRENT CART TOTAL</p>
+        <header className={styles.summaryHeading}><h2>Order summary <span>({checkout.lines.length} items)</span></h2><Link href="/cart">Edit bag</Link></header>
+        <div className={styles.summaryItems}>
+          {checkout.lines.map((line, index) => <article className={styles.summaryItem} data-status={line.status} key={`${line.productSlug}:${line.variantId}`}>
+            {line.media ? <Link aria-label={`View ${line.productName ?? "fragrance"}`} className={styles.summaryMedia} href={`/products/${line.productSlug}`}><Image alt={line.media.alt} fill loading={index === 0 ? "eager" : "lazy"} sizes="4.5rem" src={line.media.src} /></Link> : <div aria-label="Product media unavailable" className={styles.summaryPlaceholder} role="img">ATHAR</div>}
+            <div className={styles.summaryProduct}><p>{line.brandName ?? "ATHAR"}</p><h3>{line.productName ?? "Unavailable fragrance"}</h3><span>{line.fragranceType ? `${line.fragranceType} · ` : ""}{line.sizeMl ? `${line.sizeMl} ml` : "Size unavailable"}</span></div><strong>{line.status === "eligible" ? formatMoneyMinor(line.subtotalMinor, line.currency) : "Review"}</strong>
+          </article>)}
+        </div>
         {totals.status === "ready"
           ? <>
             <div><span>Subtotal</span><strong>{formatMoneyMinor(totals.merchandiseSubtotal, totals.currency)}</strong></div>
@@ -97,9 +95,10 @@ async function CheckoutContents() {
             {selectedShipping ? <div><span>Shipping</span><strong>{selectedShipping.isFree ? "Free" : formatMoneyMinor(selectedShipping.shippingAmountMinor, selectedShipping.currency)}</strong></div> : null}
             {checkout.status === "ready" && totals.reason === "SHIPPING_SELECTION_REQUIRED" ? <p className={styles.totalNotice} role="status">Choose an available delivery method to calculate your final total.</p> : null}
           </>}
-        {checkout.blockReasons.length > 0 ? <div className={styles.blocked} role="status"><strong>Checkout can’t continue yet.</strong><span>{checkout.blockReasons.includes("MIXED_CURRENCIES") ? "Items use different currencies and can’t be combined." : "Review or update the items in your bag before continuing."}</span></div> : <div className={styles.ready} role="status"><strong>Your bag is eligible for checkout.</strong><span>Add your contact and shipping address to save these details.</span></div>}
-        <p className={styles.disclaimer}>Prices and delivery are VAT-inclusive. Totals are calculated from your current bag, address, and delivery selection. Preparing for payment temporarily reserves available items; payment and order creation are not available yet.</p>
-        <Link className={styles.return} href="/cart">Return to your bag</Link>
+        {checkout.blockReasons.length > 0 ? <div className={styles.blocked} role="status"><strong>Checkout can’t continue yet.</strong><span>{checkout.blockReasons.includes("MIXED_CURRENCIES") ? "Items use different currencies and can’t be combined." : "Review or update the items in your bag before continuing."}</span></div> : <div className={styles.ready} role="status"><strong>Your bag is eligible for checkout.</strong><span>{totals.status === "ready" ? "Delivery is selected. Continue to payment when you’re ready." : "Add your contact and shipping address to save these details."}</span></div>}
+        <p className={styles.disclaimer}>Prices and delivery are VAT-inclusive. Your items are reserved only while you move to secure payment. An order is created only after payment confirmation.</p>
+        {checkoutDraft.status === "ready" && totals.status === "ready" && !reservation ? <PrepareForPaymentForm draft={checkoutDraft.draft} variant="summary" /> : null}
+        {checkoutDraft.status === "ready" && reservation ? <PaymentMethodSection draft={checkoutDraft.draft} paypalEnabled={Boolean(process.env.PAYPAL_CLIENT_ID?.trim() && process.env.PAYPAL_CLIENT_SECRET?.trim())} /> : null}
       </aside>
     </div>
   </section>;

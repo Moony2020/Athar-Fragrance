@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { io } from "next/cache";
 import { CatalogPage } from "@/components/catalog/CatalogPage/CatalogPage";
 import { getCatalogDiscoveryData, parsePublicDiscoveryQuery } from "@/server/catalog/services";
 
@@ -13,6 +14,7 @@ export async function generateMetadata({ searchParams }: ShopPageProps): Promise
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
+  await io();
   const query = parsePublicDiscoveryQuery(await searchParams);
   const browse = await getCatalogDiscoveryData(query);
   return <CatalogPage browse={browse} discovery={browse} eyebrow="FRAGRANCES" title="Shop Fragrances" description="Discover a curated selection of timeless fragrances for every moment." emptyMessage="No public fragrances are available at the moment." />;

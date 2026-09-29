@@ -1,0 +1,220 @@
+.section {
+  border-top: 1px solid var(--color-border, rgba(37, 27, 18, 0.2));
+  display: grid;
+  gap: var(--space-4, 1rem);
+  padding-top: var(--space-5, 1.5rem);
+}
+
+.heading {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.heading p {
+  color: var(--color-text-muted, #756b5d);
+  font-family: var(--font-ui), Arial, sans-serif;
+  font-size: var(--text-ui-xs, 0.6875rem);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.heading .kicker {
+  color: var(--color-accent, #8d743d);
+  font-weight: 700;
+  letter-spacing: var(--tracking-label, 0.12em);
+  text-transform: uppercase;
+}
+
+.heading h2 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.85rem, 3vw, 2.6rem);
+  font-weight: 500;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--color-text, #171512);
+}
+
+/* Methods Grid */
+.methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.method {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.method form {
+  display: block;
+  width: 100%;
+}
+
+/* Base button styling */
+.paymentButton {
+  width: 100%;
+  min-height: 4.5rem;
+  padding: 0.85rem 1.4rem;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  user-select: none;
+}
+
+.paymentButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.paymentButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.paymentButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Stripe Button */
+.stripeBtn {
+  background: #635bff;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.stripeBtn:hover:not(:disabled) {
+  background: #534be8;
+}
+
+.stripeContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.cardLogosGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cardLogo {
+  width: 2.4rem;
+  height: 1.6rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
+}
+
+.stripeDivider {
+  width: 1px;
+  height: 1.8rem;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.stripeLogo {
+  height: 1.65rem;
+  width: auto;
+  flex-shrink: 0;
+}
+
+/* PayPal Button */
+.paypalBtn {
+  background: #ffc439;
+  border-color: rgba(0, 0, 0, 0.06);
+  color: #003087;
+}
+
+.paypalBtn:hover:not(:disabled) {
+  background: #f4b828;
+}
+
+.paypalContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.paypalLogo {
+  height: 1.75rem;
+  width: auto;
+  max-width: 8rem;
+}
+
+/* Captions & helper text */
+.methodHint {
+  color: var(--color-text-muted, #756b5d);
+  font-family: var(--font-ui), Arial, sans-serif;
+  font-size: 0.75rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  line-height: 1.4;
+}
+
+.methodHint strong {
+  color: var(--color-text, #171512);
+  font-weight: 600;
+}
+
+/* Status message */
+.status {
+  color: var(--color-text-muted, #756b5d);
+  font-family: var(--font-ui), Arial, sans-serif;
+  font-size: var(--text-ui-xs, 0.6875rem);
+  line-height: 1.5;
+  margin: 0.25rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.securityBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  background: rgba(141, 116, 61, 0.07);
+  border-radius: 0.5rem;
+  color: var(--color-text-muted, #756b5d);
+  font-family: var(--font-ui), Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.securityIcon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-accent, #8d743d);
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .methods {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .paymentButton {
+    min-height: 4rem;
+    padding: 0.75rem 1rem;
+  }
+}

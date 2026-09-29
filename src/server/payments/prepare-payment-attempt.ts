@@ -11,6 +11,7 @@ import { readCurrentCheckout } from "@/server/checkout/read-model";
 import { resolveCurrentCheckoutOwner } from "@/server/checkout/current-draft";
 import { MongoInventoryReservationStore } from "@/server/inventory/reservation-store";
 import { MongoPaymentAttemptStore } from "./payment-attempt-store";
+import type { PaymentProvider } from "@/payments/payment-attempt-document";
 
 export type PreparePaymentAttemptResult =
   | { status: "created"; attempt: PaymentAttemptPublic; idempotent: boolean }
@@ -55,7 +56,7 @@ export function buildPaymentAttemptBinding(input: {
  * Server-only Stage 8.1 boundary. It takes no browser totals, reservation,
  * provider, or status input. Provider execution remains explicitly out of scope.
  */
-export async function preparePaymentAttempt(rawCheckoutId: unknown, now = new Date()): Promise<PreparePaymentAttemptResult> {
+export async function preparePaymentAttempt(rawCheckoutId: unknown, provider: PaymentProvider = "stripe", now = new Date()): Promise<PreparePaymentAttemptResult> {
   const checkoutId = checkoutIdSchema.safeParse(rawCheckoutId);
   if (!checkoutId.success) return { status: "blocked" };
 
@@ -76,7 +77,7 @@ export async function preparePaymentAttempt(rawCheckoutId: unknown, now = new Da
       await store.supersedePending(owner, checkoutId.data, now);
       return reservation?.expiresAt && reservation.expiresAt <= now ? { status: "expired" } : { status: "blocked" };
     }
-    const document = createPaymentAttemptDocument(binding, now);
+    const document = createPaymentAttemptDocument(binding, now, provider);
     await store.supersedeIncompatible(owner, checkoutId.data, document.idempotencyKey, now);
     const result = await store.createOrRead(document);
     return { status: "created", attempt: toPaymentAttemptPublic(result.attempt), idempotent: result.idempotent };

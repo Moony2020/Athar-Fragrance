@@ -75,7 +75,9 @@ export type CatalogDiscoveryResult = CatalogBrowseResult & {
 
 
 function isDevelopmentCatalogSource(): boolean {
-  return process.env.NODE_ENV !== "production";
+  // A durable cart/reservation flow must resolve its products from the same
+  // catalog that inventory uses. Fixtures remain useful when Mongo is absent.
+  return process.env.NODE_ENV !== "production" && !canReadMongoCatalog();
 }
 
 function canReadMongoCatalog(): boolean {

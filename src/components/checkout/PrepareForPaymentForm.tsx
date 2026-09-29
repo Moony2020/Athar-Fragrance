@@ -11,13 +11,25 @@ import styles from "./CheckoutDetailsForm.module.css";
 const initialState: PrepareForPaymentState = { status: "idle" };
 
 /** Reservation remains the truthful boundary before the later card-only step. */
-export function PrepareForPaymentForm({ draft }: { draft: CheckoutDraftPublic }) {
+export function PrepareForPaymentForm({ draft, variant = "panel" }: { draft: CheckoutDraftPublic; variant?: "panel" | "summary" }) {
   const [state, formAction, pending] = useActionState(prepareCheckoutForPaymentAction, initialState);
   const router = useRouter();
 
   useEffect(() => {
     if (state.status === "reserved") router.refresh();
   }, [router, state.status]);
+
+  const form = (
+    <form action={formAction} className={styles.form}>
+      <input name="checkoutId" type="hidden" value={draft.checkoutId} />
+      <Button disabled={pending || state.status === "reserved"} type="submit">
+        {pending ? "Opening secure payment…" : state.status === "reserved" ? "Opening secure payment…" : "Continue to payment"}
+      </Button>
+      {state.message ? <p className={state.status === "reserved" ? styles.success : styles.formMessage} role={state.status === "reserved" ? "status" : "alert"}>{state.message}</p> : null}
+    </form>
+  );
+
+  if (variant === "summary") return form;
 
   return (
     <section aria-labelledby="secure-payment-title" className={styles.panel}>
@@ -26,13 +38,7 @@ export function PrepareForPaymentForm({ draft }: { draft: CheckoutDraftPublic })
         <h2 id="secure-payment-title">Continue to secure payment</h2>
         <p>Your items will be held for 15 minutes while you complete card payment.</p>
       </div>
-      <form action={formAction} className={styles.form}>
-        <input name="checkoutId" type="hidden" value={draft.checkoutId} />
-        <Button disabled={pending || state.status === "reserved"} type="submit">
-          {pending ? "Securing your items…" : state.status === "reserved" ? "Opening secure payment…" : "Continue to secure payment"}
-        </Button>
-        {state.message ? <p className={state.status === "reserved" ? styles.success : styles.formMessage} role={state.status === "reserved" ? "status" : "alert"}>{state.message}</p> : null}
-      </form>
+      {form}
     </section>
   );
 }

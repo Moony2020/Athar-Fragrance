@@ -19,6 +19,9 @@ export type PaymentAttemptStatus =
 
 export type PaymentProvider = "stripe" | "paypal";
 export type StripePaymentIntentStatus = "requires_payment_method" | "requires_action" | "processing" | "succeeded" | "canceled";
+export type StripeCheckoutSessionStatus = "open" | "complete" | "expired";
+export type PayPalOrderStatus = "CREATED" | "PAYER_ACTION_REQUIRED" | "APPROVED" | "COMPLETED" | "VOIDED";
+export type ProviderPaymentStatus = StripePaymentIntentStatus | StripeCheckoutSessionStatus | PayPalOrderStatus;
 
 export type PaymentAttemptDocument = {
   _id?: ObjectId;
@@ -37,7 +40,7 @@ export type PaymentAttemptDocument = {
   providerRequestKey: string;
   provider: PaymentProvider | null;
   providerExternalId?: string;
-  providerStatus?: StripePaymentIntentStatus;
+  providerStatus?: ProviderPaymentStatus;
   status: PaymentAttemptStatus;
   createdAt: Date;
   updatedAt: Date;

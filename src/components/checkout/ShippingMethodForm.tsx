@@ -22,9 +22,8 @@ export function ShippingMethodForm({ draft, methods }: { draft: CheckoutDraftPub
 
   return <section aria-labelledby="delivery-title" className={styles.panel}>
     <div className={styles.heading}>
-      <p className={styles.kicker}>DELIVERY</p>
-      <h2 id="delivery-title">Choose your delivery method</h2>
-      <p>Free shipping on orders from 699 kr.</p>
+      <h2 id="delivery-title"><span className={styles.stepNumber}>3.</span> Delivery method</h2>
+      <p>Choose how you would like to receive your order.</p>
     </div>
     <form action={formAction} className={styles.form}>
       <input name="checkoutId" type="hidden" value={draft.checkoutId} />

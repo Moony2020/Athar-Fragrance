@@ -25,13 +25,16 @@ export const paymentAttemptDocumentSchema = z.object({
   providerRequestKey: opaqueId,
   provider: z.enum(["stripe", "paypal"]).nullable(),
   providerExternalId: z.string().min(3).max(255).regex(/^[A-Za-z0-9_]+$/).optional(),
-  providerStatus: z.enum(["requires_payment_method", "requires_action", "processing", "succeeded", "canceled"]).optional(),
+  providerStatus: z.enum(["requires_payment_method", "requires_action", "processing", "succeeded", "canceled", "open", "complete", "expired", "CREATED", "PAYER_ACTION_REQUIRED", "APPROVED", "COMPLETED", "VOIDED"]).optional(),
   status: z.enum(["local_created", "provider_waiting", "customer_action_required", "processing", "succeeded", "failed", "cancelled", "superseded"]),
   createdAt: z.date(),
   updatedAt: z.date(),
 }).strict().superRefine((document, context) => {
   if (document.provider === "stripe" && !document.providerExternalId) {
     context.addIssue({ code: "custom", message: "Stripe payment attempts require an external ID.", path: ["providerExternalId"] });
+  }
+  if (document.provider === "paypal" && !document.providerExternalId) {
+    context.addIssue({ code: "custom", message: "PayPal payment attempts require an external ID.", path: ["providerExternalId"] });
   }
   if (document.provider === null && (document.providerExternalId || document.providerStatus)) {
     context.addIssue({ code: "custom", message: "Unbound payment attempts cannot contain provider state.", path: ["provider"] });

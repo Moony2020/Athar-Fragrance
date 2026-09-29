@@ -3,7 +3,7 @@ import { createHash, randomBytes } from "node:crypto";
 import type { CommerceOwner } from "@/commerce/durable-contracts";
 import type { CheckoutTotals } from "@/checkout/totals";
 import type { InventoryReservationPublic } from "@/inventory/reservation-document";
-import type { PaymentAttemptDocument } from "./payment-attempt-document";
+import type { PaymentAttemptDocument, PaymentProvider } from "./payment-attempt-document";
 
 export type PaymentAttemptBinding = {
   owner: CommerceOwner;
@@ -15,7 +15,7 @@ export type PaymentAttemptBinding = {
   shippingMethodId: string;
 };
 
-export function paymentAttemptIdempotencyKey(binding: PaymentAttemptBinding): string {
+export function paymentAttemptIdempotencyKey(binding: PaymentAttemptBinding, provider: PaymentProvider = "stripe"): string {
   const value = [
     binding.owner.ownerType,
     binding.owner.ownerId,
@@ -26,11 +26,12 @@ export function paymentAttemptIdempotencyKey(binding: PaymentAttemptBinding): st
     binding.totals.grandTotal,
     binding.totals.currency,
     binding.shippingMethodId,
+    provider,
   ].join(":");
   return createHash("sha256").update(value).digest("base64url");
 }
 
-export function createPaymentAttemptDocument(binding: PaymentAttemptBinding, now = new Date()): PaymentAttemptDocument {
+export function createPaymentAttemptDocument(binding: PaymentAttemptBinding, now = new Date(), provider: PaymentProvider = "stripe"): PaymentAttemptDocument {
   return {
     paymentAttemptId: randomBytes(32).toString("base64url"),
     ownerType: binding.owner.ownerType,
@@ -43,7 +44,7 @@ export function createPaymentAttemptDocument(binding: PaymentAttemptBinding, now
     amountMinor: binding.totals.grandTotal,
     currency: binding.totals.currency,
     shippingMethodId: binding.shippingMethodId,
-    idempotencyKey: paymentAttemptIdempotencyKey(binding),
+    idempotencyKey: paymentAttemptIdempotencyKey(binding, provider),
     providerRequestKey: randomBytes(32).toString("base64url"),
     provider: null,
     status: "local_created",

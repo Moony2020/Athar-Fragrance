@@ -36,21 +36,18 @@ export function CheckoutDetailsForm({ draft, email }: Props) {
   const address = draft.shippingAddress;
 
   return (
-    <section aria-labelledby="checkout-details-title" className={styles.panel}>
-      <div className={styles.heading}>
-        <p className={styles.kicker}>CONTACT & SHIPPING ADDRESS</p>
-        <h2 id="checkout-details-title">Where should we reach you?</h2>
-        <p>Your details are saved for this checkout only.</p>
-      </div>
-      <form action={formAction} className={styles.form} noValidate>
+      <form action={formAction} className={styles.formShell} noValidate>
         <input name="checkoutId" type="hidden" value={draft.checkoutId} />
         <input name="revision" type="hidden" value={draft.revision} />
 
-        <div className={styles.field}>
-          <label htmlFor="email">Email address</label>
-          <input autoComplete="email" id="email" maxLength={320} name="email" type="email" defaultValue={draft.contact?.email ?? email} {...errorProps("email")} />
-          {fieldError("email")}
-        </div>
+        <section aria-labelledby="contact-information-title" className={styles.panel}>
+          <div className={styles.stepHeading}><h2 id="contact-information-title"><span>1.</span> Contact information</h2><a href="/account/sign-in">Already have an account? <strong>Log in →</strong></a></div>
+          <div className={styles.field}><label htmlFor="email">Email address</label><input autoComplete="email" id="email" maxLength={320} name="email" type="email" defaultValue={draft.contact?.email ?? email} {...errorProps("email")} />{fieldError("email")}</div>
+          <label className={styles.subscribe}><input type="checkbox" /> <span>Keep me updated about new arrivals and exclusive offers.</span></label>
+        </section>
+
+        <section aria-labelledby="delivery-address-title" className={styles.panel}>
+          <div className={styles.stepHeading}><h2 id="delivery-address-title"><span>2.</span> Delivery address</h2></div>
 
         <div className={styles.twoColumns}>
           <div className={styles.field}>
@@ -101,10 +98,9 @@ export function CheckoutDetailsForm({ draft, email }: Props) {
             {fieldError("countryCode")}
           </div>
         </div>
-
         {state.message ? <p className={state.status === "saved" ? styles.success : styles.formMessage} role={state.status === "saved" ? "status" : "alert"}>{state.message}</p> : null}
-        <Button disabled={pending} type="submit">{pending ? "Saving…" : "Save contact & address"}</Button>
+        <Button disabled={pending} size="compact" type="submit" variant="quiet">{pending ? "Saving…" : "Save details"}</Button>
+        </section>
       </form>
-    </section>
   );
 }
