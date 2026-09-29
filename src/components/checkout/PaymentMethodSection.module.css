@@ -37,7 +37,7 @@
 /* Methods Grid */
 .methods {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.25rem;
   margin-top: 0.5rem;
 }
@@ -56,23 +56,23 @@
 /* Base button styling */
 .paymentButton {
   width: 100%;
-  min-height: 4.5rem;
-  padding: 0.85rem 1.4rem;
-  border-radius: 1rem;
+  height: 4.25rem;
+  padding: 0 1.5rem;
+  border-radius: 12px;
   border: 1px solid transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
   user-select: none;
 }
 
 .paymentButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
 }
 
 .paymentButton:active:not(:disabled) {
@@ -90,8 +90,7 @@
 /* Stripe Button */
 .stripeBtn {
   background: #635bff;
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .stripeBtn:hover:not(:disabled) {
@@ -102,41 +101,62 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  width: 100%;
+  gap: 0.9rem;
 }
 
 .cardLogosGroup {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 
-.cardLogo {
-  width: 2.4rem;
-  height: 1.6rem;
+.cardBadge {
+  background: #ffffff;
   border-radius: 4px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
-  flex-shrink: 0;
+  height: 1.55rem;
+  padding: 0.15rem 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.visaText {
+  color: #1434cb;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.mcSvg {
+  width: 1.8rem;
+  height: 1.15rem;
 }
 
 .stripeDivider {
-  width: 1px;
-  height: 1.8rem;
-  background: rgba(255, 255, 255, 0.35);
+  width: 1.5px;
+  height: 1.75rem;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 1px;
 }
 
-.stripeLogo {
-  height: 1.65rem;
-  width: auto;
-  flex-shrink: 0;
+.stripeText {
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 /* PayPal Button */
 .paypalBtn {
   background: #ffc439;
-  border-color: rgba(0, 0, 0, 0.06);
-  color: #003087;
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .paypalBtn:hover:not(:disabled) {
@@ -147,14 +167,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  width: 100%;
+  gap: 0.6rem;
 }
 
-.paypalLogo {
+.paypalIcon {
   height: 1.75rem;
   width: auto;
-  max-width: 8rem;
+}
+
+.paypalTextWrap {
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1;
+}
+
+.paypalTextPay {
+  color: #003087;
+  font-family: Arial, "Helvetica Neue", sans-serif;
+  font-size: 1.7rem;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.06em;
+}
+
+.paypalTextPal {
+  color: #0079c1;
+  font-family: Arial, "Helvetica Neue", sans-serif;
+  font-size: 1.7rem;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.06em;
 }
 
 /* Captions & helper text */
@@ -169,11 +211,6 @@
   line-height: 1.4;
 }
 
-.methodHint strong {
-  color: var(--color-text, #171512);
-  font-weight: 600;
-}
-
 /* Status message */
 .status {
   color: var(--color-text-muted, #756b5d);
@@ -181,16 +218,13 @@
   font-size: var(--text-ui-xs, 0.6875rem);
   line-height: 1.5;
   margin: 0.25rem 0 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .securityBadge {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
   padding: 0.65rem 0.9rem;
   background: rgba(141, 116, 61, 0.07);
   border-radius: 0.5rem;
@@ -214,7 +248,7 @@
   }
   
   .paymentButton {
-    min-height: 4rem;
-    padding: 0.75rem 1rem;
+    height: 4rem;
+    padding: 0 1rem;
   }
 }
