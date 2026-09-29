@@ -96,6 +96,7 @@
   background: linear-gradient(90deg, #171512 0%, #8d743d 50%, #171512 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: textShimmer 3.5s linear infinite;
 }
