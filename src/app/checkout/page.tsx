@@ -101,13 +101,48 @@ async function CheckoutContents() {
             : null}
       </section>
       <aside aria-label="Checkout summary" className={styles.summary}>
-        <header className={styles.summaryHeading}><h2>Order summary <span>({checkout.lines.length} items)</span></h2><Link href="/cart">Edit bag</Link></header>
-        <div className={styles.summaryItems}>
-          {checkout.lines.map((line, index) => <article className={styles.summaryItem} data-status={line.status} key={`${line.productSlug}:${line.variantId}`}>
-            {line.media ? <Link aria-label={`View ${line.productName ?? "fragrance"}`} className={styles.summaryMedia} href={`/products/${line.productSlug}`}><Image alt={line.media.alt} fill loading={index === 0 ? "eager" : "lazy"} sizes="4.5rem" src={line.media.src} /></Link> : <div aria-label="Product media unavailable" className={styles.summaryPlaceholder} role="img">ATHAR</div>}
-            <div className={styles.summaryProduct}><p>{line.brandName ?? "ATHAR"}</p><h3>{line.productName ?? "Unavailable fragrance"}</h3><span>{line.fragranceType ? `${line.fragranceType} · ` : ""}{line.sizeMl ? `${line.sizeMl} ml` : "Size unavailable"}</span></div><strong>{line.status === "eligible" ? formatMoneyMinor(line.subtotalMinor, line.currency) : "Review"}</strong>
-          </article>)}
-        </div>
+        {(() => {
+          const totalQuantity = checkout.lines.reduce((sum, line) => sum + line.quantity, 0);
+          return (
+            <>
+              <header className={styles.summaryHeading}>
+                <h2>Order summary <span>({totalQuantity} {totalQuantity === 1 ? "item" : "items"})</span></h2>
+                <Link href="/cart">Edit bag</Link>
+              </header>
+              <div className={styles.summaryItems}>
+                {checkout.lines.map((line, index) => (
+                  <article className={styles.summaryItem} data-status={line.status} key={`${line.productSlug}:${line.variantId}`}>
+                    <div className={styles.summaryMediaWrapper}>
+                      {line.media ? (
+                        <Link aria-label={`View ${line.productName ?? "fragrance"}`} className={styles.summaryMedia} href={`/products/${line.productSlug}`}>
+                          <Image alt={line.media.alt} fill loading={index === 0 ? "eager" : "lazy"} sizes="4.5rem" src={line.media.src} />
+                        </Link>
+                      ) : (
+                        <div aria-label="Product media unavailable" className={styles.summaryPlaceholder} role="img">ATHAR</div>
+                      )}
+                      {line.quantity > 1 ? <span className={styles.quantityBadge}>{line.quantity}</span> : null}
+                    </div>
+                    <div className={styles.summaryProduct}>
+                      <p>{line.brandName ?? "ATHAR"}</p>
+                      <h3>{line.productName ?? "Unavailable fragrance"}</h3>
+                      <span>
+                        {line.fragranceType ? `${line.fragranceType} · ` : ""}
+                        {line.sizeMl ? `${line.sizeMl} ml` : "Size unavailable"}
+                        {line.quantity > 1 ? ` · Qty: ${line.quantity}` : ""}
+                      </span>
+                    </div>
+                    <div className={styles.summaryPriceCol}>
+                      <strong>{line.status === "eligible" ? formatMoneyMinor(line.subtotalMinor, line.currency) : "Review"}</strong>
+                      {line.status === "eligible" && line.quantity > 1 ? (
+                        <small className={styles.unitPrice}>{formatMoneyMinor(line.priceMinor, line.currency)} each</small>
+                      ) : null}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </>
+          );
+        })()}
         {totals.status === "ready"
           ? <>
             <div><span>Subtotal</span><strong>{formatMoneyMinor(totals.merchandiseSubtotal, totals.currency)}</strong></div>
