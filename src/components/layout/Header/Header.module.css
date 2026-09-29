@@ -1,7 +1,7 @@
 .root {
   inset: 0 0 auto;
   position: absolute;
-  z-index: 2;
+  z-index: 101;
 }
 
 .inner {
@@ -366,8 +366,17 @@
   width: 1rem;
 }
 
-.cartBackdrop { background: rgba(18, 14, 10, .38); inset: 0; position: fixed; z-index: 20; }
-.cartDrawer { background: #fbf7f0; box-shadow: -1.2rem 0 3rem rgba(30, 20, 10, .18); display: flex; flex-direction: column; inset: 0 0 0 auto; max-width: 27rem; position: fixed; transform: translateX(105%); transition: transform .28s ease; visibility: hidden; width: min(90vw, 27rem); z-index: 21; }
+.cartBackdrop {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: rgba(18, 14, 10, 0.42);
+  inset: 0;
+  position: fixed;
+  z-index: 99;
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+.cartDrawer { background: #fbf7f0; box-shadow: -1.2rem 0 3rem rgba(30, 20, 10, .18); display: flex; flex-direction: column; inset: 0 0 0 auto; max-width: 27rem; position: fixed; transform: translateX(105%); transition: transform .28s ease; visibility: hidden; width: min(90vw, 27rem); z-index: 100; }
 .cartDrawerOpen { transform: translateX(0); visibility: visible; }
 .cartDrawerHead { align-items: center; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; padding: 1rem 1.4rem; }
 .cartDrawerKicker { display: none; }
