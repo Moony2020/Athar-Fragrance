@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Browse fragrance brands in the ATHAR catalog.",
 };
 
+export const instant = false;
+
 export default async function BrandsPage() {
   const browse = await getBrandIndexData();
   return (
