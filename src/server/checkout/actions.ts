@@ -1,6 +1,5 @@
 "use server";
 
-import { refresh } from "next/cache";
 import { cookies } from "next/headers";
 import { DURABLE_COMMERCE_TTL_DAYS } from "@/commerce/durable-contracts";
 import { checkoutContactAddressSchema, checkoutIdSchema, type CheckoutContactAddress } from "@/checkout/contact-address";
@@ -92,7 +91,6 @@ export async function saveCheckoutDetailsAction(_previous: CheckoutFormState, fo
       maxAge: cookieMaxAge,
       path: "/checkout",
     });
-    refresh();
     return { status: "saved", message: "Contact and shipping address saved." };
   } catch {
     // Do not put PII or raw database errors in logs or action responses.
@@ -123,7 +121,6 @@ export async function saveShippingSelectionAction(_previous: ShippingSelectionSt
     const result = await new MongoCheckoutDraftStore().saveShippingSelection(owner, checkoutId.data, revision, shippingMethodId.data);
     if (result === "not-found") return { status: "expired", message: "This checkout session has expired or changed. Reload the page and try again." };
     if (result === "conflict") return { status: "conflict", message: "These details changed in another session. Reload and try again." };
-    refresh();
     return { status: "saved", message: "Delivery method saved." };
   } catch {
     return { status: "unavailable", message: "We couldn’t save delivery right now. Please try again shortly." };
@@ -155,7 +152,6 @@ export async function prepareCheckoutForPaymentAction(_previous: PrepareForPayme
     if (reservation.status === "insufficient") return { status: "insufficient", message: "One or more items are no longer available in the requested quantity. Review your bag and try again." };
     if (reservation.status === "invalid") return { status: "blocked", message: "Your bag changed and can’t be reserved. Review it and try again." };
     if (reservation.status === "unavailable") return { status: "unavailable", message: "We couldn’t reserve your items right now. Please try again shortly." };
-    refresh();
     return {
       status: "reserved",
       reservationId: reservation.reservation.reservationId,

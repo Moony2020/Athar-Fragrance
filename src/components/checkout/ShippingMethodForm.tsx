@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/Button/Button";
 import type { CheckoutDraftPublic } from "@/checkout/draft-document";
 import type { ShippingMethodPublic } from "@/checkout/shipping";
 import { saveShippingSelectionAction, type ShippingSelectionState } from "@/server/checkout/actions";
@@ -14,6 +14,11 @@ const initialState: ShippingSelectionState = { status: "idle" };
 
 export function ShippingMethodForm({ draft, methods }: { draft: CheckoutDraftPublic; methods: ShippingMethodPublic[] }) {
   const [state, formAction, pending] = useActionState(saveShippingSelectionAction, initialState);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state.status === "saved") router.refresh();
+  }, [router, state.status]);
 
   return <section aria-labelledby="delivery-title" className={styles.panel}>
     <div className={styles.heading}>
@@ -27,12 +32,12 @@ export function ShippingMethodForm({ draft, methods }: { draft: CheckoutDraftPub
       <fieldset className={styles.shippingMethods} disabled={pending}>
         <legend>Available delivery methods</legend>
         {methods.map((method) => <label className={styles.shippingMethod} key={method.shippingMethodId}>
-          <input defaultChecked={draft.selectedShippingMethodId === method.shippingMethodId} name="shippingMethodId" required type="radio" value={method.shippingMethodId} />
+          <input defaultChecked={draft.selectedShippingMethodId === method.shippingMethodId} name="shippingMethodId" onChange={(event) => event.currentTarget.form?.requestSubmit()} required type="radio" value={method.shippingMethodId} />
           <span><strong>{method.label}</strong><small>{method.isFree ? "Free" : formatMoneyMinor(method.shippingAmountMinor, method.currency)}</small></span>
         </label>)}
       </fieldset>
-      {state.message ? <p className={state.status === "saved" ? styles.success : styles.formMessage} role={state.status === "saved" ? "status" : "alert"}>{state.message}</p> : null}
-      <Button type="submit" disabled={pending}>{pending ? "Saving…" : "Save delivery method"}</Button>
+      {pending ? <p className={styles.helper} role="status">Saving your delivery choice…</p> : null}
+      {state.status !== "idle" && state.status !== "saved" && state.message ? <p className={styles.formMessage} role="alert">{state.message}</p> : null}
     </form>
   </section>;
 }

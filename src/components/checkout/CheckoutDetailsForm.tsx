@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button/Button";
 import { saveCheckoutDetailsAction, type CheckoutField, type CheckoutFormState } from "@/server/checkout/actions";
 import type { CheckoutDraftPublic } from "@/checkout/draft-document";
@@ -12,7 +13,12 @@ type Props = { draft: CheckoutDraftPublic; email: string };
 
 export function CheckoutDetailsForm({ draft, email }: Props) {
   const [state, formAction, pending] = useActionState(saveCheckoutDetailsAction, initialState);
+  const router = useRouter();
   const errors = state.errors ?? {};
+
+  useEffect(() => {
+    if (state.status === "saved") router.refresh();
+  }, [router, state.status]);
 
   function errorProps(name: CheckoutField) {
     const error = errors[name];

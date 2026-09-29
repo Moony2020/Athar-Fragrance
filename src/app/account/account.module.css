@@ -1,7 +1,34 @@
 .shell {
   width: min(100% - 2rem, 74rem);
   margin: 0 auto;
-  padding: clamp(2rem, 4vw, 4rem) 0;
+  padding: calc(5.75rem + clamp(1.5rem, 3vw, 2.5rem)) 0 clamp(3rem, 5vw, 6rem);
+}
+
+.breadcrumb {
+  align-items: center;
+  color: var(--color-text-muted);
+  display: flex;
+  font-family: var(--font-ui);
+  font-size: var(--text-ui-xs, 0.6875rem);
+  gap: var(--space-2, 0.5rem);
+  letter-spacing: var(--tracking-label, 0.12em);
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  text-transform: uppercase;
+}
+
+.breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb a:hover {
+  color: var(--color-accent, #8d743d);
+}
+
+.breadcrumb span:last-child {
+  color: var(--color-text);
+  font-weight: 600;
 }
 
 .intro {

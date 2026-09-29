@@ -6,6 +6,7 @@ import { SignOutButton } from "@/components/auth/SignOutButton";
 import { ProfileForm } from "@/components/auth/ProfileForm";
 import { auth } from "@/auth";
 import { getCustomerProfile } from "@/server/identity/profile-service";
+import { CatalogShell } from "@/components/catalog/CatalogShell/CatalogShell";
 import styles from "./account.module.css";
 
 export const instant = false;
@@ -19,12 +20,19 @@ export default async function AccountPage() {
   if (!profile) redirect("/account/sign-in");
 
   return (
-    <main className={styles.shell}>
-      <header className={styles.intro}>
-        <p className={styles.eyebrow}>ATHAR / ACCOUNT</p>
-        <h1>Your account</h1>
-        <p>Welcome back, {profile.displayName}. Manage your profile and continue your fragrance journey.</p>
-      </header>
+    <CatalogShell>
+      <div className={styles.shell}>
+        <header className={styles.intro}>
+          <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
+            <Link href="/">Home</Link>
+            <span aria-hidden="true">/</span>
+            <Link href="/shop">Shop</Link>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Your Account</span>
+          </nav>
+          <h1>Your account</h1>
+          <p>Welcome back, {profile.displayName}. Manage your profile and continue your fragrance journey.</p>
+        </header>
 
       <div className={styles.grid}>
         <section className={`${styles.panel} ${styles.profilePanel}`} aria-labelledby="profile-heading">
@@ -76,6 +84,7 @@ export default async function AccountPage() {
         </aside>
       </div>
 
-    </main>
+      </div>
+    </CatalogShell>
   );
 }
