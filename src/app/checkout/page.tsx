@@ -58,10 +58,35 @@ async function CheckoutContents() {
     ? await new MongoInventoryReservationStore().readActive(owner, checkoutDraft.draft.checkoutId)
     : null;
 
+  const isAddressFilled = Boolean(checkoutDraft.status === "ready" && checkoutDraft.draft.shippingAddress?.addressLine1);
+  const isShippingSelected = Boolean(checkoutDraft.status === "ready" && checkoutDraft.draft.selectedShippingMethodId);
+
+  let currentStep = 1;
+  if (reservation || (totals.status === "ready" && isShippingSelected)) {
+    currentStep = 3;
+  } else if (isAddressFilled) {
+    currentStep = 2;
+  } else {
+    currentStep = 1;
+  }
+
   return <section aria-labelledby="checkout-title" className={styles.page}>
     <nav aria-label="Breadcrumb" className={styles.breadcrumb}><Link href="/shop">Shop</Link><span aria-hidden="true">/</span><span aria-current="page">Checkout</span></nav>
     <header className={styles.heading}><div><h1 id="checkout-title">Checkout</h1><p>Complete your order securely.</p></div></header>
-    <nav aria-label="Checkout progress" className={styles.progress}><span className={styles.progressActive}><b>1</b>Information</span><span><b>2</b>Delivery</span><span><b>3</b>Payment</span><span><b>4</b>Review</span></nav>
+    <nav aria-label="Checkout progress" className={styles.progress}>
+      <a className={`${styles.progressStep} ${currentStep === 1 ? styles.progressActive : currentStep > 1 ? styles.progressCompleted : ""}`} href="#contact-information-title">
+        <b>{currentStep > 1 ? "✓" : "1"}</b>Information
+      </a>
+      <a className={`${styles.progressStep} ${currentStep === 2 ? styles.progressActive : currentStep > 2 ? styles.progressCompleted : ""}`} href="#delivery-title">
+        <b>{currentStep > 2 ? "✓" : "2"}</b>Delivery
+      </a>
+      <a className={`${styles.progressStep} ${currentStep === 3 ? styles.progressActive : currentStep > 3 ? styles.progressCompleted : ""}`} href="#payment-method-title">
+        <b>{currentStep > 3 ? "✓" : "3"}</b>Payment
+      </a>
+      <span className={`${styles.progressStep} ${currentStep === 4 ? styles.progressActive : ""}`}>
+        <b>4</b>Review
+      </span>
+    </nav>
     <div className={styles.layout}>
       <section aria-label="Checkout information" className={styles.items}>
         {checkout.status === "ready" && checkoutDraft.status === "ready"

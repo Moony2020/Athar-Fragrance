@@ -81,12 +81,11 @@ export function PaymentMethodSection({ draft, paypalEnabled }: { draft: Checkout
               <div className={styles.paypalContent}>
                 <span className={styles.payWithText}>Pay with</span>
                 <span className={styles.paypalBrand}>
-                  {/* PayPal Double P Emblem */}
-                  <svg className={styles.paypalEmblem} viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    {/* Cyan Blue P in back */}
-                    <path d="M8.5 7.5h7c3.5 0 6.4 2.6 6.1 6.2-.5 4.2-3.8 7.3-8 7.3H9.7l-1.5 7.8c-.1.5-.6.9-1.1.9H3.5c-.6 0-1-.5-.9-1.1L8.5 7.5z" fill="#0079C1"/>
-                    {/* Dark Blue P on top */}
-                    <path d="M4 0h9c3.8 0 7 2.8 6.6 6.8-.5 4.6-4.2 8-8.8 8H7.4L5.5 25.4c-.1.5-.6.9-1.1.9H0.8c-.6 0-1-.5-.9-1.1L4 0z" fill="#003087"/>
+                  {/* Official PayPal Double-P Vector Emblem with proper layering */}
+                  <svg className={styles.paypalEmblem} viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M34.2 15.6h25.4c12.7 0 22.8 8.8 21.4 22.2-1.7 15.2-13.8 26.6-29 26.6H40.2l-5.1 32.5c-.3 1.9-1.9 3.3-3.8 3.3H16.8c-2.3 0-4-2.1-3.6-4.4L29.6 19.3c.4-2.1 2.2-3.7 4.6-3.7z" fill="#003087"/>
+                    <path d="M49.6 37.9h21.8c11 0 19.7 7.7 18.5 19.3-1.5 13.2-11.9 23-25.1 23H52.9l-4.5 28.3c-.3 1.9-1.9 3.3-3.8 3.3H30c-2.3 0-4-2.1-3.6-4.4l11.2-70.8c.4-2.1 2.2-3.7 4.6-3.7h7.4z" fill="#0079C1"/>
+                    <path d="M40.2 64.4l5.1-32.5h11.8c12.7 0 22.8 8.8 21.4 22.2-.6 5.5-3.3 10.3-7.5 13.9-3.2-2.7-7.4-4.3-12-4.3H49.6l-5.1 32.5c-.3 1.9-1.9 3.3-3.8 3.3H30l4.7-29.6c1.5-.7 3.3-1.4 5.5-1.5z" fill="#002069"/>
                   </svg>
                   <span className={styles.paypalWordmark}>
                     <span className={styles.payBlue}>Pay</span>
