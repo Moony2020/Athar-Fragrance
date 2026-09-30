@@ -67,6 +67,10 @@ export class MongoOrderStore {
     return (await this.database()).collection<OrderDocument>(databaseCollections.orders).find(ownerFilter(owner)).sort({ createdAt: -1 }).limit(20).toArray();
   }
 
+  async findForOwnerByOrderId(owner: CommerceOwner, publicOrderId: string): Promise<OrderDocument | null> {
+    return (await this.database()).collection<OrderDocument>(databaseCollections.orders).findOne({ orderId: publicOrderId, ...ownerFilter(owner) });
+  }
+
   private async clearCart(owner: CommerceOwner) {
     const store = getGuestCartStore();
     if (isMongoGuestCartStore(store)) await store.mutateOwner(owner, async () => ({ lines: [] }));

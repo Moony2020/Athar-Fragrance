@@ -6,12 +6,19 @@ import { createStripeCheckoutGateway, stripeCheckoutMatchesAttempt } from "@/ser
 import { finalizeTrustedPayment } from "@/server/payments/finalize-payment";
 
 import { resolvePublicAppOrigin } from "@/server/payments/public-app-origin";
+import { confirmationOrderCookieName, confirmationOrderCookieOptions } from "@/server/orders/confirmation-order-cookie";
 
 function confirmationUrl(request: Request, state: "success" | "error", reason?: string): URL {
   const origin = resolvePublicAppOrigin();
   const url = new URL(`/checkout/confirmation?provider=stripe&state=${state}`, origin);
   if (reason) url.searchParams.set("reason", reason);
   return url;
+}
+
+function successRedirect(request: Request, orderId: string): Response {
+  const response = NextResponse.redirect(confirmationUrl(request, "success"));
+  response.cookies.set(confirmationOrderCookieName, orderId, confirmationOrderCookieOptions);
+  return response;
 }
 
 /** Verifies the hosted Stripe session on the server before showing payment confirmation. */
@@ -28,7 +35,7 @@ export async function GET(request: Request): Promise<Response> {
     if (!attempt) return NextResponse.redirect(confirmationUrl(request, "error", "attempt-not-found"));
     if (attempt.status === "succeeded") {
       const existing = await finalizeTrustedPayment(owner, attempt);
-      return NextResponse.redirect(confirmationUrl(request, existing ? "success" : "error", existing ? undefined : "order-finalization-failed"));
+      return existing ? successRedirect(request, existing.orderId) : NextResponse.redirect(confirmationUrl(request, "error", "order-finalization-failed"));
     }
     if (attempt.status !== "provider_waiting") return NextResponse.redirect(confirmationUrl(request, "error", "attempt-not-pending"));
     const session = await createStripeCheckoutGateway(secret).retrieveSession(sessionId);
@@ -37,7 +44,7 @@ export async function GET(request: Request): Promise<Response> {
     const stored = await store.markProviderSucceeded(owner, attempt.paymentAttemptId, "stripe", session.id, session.status);
     if (!stored) return NextResponse.redirect(confirmationUrl(request, "error", "attempt-update-failed"));
     const order = await finalizeTrustedPayment(owner, stored);
-    return NextResponse.redirect(confirmationUrl(request, order ? "success" : "error", order ? undefined : "order-finalization-failed"));
+    return order ? successRedirect(request, order.orderId) : NextResponse.redirect(confirmationUrl(request, "error", "order-finalization-failed"));
   } catch (error) {
     console.error("[athar-stripe-return] verification failed", error instanceof Error ? error.message : error);
     return NextResponse.redirect(confirmationUrl(request, "error", "verification-failed"));

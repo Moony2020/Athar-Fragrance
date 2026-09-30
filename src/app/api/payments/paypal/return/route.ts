@@ -8,12 +8,19 @@ import { createPayPalGateway, paypalOrderMatchesAttempt } from "@/server/payment
 import { finalizeTrustedPayment } from "@/server/payments/finalize-payment";
 
 import { resolvePublicAppOrigin } from "@/server/payments/public-app-origin";
+import { confirmationOrderCookieName, confirmationOrderCookieOptions } from "@/server/orders/confirmation-order-cookie";
 
 function checkoutUrl(request: Request, state: "success" | "cancelled" | "error"): URL {
   const origin = resolvePublicAppOrigin();
   return state === "success"
     ? new URL("/checkout/confirmation?provider=paypal&state=success", origin)
     : new URL(`/checkout?payment=paypal-${state}`, origin);
+}
+
+function successRedirect(request: Request, orderId: string): Response {
+  const response = NextResponse.redirect(checkoutUrl(request, "success"));
+  response.cookies.set(confirmationOrderCookieName, orderId, confirmationOrderCookieOptions);
+  return response;
 }
 
 /** PayPal returns here after hosted approval; capture remains server-authoritative. */
@@ -30,7 +37,7 @@ export async function GET(request: Request): Promise<Response> {
     if (!attempt) return NextResponse.redirect(checkoutUrl(request, "error"));
     if (attempt.status === "succeeded") {
       const existing = await finalizeTrustedPayment(owner, attempt);
-      return NextResponse.redirect(checkoutUrl(request, existing ? "success" : "error"));
+      return existing ? successRedirect(request, existing.orderId) : NextResponse.redirect(checkoutUrl(request, "error"));
     }
     if (attempt.status !== "provider_waiting") return NextResponse.redirect(checkoutUrl(request, "error"));
     const captureKey = createHash("sha256").update(`${attempt.providerRequestKey}:capture`).digest("base64url");
@@ -39,7 +46,7 @@ export async function GET(request: Request): Promise<Response> {
     const stored = await store.markProviderSucceeded(owner, attempt.paymentAttemptId, "paypal", order.id, order.status);
     if (!stored) return NextResponse.redirect(checkoutUrl(request, "error"));
     const finalized = await finalizeTrustedPayment(owner, stored);
-    return NextResponse.redirect(checkoutUrl(request, finalized ? "success" : "error"));
+    return finalized ? successRedirect(request, finalized.orderId) : NextResponse.redirect(checkoutUrl(request, "error"));
   } catch {
     return NextResponse.redirect(checkoutUrl(request, "error"));
   }
