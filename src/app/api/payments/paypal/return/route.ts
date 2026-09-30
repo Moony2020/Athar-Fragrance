@@ -7,10 +7,13 @@ import { MongoPaymentAttemptStore } from "@/server/payments/payment-attempt-stor
 import { createPayPalGateway, paypalOrderMatchesAttempt } from "@/server/payments/paypal-provider";
 import { finalizeTrustedPayment } from "@/server/payments/finalize-payment";
 
+import { resolvePublicAppOrigin } from "@/server/payments/public-app-origin";
+
 function checkoutUrl(request: Request, state: "success" | "cancelled" | "error"): URL {
+  const origin = resolvePublicAppOrigin();
   return state === "success"
-    ? new URL("/checkout/confirmation?provider=paypal&state=success", request.url)
-    : new URL(`/checkout?payment=paypal-${state}`, request.url);
+    ? new URL("/checkout/confirmation?provider=paypal&state=success", origin)
+    : new URL(`/checkout?payment=paypal-${state}`, origin);
 }
 
 /** PayPal returns here after hosted approval; capture remains server-authoritative. */

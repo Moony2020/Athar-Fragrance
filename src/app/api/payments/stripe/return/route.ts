@@ -5,8 +5,11 @@ import { MongoPaymentAttemptStore } from "@/server/payments/payment-attempt-stor
 import { createStripeCheckoutGateway, stripeCheckoutMatchesAttempt } from "@/server/payments/stripe-checkout-provider";
 import { finalizeTrustedPayment } from "@/server/payments/finalize-payment";
 
+import { resolvePublicAppOrigin } from "@/server/payments/public-app-origin";
+
 function confirmationUrl(request: Request, state: "success" | "error", reason?: string): URL {
-  const url = new URL(`/checkout/confirmation?provider=stripe&state=${state}`, request.url);
+  const origin = resolvePublicAppOrigin();
+  const url = new URL(`/checkout/confirmation?provider=stripe&state=${state}`, origin);
   if (reason) url.searchParams.set("reason", reason);
   return url;
 }
