@@ -4,6 +4,9 @@ import { CatalogShell } from "@/components/catalog/CatalogShell/CatalogShell";
 import { Container } from "@/components/ui/Container/Container";
 import styles from "./ConfirmationPage.module.css";
 
+// The provider return URL intentionally carries dynamic search parameters.
+export const instant = false;
+
 export default async function CheckoutConfirmationPage({ searchParams }: { searchParams: Promise<{ provider?: string; state?: string }> }) {
   const { provider, state } = await searchParams;
   const successful = state === "success" && (provider === "stripe" || provider === "paypal");

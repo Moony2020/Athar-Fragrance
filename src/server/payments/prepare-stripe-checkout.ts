@@ -54,7 +54,7 @@ export async function prepareStripeCheckout(rawCheckoutId: unknown, dependencies
     const session = attempt.providerExternalId
       ? await gateway.retrieveSession(attempt.providerExternalId)
       : await gateway.createSession(stripeCheckoutInput({ attempt, origin, customerEmail: draft?.contact?.email }), attempt.providerRequestKey);
-    if (!stripeCheckoutMatchesAttempt(session, attempt) || session.status !== "open") return { status: "blocked" };
+    if (!stripeCheckoutMatchesAttempt(session, attempt) || session.status !== "open" || !session.url) return { status: "blocked" };
     const bound = await store.bindProviderOperation(owner, attempt.paymentAttemptId, "stripe", session.id, session.status, now);
     if (!bound || bound.providerExternalId !== session.id) return { status: "blocked" };
     return { status: "ready", paymentAttemptId: bound.paymentAttemptId, url: session.url };

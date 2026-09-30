@@ -99,7 +99,7 @@ export function CheckoutDetailsForm({ draft, email }: Props) {
           </div>
         </div>
         {state.message ? <p className={state.status === "saved" ? styles.success : styles.formMessage} role={state.status === "saved" ? "status" : "alert"}>{state.message}</p> : null}
-        <Button disabled={pending} size="compact" type="submit" variant="quiet">{pending ? "Saving…" : "Save details"}</Button>
+        <Button className={styles.saveBtn} disabled={pending} type="submit" variant="primary">{pending ? "Saving…" : "Save details"}</Button>
         </section>
       </form>
   );

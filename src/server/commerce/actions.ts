@@ -29,7 +29,13 @@ function createGuestCartId() {
 }
 
 async function invalidateOwnerReservation(owner: CommerceOwner) {
-  await new MongoInventoryReservationStore().releaseForOwner(owner);
+  // Cart mutations must remain usable even when there is no active reservation
+  // (or the optional reservation store is temporarily unavailable).
+  try {
+    await new MongoInventoryReservationStore().releaseForOwner(owner);
+  } catch {
+    // Reservation cleanup is best-effort; the cart mutation already succeeded.
+  }
 }
 
 /** PDP-only Cart mutation. It receives identity + quantity, never browser-owned commerce data. */

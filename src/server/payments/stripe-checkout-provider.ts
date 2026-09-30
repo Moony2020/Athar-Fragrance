@@ -6,7 +6,7 @@ import type { PaymentAttemptDocument } from "@/payments/payment-attempt-document
 
 export type StripeCheckoutSessionSnapshot = {
   id: string;
-  url: string;
+  url: string | null;
   status: "open" | "complete" | "expired";
   amountTotal: number | null;
   currency: string | null;
@@ -19,8 +19,8 @@ export type StripeCheckoutGateway = {
   retrieveSession(id: string): Promise<StripeCheckoutSessionSnapshot>;
 };
 
-function toSnapshot(session: Stripe.Checkout.Session): StripeCheckoutSessionSnapshot {
-  if (!session.url || !["open", "complete", "expired"].includes(session.status ?? "") || !["paid", "unpaid", "no_payment_required"].includes(session.payment_status)) {
+function toSnapshot(session: Stripe.Checkout.Session, requireUrl: boolean): StripeCheckoutSessionSnapshot {
+  if ((requireUrl && !session.url) || !["open", "complete", "expired"].includes(session.status ?? "") || !["paid", "unpaid", "no_payment_required"].includes(session.payment_status)) {
     throw new Error("Stripe Checkout did not return a usable session.");
   }
   return {
@@ -38,10 +38,10 @@ export function createStripeCheckoutGateway(secretKey: string): StripeCheckoutGa
   const stripe = new Stripe(secretKey);
   return {
     async createSession(input, idempotencyKey) {
-      return toSnapshot(await stripe.checkout.sessions.create(input, { idempotencyKey }));
+      return toSnapshot(await stripe.checkout.sessions.create(input, { idempotencyKey }), true);
     },
     async retrieveSession(id) {
-      return toSnapshot(await stripe.checkout.sessions.retrieve(id));
+      return toSnapshot(await stripe.checkout.sessions.retrieve(id), false);
     },
   };
 }

@@ -47,14 +47,14 @@
 .summaryProduct { min-width: 0; }
 .summaryProduct p { color: var(--color-accent); font-family: var(--font-ui); font-size: .62rem; font-weight: 700; letter-spacing: .12em; margin: 0; text-transform: uppercase; }
 .summaryProduct h3 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; margin: .12rem 0; }
-.summaryProduct span { font-family: var(--font-ui); font-size: var(--text-ui-xs); color: var(--color-text-muted); }
+.summaryProduct span { font-family: var(--font-ui); font-size: 0.75rem; color: var(--color-text-muted); }
 .summaryPriceCol { display: flex; flex-direction: column; align-items: flex-end; gap: 0.15rem; }
-.summaryPriceCol strong { font-family: var(--font-ui); font-size: var(--text-body-sm); white-space: nowrap; }
-.unitPrice { font-family: var(--font-ui); font-size: 0.6875rem; color: var(--color-text-muted); white-space: nowrap; }
-.summary > div { align-items: center; display: flex; font-family: var(--font-ui); font-size: var(--text-ui-xs); justify-content: space-between; }
-.summary > div > strong { font-size: var(--text-body-sm); }
-.summary > .grandTotal { border-top: 1px solid var(--color-border); font-size: var(--text-body-sm); font-weight: 700; padding-top: var(--space-4); }
-.summary > .grandTotal > strong { font-size: var(--text-body-lg); }
+.summaryPriceCol strong { font-family: var(--font-ui); font-size: 0.925rem; font-weight: 600; color: var(--color-text); white-space: nowrap; }
+.unitPrice { font-family: var(--font-ui); font-size: 0.72rem; color: var(--color-text-muted); white-space: nowrap; }
+.summary > div { align-items: center; display: flex; font-family: var(--font-ui); font-size: 0.8125rem; justify-content: space-between; }
+.summary > div > strong { font-size: 0.875rem; font-weight: 600; color: var(--color-text); }
+.summary > .grandTotal { border-top: 1px solid var(--color-border); font-size: 0.95rem; font-weight: 600; padding-top: var(--space-4); }
+.summary > .grandTotal > strong { font-size: 1.18rem; font-weight: 700; color: var(--color-text); }
 .totalNotice { color: var(--color-text-muted); font-family: var(--font-ui); font-size: var(--text-ui-xs); line-height: 1.55; margin: 0; }
 .blocked,.ready { align-items: start !important; border-block: 1px solid var(--color-border); display: grid !important; gap: .4rem; justify-content: stretch !important; padding-block: var(--space-4); }
 .blocked span,.ready span,.disclaimer { color: var(--color-text-muted); font-family: var(--font-ui); font-size: var(--text-ui-xs); line-height: 1.55; }

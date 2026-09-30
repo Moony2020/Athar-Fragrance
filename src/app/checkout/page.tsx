@@ -128,7 +128,6 @@ async function CheckoutContents() {
                       <span>
                         {line.fragranceType ? `${line.fragranceType} · ` : ""}
                         {line.sizeMl ? `${line.sizeMl} ml` : "Size unavailable"}
-                        {line.quantity > 1 ? ` · Qty: ${line.quantity}` : ""}
                       </span>
                     </div>
                     <div className={styles.summaryPriceCol}>

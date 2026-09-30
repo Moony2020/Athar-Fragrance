@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button/Button";
@@ -10,13 +10,28 @@ import { CartLineQuantity, CartLineRemoveButton } from "./CartLineControls";
 import styles from "./CartPage.module.css";
 
 export function CartPage({ cart }: { cart: PublicCart }) {
+  const availableKeys = cart.lines
+    .filter((line) => line.availability === "available")
+    .map((line) => `${line.productSlug}:${line.variantId}`);
+  const availableSignature = availableKeys.join("|");
+  const previousAvailableSignature = useRef(availableSignature);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(() => {
-    return new Set(
-      cart.lines
-        .filter((l) => l.availability === "available")
-        .map((l) => `${l.productSlug}:${l.variantId}`)
-    );
+    return new Set(availableKeys);
   });
+
+  useEffect(() => {
+    if (previousAvailableSignature.current === availableSignature) return;
+    const previousKeys = new Set(previousAvailableSignature.current.split("|").filter(Boolean));
+    const currentKeys = new Set(availableKeys);
+    setSelectedKeys((selected) => {
+      const next = new Set([...selected].filter((key) => currentKeys.has(key)));
+      for (const key of availableKeys) {
+        if (!previousKeys.has(key)) next.add(key);
+      }
+      return next;
+    });
+    previousAvailableSignature.current = availableSignature;
+  }, [availableSignature]);
 
   if (cart.availability === "unavailable") {
     return (
