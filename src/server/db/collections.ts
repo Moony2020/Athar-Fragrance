@@ -9,6 +9,7 @@ export const databaseCollections = {
   checkoutDrafts: "checkout_drafts",
   inventoryReservations: "inventory_reservations",
   paymentAttempts: "payment_attempts",
+  orders: "orders",
   users: "users",
   userCredentials: "user_credentials",
   passwordResetTokens: "password_reset_tokens",
