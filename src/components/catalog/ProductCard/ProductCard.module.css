@@ -10,6 +10,7 @@
   overflow: hidden;
   padding: .45rem;
   box-shadow: 0 1rem 2rem rgba(53, 40, 25, .06), inset 0 1px 0 rgba(255, 255, 255, .8);
+  transform: translateZ(0);
 }
 
 .visual {
@@ -46,6 +47,7 @@
   gap: .38rem;
   padding: .85rem .9rem .8rem;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .86), 0 .5rem 1.4rem rgba(53, 40, 25, .05);
+  transform: translateZ(0);
 }
 .infoPanel > small { color: var(--color-text-muted); font-family: var(--font-ui); font-size: .58rem; letter-spacing: .11em; text-transform: uppercase; }
 .productName { font-family: var(--font-ui); font-size: clamp(.9rem, 1.15vw, 1rem); line-height: 1.15; }
