@@ -1,20 +1,52 @@
 # ATHAR Project Status
 
-**Last audited:** 2026-09-28
+**Last audited:** 2026-10-01
 **Current phase:** Phase 8 — Payments
-**Overall status:** **STAGE 8.2 IMPLEMENTED — STRIPE SANDBOX VERIFICATION PENDING. Stage 8.1 is closed at official baseline `863f3fe0bed7a4be5fbadbc9577c58393d50f45c`; no provider finalization or Order exists.**
+**Overall status:** **TRUSTED PAYMENT FINALIZATION VERIFIED — CHECKPOINT PENDING.** Stripe and PayPal Sandbox payment/webhook/replay evidence is closed operationally; the historical first PayPal inventory decrement remains explicitly unverified.
+
+## Trusted Payment Finalization closure (2026-10-01)
+
+The current payment finalization boundary is verified for the following evidence:
+
+- PaymentAttempt automated tests: **VERIFIED**.
+- Stripe automated tests: **VERIFIED**.
+- Inventory/reservation automated verification against the dedicated
+  `athar_stage55_test` database: **VERIFIED** (2 passed, 0 failed, 0 skipped;
+  fixture cleanup passed).
+- Real Stripe Sandbox finalization and webhook delivery: **VERIFIED**.
+- Real PayPal Sandbox create/capture and `PAYMENT.CAPTURE.COMPLETED` delivery:
+  **VERIFIED**.
+- PayPal `FAIL_SOFT` retry to `DELIVERED`: **VERIFIED**.
+- PayPal replay created no duplicate Order, caused no second inventory
+  decrement, and preserved the cleared Cart: **VERIFIED**.
+- Exactly one Order per verified PaymentAttempt, `paymentStatus = paid`, and
+  `fulfillmentStatus = pending`: **VERIFIED**.
+- TypeScript, affected ESLint, and production build: **VERIFIED**.
+
+The following are not claims about the old transaction's first stock mutation:
+
+```text
+Original PayPal inventory decrement exactly once:
+UNVERIFIED historically
+```
+
+The consumed reservation was later removed by the existing TTL behavior and no
+durable historical consumption ledger exists. The current inventory/reservation
+tests verify the current engine, while PayPal replay evidence verifies that the
+replay caused no additional mutation; neither is retrospective proof of that
+old transaction's first decrement. A dedicated standalone PayPal route test
+suite is **NOT APPLICABLE** because none currently exists.
 
 ## Stage 8.2 current status
 
-Stage 8.2 is **IMPLEMENTED — STRIPE SANDBOX VERIFICATION PENDING**. Stripe card
-PaymentIntent preparation uses owner-approved immediate capture
-(`capture_method = automatic`) after the current owner, Cart, Checkout, totals,
-and compatible active reservation are revalidated. The Payment Element receives
-only a transient owner-bound client secret; browser confirmation cannot create
-an Order or consume final inventory. `STRIPE_SECRET_KEY` and
-`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` are not configured in the current
-environment, so no sandbox call, live charge, or provider/browser PASS is
-claimed. PayPal, webhooks, and Orders remain out of scope.
+Stage 8.2 is **IMPLEMENTED — TRUSTED PAYMENT FINALIZATION VERIFIED; CHECKPOINT
+PENDING**. Current customer card checkout uses a Stripe-hosted Checkout Session
+with automatic capture; card details never render inside ATHAR. The Session
+creates the underlying PaymentIntent and carries the immutable PaymentAttempt
+metadata. The return route and `checkout.session.completed` webhook retrieve and
+validate the hosted Session before trusted finalization. The older server-only
+PaymentIntent helper remains covered by its focused contract tests but is not the
+current customer checkout surface. Refund and Admin remain out of scope.
 
 ## Stage 8.1 current status
 

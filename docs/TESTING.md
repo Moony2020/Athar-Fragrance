@@ -235,11 +235,42 @@ Stripe or PayPal call is made. The focused suite passed 4/4; affected Stage 7.4
 and Stage 7.5 regression passed 8/8. TypeScript, affected ESLint, and isolated
 Webpack production build passed; build evidence records terminal exit code `0`.
 
-## Stage 8.2 Stripe verification (implemented; sandbox pending)
+## Stage 8.2 Stripe verification (implemented; trusted finalization verified)
 
 Focused tests cover immutable SEK amount/currency, explicit automatic capture,
 card-only scope, metadata validation, provider-ID substitution rejection, and
 no client-secret persistence. Mongo uses `athar_stage55_test` only and verifies
-cleanup. Stage 8.1 and Stage 7.4/7.5 regressions remain required. Sandbox
-PaymentIntent, decline, 3DS, and browser Payment Element tests are pending until
-both Stripe environment keys are configured; no live charge is attempted.
+cleanup. Stage 8.1 and Stage 7.4/7.5 regressions remain required. The current
+customer surface is Stripe-hosted Checkout Session; the older server-only
+PaymentIntent helper remains covered by contract tests but is not the active
+browser flow. Payment Element-specific browser tests are **NOT APPLICABLE** to
+the current surface. Real Stripe Sandbox finalization is recorded below.
+
+## Trusted Payment Finalization closure (2026-10-01 — verified; checkpoint pending)
+
+External and automated evidence is recorded with explicit status labels:
+
+- PaymentAttempt and Stripe automated suites: **VERIFIED**.
+- Stage 7.5 inventory/reservation gate: **VERIFIED** against exactly
+  `athar_stage55_test` (2 passed, 0 failed, 0 skipped; fixture cleanup PASS).
+- Real Stripe Sandbox finalization/webhook delivery: **VERIFIED**.
+- Real PayPal Sandbox create/capture, `PAYMENT.CAPTURE.COMPLETED`, delivery,
+  `FAIL_SOFT → DELIVERED` retry, and one replay: **VERIFIED**.
+- Replay preserved one Order, unchanged inventory, and an empty Cart:
+  **VERIFIED**.
+- TypeScript, affected ESLint, production build, and `git diff --check`:
+  **VERIFIED**.
+- PayPal route-specific automated suite: **NOT APPLICABLE** — no dedicated
+  standalone suite currently exists.
+
+Historical limitation (must not be promoted to PASS):
+
+```text
+Original PayPal inventory decrement exactly once:
+UNVERIFIED historically
+```
+
+The old consumed reservation was removed by the existing TTL behavior and the
+project has no durable historical consumption ledger. Current inventory tests
+prove current engine behavior; PayPal replay proves no second mutation, but
+neither retrospectively proves the first decrement for that old transaction.

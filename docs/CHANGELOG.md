@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-10-01 — Trusted Payment Finalization verification complete — documentation closure
+
+- Recorded verified Stripe and PayPal Sandbox create/capture, real webhook
+  delivery, retry, and one-event replay idempotency evidence.
+- Recorded PaymentAttempt, Stripe, and dedicated `athar_stage55_test`
+  inventory/reservation automation as passing; the Stage 7.5 gate passed 2/2
+  with zero skips and fixture cleanup.
+- Preserved the exact evidence limitation: **Original PayPal inventory
+  decrement exactly once: UNVERIFIED historically**. The old reservation was
+  TTL-deleted and no durable historical consumption ledger exists.
+- Recorded the PayPal route-specific automated suite as **NOT APPLICABLE**;
+  no standalone suite currently exists. Refund and Admin remain unstarted.
+
 ## 2026-09-28 — Phase 7 / Stage 7.6 integration and closure complete — ready for checkpoint
 
 - Re-verified the server-authoritative guest and authenticated checkout flow
