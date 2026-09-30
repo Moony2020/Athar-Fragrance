@@ -4,7 +4,7 @@ import type { CommerceOwner } from "@/commerce/durable-contracts";
 
 export const INVENTORY_RESERVATION_TTL_MS = 15 * 60 * 1000;
 
-export type InventoryReservationStatus = "active" | "released" | "expired";
+export type InventoryReservationStatus = "active" | "consumed" | "released" | "expired";
 
 export type InventoryReservationLine = {
   productSlug: string;

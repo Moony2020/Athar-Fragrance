@@ -5,6 +5,7 @@ const exposeTestingApi = process.env.EXPOSE_TESTING_API === "1";
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1", "localhost", "192.168.10.226"],
   cacheComponents: true,
+  partialPrefetching: true,
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.matas.dk" },
@@ -14,7 +15,6 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "assets.armani.com" },
     ],
   },
-  partialPrefetching: true,
   experimental: {
     exposeTestingApiInProductionBuild: exposeTestingApi,
   },

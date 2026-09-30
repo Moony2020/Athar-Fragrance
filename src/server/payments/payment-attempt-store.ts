@@ -90,4 +90,10 @@ export class MongoPaymentAttemptStore {
       .findOne({ ...ownerFilter(owner), provider, providerExternalId });
     return document ? parsePaymentAttemptDocument(document) : null;
   }
+
+  async readByProviderExternalIdAnyOwner(provider: PaymentProvider, providerExternalId: string): Promise<PaymentAttemptDocument | null> {
+    const document = await (await this.database()).collection<PaymentAttemptDocument>(databaseCollections.paymentAttempts)
+      .findOne({ provider, providerExternalId });
+    return document ? parsePaymentAttemptDocument(document) : null;
+  }
 }

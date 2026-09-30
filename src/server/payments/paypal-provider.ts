@@ -8,6 +8,7 @@ export type PayPalOrderSnapshot = {
   intent: "CAPTURE";
   amountMinor: number;
   currency: "SEK";
+  customId: string | null;
   approvalUrl: string | null;
 };
 
@@ -27,14 +28,14 @@ function money(minor: number): string {
 
 function fromResponse(raw: unknown): PayPalOrderSnapshot {
   if (!raw || typeof raw !== "object") throw new Error("PayPal returned an invalid order.");
-  const order = raw as { id?: unknown; status?: unknown; intent?: unknown; links?: Array<{ rel?: unknown; href?: unknown }>; purchase_units?: Array<{ amount?: { value?: unknown; currency_code?: unknown } }> };
+  const order = raw as { id?: unknown; status?: unknown; intent?: unknown; links?: Array<{ rel?: unknown; href?: unknown }>; purchase_units?: Array<{ custom_id?: unknown; amount?: { value?: unknown; currency_code?: unknown } }> };
   const value = order.purchase_units?.[0]?.amount?.value;
   const currency = order.purchase_units?.[0]?.amount?.currency_code;
   if (typeof order.id !== "string" || !["CREATED", "PAYER_ACTION_REQUIRED", "APPROVED", "COMPLETED", "VOIDED"].includes(String(order.status)) || order.intent !== "CAPTURE" || typeof value !== "string" || currency !== "SEK") throw new Error("PayPal order did not match ATHAR payment policy.");
   const [whole, fraction = ""] = value.split(".");
   if (!/^\d+$/.test(whole) || !/^\d{0,2}$/.test(fraction)) throw new Error("PayPal returned an invalid amount.");
   const approval = order.links?.find((link) => link.rel === "approve" || link.rel === "payer-action")?.href;
-  return { id: order.id, status: order.status as PayPalOrderSnapshot["status"], intent: "CAPTURE", amountMinor: Number(whole) * 100 + Number(fraction.padEnd(2, "0")), currency: "SEK", approvalUrl: typeof approval === "string" ? approval : null };
+  return { id: order.id, status: order.status as PayPalOrderSnapshot["status"], intent: "CAPTURE", amountMinor: Number(whole) * 100 + Number(fraction.padEnd(2, "0")), currency: "SEK", customId: typeof order.purchase_units?.[0]?.custom_id === "string" ? order.purchase_units[0].custom_id : null, approvalUrl: typeof approval === "string" ? approval : null };
 }
 
 export function createPayPalGateway(clientId: string, clientSecret: string): PayPalGateway {
@@ -57,5 +58,5 @@ export function createPayPalGateway(clientId: string, clientSecret: string): Pay
 }
 
 export function paypalOrderMatchesAttempt(order: PayPalOrderSnapshot, attempt: PaymentAttemptDocument): boolean {
-  return order.intent === "CAPTURE" && order.amountMinor === attempt.amountMinor && order.currency === attempt.currency;
+  return order.intent === "CAPTURE" && order.amountMinor === attempt.amountMinor && order.currency === attempt.currency && order.customId === attempt.paymentAttemptId;
 }

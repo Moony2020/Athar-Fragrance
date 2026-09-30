@@ -209,4 +209,49 @@ export class MongoInventoryReservationStore {
       lines: document.lines.map((line) => ({ ...line })),
     } : null;
   }
+
+  /** Atomically converts one active reservation into consumed inventory. */
+  async consume(owner: CommerceOwner, reservationId: string, now = new Date()): Promise<"consumed" | "already_consumed" | "unavailable"> {
+    const client = await this.client();
+    const session = client.startSession();
+    try {
+      let result: "consumed" | "already_consumed" | "unavailable" = "unavailable";
+      await session.withTransaction(async () => {
+        const database = await this.database();
+        const reservations = database.collection<InventoryReservationDocument>(databaseCollections.inventoryReservations);
+        const reservation = await reservations.findOne({ ...ownerFilter(owner), reservationId }, { session });
+        if (!reservation) return;
+        if (reservation.status === "consumed") { result = "already_consumed"; return; }
+        if (reservation.status !== "active" || reservation.expiresAt <= now) return;
+        const products = database.collection<ProductDocument>(databaseCollections.products);
+        const resolvedLines = [] as Array<{ productSlug: string; internalVariantId: string; quantity: number }>;
+        for (const line of reservation.lines) {
+          const product = await products.findOne({ slug: line.productSlug }, { session });
+          const variant = product?.variants.find((candidate) => publicVariantId(product.slug, candidate.id) === line.variantId);
+          if (!variant) throw new Error("inventory-variant-mismatch");
+          resolvedLines.push({ productSlug: line.productSlug, internalVariantId: variant.id, quantity: line.quantity });
+        }
+        for (const line of resolvedLines) {
+          const updated = await products.updateOne(
+            { slug: line.productSlug, variants: { $elemMatch: { id: line.internalVariantId, inventoryQuantity: { $gte: line.quantity } } } },
+            { $inc: { "variants.$[variant].inventoryQuantity": -line.quantity } },
+            { arrayFilters: [{ "variant.id": line.internalVariantId, "variant.inventoryQuantity": { $gte: line.quantity } }], session },
+          );
+          if (updated.modifiedCount !== 1) throw new Error("inventory-consumption-conflict");
+        }
+        const marked = await reservations.updateOne(
+          { _id: reservation._id, status: "active", revision: reservation.revision },
+          { $set: { status: "consumed", updatedAt: now }, $inc: { revision: 1 } },
+          { session },
+        );
+        if (marked.modifiedCount !== 1) throw new Error("reservation-consumption-conflict");
+        result = "consumed";
+      });
+      return result;
+    } catch {
+      return "unavailable";
+    } finally {
+      await session.endSession();
+    }
+  }
 }

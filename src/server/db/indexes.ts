@@ -9,6 +9,7 @@ import type { UserCredentialDocument } from "@/identity/credential-documents";
 import type { CheckoutDraftDocument } from "@/checkout/draft-document";
 import type { InventoryReservationDocument } from "@/inventory/reservation-document";
 import type { PaymentAttemptDocument } from "@/payments/payment-attempt-document";
+import type { OrderDocument } from "@/orders/order-document";
 
 /**
  * Idempotent catalog indexes. Invoke from a controlled deployment/migration
@@ -78,6 +79,17 @@ export async function ensurePaymentAttemptIndexes(): Promise<void> {
     { key: { ownerType: 1, ownerId: 1, checkoutId: 1, idempotencyKey: 1 }, name: "payment_attempt_checkout_idempotency_unique", unique: true },
     { key: { ownerType: 1, ownerId: 1, checkoutId: 1, status: 1 }, name: "payment_attempt_owner_checkout_status" },
     { key: { reservationId: 1 }, name: "payment_attempt_reservation" },
+    { key: { provider: 1, providerExternalId: 1 }, name: "payment_attempt_provider_external" },
+  ]);
+}
+
+/** Order indexes are explicit deployment work, never request work. */
+export async function ensureOrderIndexes(): Promise<void> {
+  const database = await getDatabase();
+  await database.collection<OrderDocument>(databaseCollections.orders).createIndexes([
+    { key: { orderId: 1 }, name: "order_public_id_unique", unique: true },
+    { key: { paymentAttemptId: 1 }, name: "order_payment_attempt_unique", unique: true },
+    { key: { ownerType: 1, ownerId: 1, createdAt: -1 }, name: "order_owner_created" },
   ]);
 }
 

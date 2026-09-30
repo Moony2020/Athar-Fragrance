@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${displayFont.variable} ${uiFont.variable} ${logoFont.variable}`}>
+    <html lang="en" className={`${displayFont.variable} ${uiFont.variable} ${logoFont.variable}`} data-scroll-behavior="smooth">
       <body suppressHydrationWarning>{children}</body>
     </html>
   );

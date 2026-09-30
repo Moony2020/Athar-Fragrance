@@ -90,7 +90,7 @@ async function CheckoutContents() {
     <div className={styles.layout}>
       <section aria-label="Checkout information" className={styles.items}>
         {checkout.status === "ready" && checkoutDraft.status === "ready"
-          ? <><CheckoutDetailsForm draft={checkoutDraft.draft} email={checkoutDraft.email} />
+          ? <><CheckoutDetailsForm draft={checkoutDraft.draft} email={checkoutDraft.email} isLoggedIn={owner?.ownerType === "user"} />
             {shipping?.status === "available" ? <ShippingMethodForm draft={checkoutDraft.draft} methods={shipping.methods} /> : null}
             {shipping?.status === "unsupported-country" ? <p className={styles.blocked} role="status">Shipping is not available to this country yet.</p> : null}
             {shipping?.status === "currency-mismatch" ? <p className={styles.blocked} role="status">Delivery is unavailable because your bag currency cannot be matched.</p> : null}
@@ -120,7 +120,7 @@ async function CheckoutContents() {
                       ) : (
                         <div aria-label="Product media unavailable" className={styles.summaryPlaceholder} role="img">ATHAR</div>
                       )}
-                      {line.quantity > 1 ? <span className={styles.quantityBadge}>{line.quantity}</span> : null}
+                      <span className={styles.quantityBadge}>{line.quantity}</span>
                     </div>
                     <div className={styles.summaryProduct}>
                       <p>{line.brandName ?? "ATHAR"}</p>

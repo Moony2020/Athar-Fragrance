@@ -9,9 +9,9 @@ import styles from "./CheckoutDetailsForm.module.css";
 
 const initialState: CheckoutFormState = { status: "idle" };
 
-type Props = { draft: CheckoutDraftPublic; email: string };
+type Props = { draft: CheckoutDraftPublic; email: string; isLoggedIn?: boolean };
 
-export function CheckoutDetailsForm({ draft, email }: Props) {
+export function CheckoutDetailsForm({ draft, email, isLoggedIn }: Props) {
   const [state, formAction, pending] = useActionState(saveCheckoutDetailsAction, initialState);
   const router = useRouter();
   const errors = state.errors ?? {};
@@ -41,7 +41,7 @@ export function CheckoutDetailsForm({ draft, email }: Props) {
         <input name="revision" type="hidden" value={draft.revision} />
 
         <section aria-labelledby="contact-information-title" className={styles.panel}>
-          <div className={styles.stepHeading}><h2 id="contact-information-title"><span>1.</span> Contact information</h2><a href="/account/sign-in">Already have an account? <strong>Log in →</strong></a></div>
+          <div className={styles.stepHeading}><h2 id="contact-information-title"><span>1.</span> Contact information</h2>{!isLoggedIn && <a href="/account/sign-in">Already have an account? <strong>Log in →</strong></a>}</div>
           <div className={styles.field}><label htmlFor="email">Email address</label><input autoComplete="email" id="email" maxLength={320} name="email" type="email" defaultValue={draft.contact?.email ?? email} {...errorProps("email")} />{fieldError("email")}</div>
           <label className={styles.subscribe}><input type="checkbox" /> <span>Keep me updated about new arrivals and exclusive offers.</span></label>
         </section>
