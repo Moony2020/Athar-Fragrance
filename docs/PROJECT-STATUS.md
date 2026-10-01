@@ -94,8 +94,25 @@ snapshot, and the server-only Brevo adapter uses `BREVO_SENDER_EMAIL` with
 `BREVO_SENDER_NAME` (defaulting to `ATHAR`). A non-production test-mail adapter
 and protected test route verify delivery shape without sending live mail.
 
-Automatic payment-to-email wiring, durable outbox/idempotency/retry, and live
-Brevo delivery remain outside this stage and are deferred to Stage 9.4.
+Automatic payment-to-email wiring remains disabled by default and is deferred
+to the Stage 9.4 runtime flag; live Brevo delivery remains deferred.
+
+## Stage 9.4 current status (implemented locally — checkpoint pending)
+
+Stage 9.4 adds a Mongo-backed `email_deliveries` outbox with one logical
+`order_confirmation` record per Order, stable opaque delivery/idempotency
+identity, atomic lease claims, bounded retry, and explicit provider-accepted,
+delivered, retryable, permanent, and ambiguous states. Trusted payment and Order
+finalization remain independent of email dispatch; finalization only ensures a
+pending delivery record and never requires Brevo success.
+
+The Brevo transactional webhook route uses the documented Bearer-token notify
+URL authentication contract and correlates only through the opaque delivery tag
+and provider message ID. Automatic Order-to-delivery dispatch is implemented
+behind the explicit server-only `ATHAR_ORDER_EMAIL_DISPATCH_ENABLED=1` flag and
+is off by default; email failures cannot change payment truth. Live Brevo
+webhook configuration, provider acceptance, and live Order email delivery are
+not verified. Stage 9.4 remains checkpoint pending.
 
 ## Stage 7.6 current status
 

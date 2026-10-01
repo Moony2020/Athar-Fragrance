@@ -307,5 +307,28 @@ Stage 9.3.
 - Password-reset regression and dedicated `athar_stage55_test` Mongo regression:
   **VERIFIED**.
 - Live Brevo Order delivery: **NOT YET VERIFIED**.
-- Automatic payment-to-email wiring and durable outbox/idempotency/retry:
-  **NOT STARTED**; these remain Stage 9.4 scope.
+- Automatic payment-to-email wiring: **IMPLEMENTED LOCALLY BEHIND AN EXPLICIT
+  SERVER-ONLY FLAG**, disabled by default; live dispatch is not authorized.
+- Durable outbox/idempotency/retry: **VERIFIED LOCALLY**; live Brevo delivery
+  remains deferred.
+
+## Stage 9.4 email delivery verification (implemented locally — checkpoint pending)
+
+- Pure delivery identity/state-machine tests: **2/2 PASS**.
+- Dedicated `athar_stage55_test` Mongo uniqueness, concurrent creation/claim,
+  retry, provider acceptance, and webhook replay test: **1/1 PASS**.
+- Stage 9.3 email regressions: **8/8 PASS**.
+- Stage 9.1 Order snapshot regressions: **5/5 PASS**.
+- Password-reset regression with dedicated Mongo transaction: **8/8 PASS**.
+- Stage 7.5 inventory/reservation regression: **2/2 PASS**.
+- Stage 8.1 PaymentAttempt regression: **4/4 PASS**.
+- Stage 8.2 Stripe regression: **4/4 PASS**.
+- TypeScript, affected ESLint, production build, and `git diff --check`:
+  **PASS**.
+
+The Brevo webhook route follows documented Bearer-token notify URL
+authentication. Provider acceptance and local durable state are distinct from
+provider delivery; live Brevo configuration and live Order email delivery are
+**NOT YET VERIFIED**. Automatic Order-to-email dispatch is implemented behind
+the explicit `ATHAR_ORDER_EMAIL_DISPATCH_ENABLED=1` server-only flag and is off
+by default; trusted finalization remains independent of email success.

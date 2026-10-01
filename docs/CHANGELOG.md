@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-10-01 — Stage 9.4 email delivery durability implemented locally
+
+- Added Mongo-backed `email_deliveries` records with one logical Order
+  confirmation per Order, stable idempotency identity, atomic leases, bounded
+  retry, and explicit ambiguous provider-acceptance handling.
+- Added the documented Bearer-authenticated Brevo transactional webhook route
+  with opaque delivery-tag/provider-message correlation and replay-safe state
+  transitions.
+- Preserved payment independence: trusted finalization never depends on Brevo
+  success. Automatic Order-to-email dispatch is implemented behind the explicit
+  server-only `ATHAR_ORDER_EMAIL_DISPATCH_ENABLED=1` flag and is off by default.
+  Live Brevo configuration, provider acceptance, and live Order delivery remain
+  unverified; checkpoint and live-send authorization are still pending.
+
 ## 2026-10-01 — Stage 9.3 transactional Order email checkpoint
 
 - Added immutable Order confirmation email contract with HTML and plain-text

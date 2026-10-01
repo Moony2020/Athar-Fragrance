@@ -12,22 +12,40 @@ export function isBrevoConfigured(): boolean {
   return Boolean(process.env.BREVO_API_KEY?.trim() && process.env.BREVO_SENDER_EMAIL?.trim());
 }
 
-async function sendBrevoMessage(message: { to: string; subject: string; textContent: string; htmlContent: string }): Promise<void> {
+export class BrevoTemporaryError extends Error { constructor(message = "Brevo temporary delivery failure.") { super(message); this.name = "BrevoTemporaryError"; } }
+export class BrevoPermanentError extends Error { constructor(message = "Brevo permanent delivery failure.") { super(message); this.name = "BrevoPermanentError"; } }
+export class BrevoAmbiguousError extends Error { constructor(message = "Brevo acceptance is ambiguous.") { super(message); this.name = "BrevoAmbiguousError"; } }
+
+async function sendBrevoMessage(message: { to: string; subject: string; textContent: string; htmlContent: string }, context?: { deliveryId: string; idempotencyKey: string }): Promise<{ providerMessageId?: string }> {
   const apiKey = process.env.BREVO_API_KEY?.trim();
   const senderEmail = process.env.BREVO_SENDER_EMAIL?.trim();
   const senderName = process.env.BREVO_SENDER_NAME?.trim() || "ATHAR";
-  if (!apiKey || !senderEmail) throw new Error("Transactional email is not configured.");
-  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST", headers: { "content-type": "application/json", "api-key": apiKey }, signal: AbortSignal.timeout(10_000),
-    body: JSON.stringify({ sender: { name: senderName, email: senderEmail }, to: [{ email: message.to }], subject: message.subject, textContent: message.textContent, htmlContent: message.htmlContent }),
-  });
-  if (!response.ok) throw new Error("Transactional email delivery failed.");
+  if (!apiKey || !senderEmail) throw new BrevoPermanentError("Transactional email is not configured.");
+  let response: Response;
+  try {
+    response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST", headers: { "content-type": "application/json", "api-key": apiKey }, signal: AbortSignal.timeout(10_000),
+      body: JSON.stringify({ sender: { name: senderName, email: senderEmail }, to: [{ email: message.to }], subject: message.subject, textContent: message.textContent, htmlContent: message.htmlContent, ...(context ? { tags: [`athar_delivery:${context.deliveryId}`] } : {}) }),
+    });
+  } catch (error) {
+    throw new BrevoAmbiguousError(error instanceof Error ? error.message : undefined);
+  }
+  if (!response.ok) {
+    if (response.status === 429 || response.status >= 500) throw new BrevoTemporaryError();
+    throw new BrevoPermanentError();
+  }
+  const body = await response.json().catch(() => null) as { messageId?: unknown } | null;
+  return typeof body?.messageId === "string" ? { providerMessageId: body.messageId } : {};
 }
 
-export interface OrderConfirmationMailer { sendOrderConfirmation(message: RenderedOrderConfirmationEmail): Promise<void>; }
+export interface OrderConfirmationMailer {
+  sendOrderConfirmation(message: RenderedOrderConfirmationEmail, context?: { deliveryId: string; idempotencyKey: string }): Promise<{ providerMessageId?: string }>;
+}
 
 export class BrevoOrderConfirmationMailer implements OrderConfirmationMailer {
-  async sendOrderConfirmation(message: RenderedOrderConfirmationEmail): Promise<void> { await sendBrevoMessage(message); }
+  async sendOrderConfirmation(message: RenderedOrderConfirmationEmail, context?: { deliveryId: string; idempotencyKey: string }): Promise<{ providerMessageId?: string }> {
+    return sendBrevoMessage(message, context);
+  }
 }
 
 export class BrevoPasswordResetMailer implements PasswordResetMailer {

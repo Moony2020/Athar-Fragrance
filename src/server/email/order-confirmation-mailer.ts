@@ -6,3 +6,7 @@ import { isOrderConfirmationTestMailerEnabled, TestOrderConfirmationMailer } fro
 export function createOrderConfirmationMailer(): OrderConfirmationMailer {
   return isOrderConfirmationTestMailerEnabled() ? new TestOrderConfirmationMailer() : new BrevoOrderConfirmationMailer();
 }
+
+export function isOrderEmailDispatchEnabled(): boolean {
+  return process.env.ATHAR_ORDER_EMAIL_DISPATCH_ENABLED === "1";
+}

@@ -10,6 +10,7 @@ import type { CheckoutDraftDocument } from "@/checkout/draft-document";
 import type { InventoryReservationDocument } from "@/inventory/reservation-document";
 import type { PaymentAttemptDocument } from "@/payments/payment-attempt-document";
 import type { OrderDocument } from "@/orders/order-document";
+import type { EmailDelivery } from "@/server/email/email-delivery-document";
 
 /**
  * Idempotent catalog indexes. Invoke from a controlled deployment/migration
@@ -90,6 +91,17 @@ export async function ensureOrderIndexes(): Promise<void> {
     { key: { orderId: 1 }, name: "order_public_id_unique", unique: true },
     { key: { paymentAttemptId: 1 }, name: "order_payment_attempt_unique", unique: true },
     { key: { ownerType: 1, ownerId: 1, createdAt: -1 }, name: "order_owner_created" },
+  ]);
+}
+
+/** Email delivery indexes are explicit deployment work, never request work. */
+export async function ensureEmailDeliveryIndexes(): Promise<void> {
+  const database = await getDatabase();
+  await database.collection<EmailDelivery>(databaseCollections.emailDeliveries).createIndexes([
+    { key: { orderId: 1, messageType: 1 }, name: "email_delivery_order_message_unique", unique: true },
+    { key: { deliveryId: 1 }, name: "email_delivery_public_id_unique", unique: true },
+    { key: { status: 1, nextAttemptAt: 1, leaseExpiresAt: 1, createdAt: 1 }, name: "email_delivery_dispatch_claim" },
+    { key: { providerMessageId: 1 }, name: "email_delivery_provider_message" },
   ]);
 }
 

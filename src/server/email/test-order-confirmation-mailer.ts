@@ -12,16 +12,17 @@ export function isOrderConfirmationTestMailerEnabled(): boolean {
 }
 
 export class TestOrderConfirmationMailer implements OrderConfirmationMailer {
-  async sendOrderConfirmation(message: RenderedOrderConfirmationEmail): Promise<void> {
+  async sendOrderConfirmation(message: RenderedOrderConfirmationEmail): Promise<{ providerMessageId?: string }> {
     if (!isOrderConfirmationTestMailerEnabled()) throw new Error("Test mail adapter is disabled.");
     const outboxPath = process.env.ATHAR_TEST_MAIL_OUTBOX;
     if (outboxPath) {
       if (!path.isAbsolute(outboxPath)) throw new Error("Test mail outbox path must be absolute.");
       await appendFile(outboxPath, `${JSON.stringify(message)}\n`, { encoding: "utf8", mode: 0o600 });
-      return;
+      return { providerMessageId: `test:${message.orderId}` };
     }
     globalThis.atharOrderConfirmationTestMailState ??= { messages: [] };
     globalThis.atharOrderConfirmationTestMailState.messages.push({ ...message });
+    return { providerMessageId: `test:${message.orderId}` };
   }
 }
 
