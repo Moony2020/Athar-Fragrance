@@ -22,7 +22,7 @@ function binding(overrides: Partial<PaymentAttemptBinding> = {}): PaymentAttempt
     cartFingerprint: opaque(),
     totals: {
       status: "ready", currency: "SEK", merchandiseSubtotal: 59_900, discountTotal: 0, appliedDiscounts: [], shippingTotal: 5_900,
-      vatTotal: 13_160, grandTotal: 65_800, vatRatePercent: 25, vatIncluded: true,
+      shippingMethodLabel: "PostNord", vatTotal: 13_160, grandTotal: 65_800, vatRatePercent: 25, vatIncluded: true,
     },
     shippingMethodId: "postnord-service-point-se",
     ...overrides,

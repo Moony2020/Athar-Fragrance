@@ -19,7 +19,7 @@ function attempt(): PaymentAttemptDocument {
     owner: userCommerceOwner(opaque()), checkoutId: opaque(), checkoutRevision: 2,
     reservation: { reservationId: opaque(), checkoutId: opaque(), status: "active", expiresAt: new Date("2030-01-01T00:15:00.000Z") },
     cartFingerprint: opaque(), shippingMethodId: "postnord-service-point-se",
-    totals: { status: "ready", currency: "SEK", merchandiseSubtotal: 59_900, discountTotal: 0, appliedDiscounts: [], shippingTotal: 5_900, vatTotal: 13_160, grandTotal: 65_800, vatRatePercent: 25, vatIncluded: true },
+    totals: { status: "ready", currency: "SEK", merchandiseSubtotal: 59_900, discountTotal: 0, appliedDiscounts: [], shippingTotal: 5_900, shippingMethodLabel: "PostNord", vatTotal: 13_160, grandTotal: 65_800, vatRatePercent: 25, vatIncluded: true },
   };
   return createPaymentAttemptDocument(binding, new Date("2030-01-01T00:00:00.000Z"));
 }

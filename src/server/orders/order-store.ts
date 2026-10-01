@@ -33,8 +33,9 @@ export class MongoOrderStore {
     const draft = await new MongoCheckoutDraftStore(this.database).get(owner, attempt.checkoutId);
     const store = getGuestCartStore();
     if (!draft || !isMongoGuestCartStore(store) || !attempt.provider || !attempt.providerExternalId) return null;
+    if (attempt.merchandiseSubtotalMinor === undefined || attempt.shippingAmountMinor === undefined || attempt.discountAmountMinor === undefined || attempt.vatIncludedMinor === undefined || attempt.grandTotalMinor === undefined || !attempt.shippingMethodLabelSnapshot) return null;
     const resolved = await resolveCart(await store.readOwner(owner), resolvePublicCommerceProduct);
-    if (!resolved.lines.length || resolved.currency === null || resolved.subtotalMinor !== attempt.amountMinor) return null;
+    if (!resolved.lines.length || resolved.currency !== attempt.currency || resolved.subtotalMinor !== attempt.merchandiseSubtotalMinor) return null;
     const consumed = await new MongoInventoryReservationStore(this.database).consume(owner, attempt.reservationId);
     if (consumed === "unavailable") {
       const concurrent = await collection.findOne({ paymentAttemptId: attempt.paymentAttemptId, ...ownerFilter(owner) });
@@ -51,9 +52,16 @@ export class MongoOrderStore {
       ...ownerFilter(owner), provider: attempt.provider, providerExternalId: attempt.providerExternalId, status: "confirmed",
       paymentStatus: "paid", fulfillmentStatus: "pending",
       lines,
-      subtotalMinor: resolved.subtotalMinor, totalMinor: attempt.amountMinor, currency: resolved.currency,
+      subtotalMinor: attempt.merchandiseSubtotalMinor, totalMinor: attempt.grandTotalMinor, currency: attempt.currency,
+      merchandiseSubtotalMinor: attempt.merchandiseSubtotalMinor,
+      shippingAmountMinor: attempt.shippingAmountMinor,
+      discountAmountMinor: attempt.discountAmountMinor,
+      vatIncludedMinor: attempt.vatIncludedMinor,
+      grandTotalMinor: attempt.grandTotalMinor,
       ...(draft.contact ? { contact: draft.contact } : {}), ...(draft.shippingAddress ? { shippingAddress: draft.shippingAddress } : {}),
-      ...(draft.selectedShippingMethodId ? { shippingMethodId: draft.selectedShippingMethodId } : {}), createdAt: now,
+      ...(draft.selectedShippingMethodId ? { shippingMethodId: draft.selectedShippingMethodId } : {}),
+      shippingMethodLabelSnapshot: attempt.shippingMethodLabelSnapshot,
+      createdAt: now,
     };
     try { await collection.insertOne(document); } catch (error) {
       const concurrent = await collection.findOne({ paymentAttemptId: attempt.paymentAttemptId, ...ownerFilter(owner) });

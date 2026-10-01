@@ -22,7 +22,7 @@ test("Stage 7.4 derives gross totals and included 25% VAT entirely from canonica
   const totals = resolveCheckoutTotals({ checkout: checkout(59_900), draft: selectedDraft() });
   assert.deepEqual(totals, {
     status: "ready", currency: "SEK", merchandiseSubtotal: 59_900, discountTotal: 0, appliedDiscounts: [],
-    shippingTotal: 5_900, vatTotal: 13_160, grandTotal: 65_800, vatRatePercent: 25, vatIncluded: true,
+    shippingTotal: 5_900, shippingMethodLabel: "PostNord", vatTotal: 13_160, grandTotal: 65_800, vatRatePercent: 25, vatIncluded: true,
   });
 });
 

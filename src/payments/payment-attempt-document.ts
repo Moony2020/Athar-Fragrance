@@ -36,6 +36,13 @@ export type PaymentAttemptDocument = {
   amountMinor: number;
   currency: "SEK";
   shippingMethodId: string;
+  /** Immutable checkout totals captured before provider execution. Optional only for legacy records. */
+  merchandiseSubtotalMinor?: number;
+  shippingAmountMinor?: number;
+  discountAmountMinor?: number;
+  vatIncludedMinor?: number;
+  grandTotalMinor?: number;
+  shippingMethodLabelSnapshot?: string;
   idempotencyKey: string;
   providerRequestKey: string;
   provider: PaymentProvider | null;

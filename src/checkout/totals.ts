@@ -23,6 +23,7 @@ export type CheckoutTotals = {
   discountTotal: 0;
   appliedDiscounts: AppliedDiscountPublic[];
   shippingTotal: number;
+  shippingMethodLabel: string;
   vatTotal: number;
   grandTotal: number;
   vatRatePercent: 25;
@@ -101,6 +102,7 @@ export function resolveCheckoutTotals(input: {
     discountTotal,
     appliedDiscounts: [],
     shippingTotal,
+    shippingMethodLabel: selectedShipping.label,
     vatTotal: extractIncludedVatMinor(grandTotal),
     grandTotal,
     vatRatePercent: swedenCheckoutVatPolicy.ratePercent,

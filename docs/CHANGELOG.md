@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-01 — Stage 9.1 canonical Order snapshot implemented locally
+
+- Extended the existing trusted-finalization boundary with immutable financial
+  snapshot fields sourced from server-authoritative checkout totals.
+- Preserved backward-compatible reads for legacy Orders without inventing VAT,
+  shipping, or discount history. No email, guest lookup, or Order detail route
+  was added; Stage 9.1 remains checkpoint pending.
+
 ## 2026-10-01 — Trusted Payment Finalization verification complete — documentation closure
 
 - Recorded verified Stripe and PayPal Sandbox create/capture, real webhook

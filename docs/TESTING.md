@@ -274,3 +274,13 @@ The old consumed reservation was removed by the existing TTL behavior and the
 project has no durable historical consumption ledger. Current inventory tests
 prove current engine behavior; PayPal replay proves no second mutation, but
 neither retrospectively proves the first decrement for that old transaction.
+
+## Stage 9.1 Order snapshot verification (implemented locally — checkpoint pending)
+
+Stage 9.1 tests verify that new PaymentAttempts carry the complete trusted
+financial snapshot into Order finalization, including integer SEK amounts,
+server-derived VAT, shipping amount/label, explicit zero discount, and grand
+total consistency. They reject partial or tampered snapshots and preserve
+legacy Orders without fabricating missing historical values. No email is sent;
+Stage 9.2 Order detail/read-model work and all transactional email behavior
+remain deferred.

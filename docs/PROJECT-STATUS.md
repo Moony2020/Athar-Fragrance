@@ -58,6 +58,18 @@ or capture/authorize decision is implemented. Focused contract/Mongo tests,
 affected Phase 7 regression, TypeScript, ESLint, and isolated Webpack build
 passed; the production build has an explicit durable exit code of `0`.
 
+## Stage 9.1 current status (implemented locally — checkpoint pending)
+
+Stage 9.1 extends the Phase 8 Order boundary with an immutable financial
+snapshot captured from the server-authoritative checkout totals: merchandise,
+shipping amount and label, explicit zero discount, included VAT, grand total,
+currency, and shipping method. New PaymentAttempts persist this snapshot before
+provider execution so finalization does not re-derive historical amounts from
+current Cart or shipping policy. Existing legacy Orders remain readable without
+invented VAT, shipping, or discount history. Stage 9.1 adds no email delivery,
+outbox, retry, guest lookup, or independent Order detail route. Refund and
+Admin remain not started.
+
 ## Stage 7.6 current status
 
 Stage 7.6 is **COMPLETE — READY FOR CHECKPOINT**. Phase 7 has been verified as

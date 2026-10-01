@@ -21,6 +21,12 @@ export const paymentAttemptDocumentSchema = z.object({
   amountMinor: z.number().int().nonnegative().safe(),
   currency: z.literal("SEK"),
   shippingMethodId: z.string().trim().min(3).max(80).regex(/^[a-z0-9-]+$/),
+  merchandiseSubtotalMinor: z.number().int().nonnegative().safe().optional(),
+  shippingAmountMinor: z.number().int().nonnegative().safe().optional(),
+  discountAmountMinor: z.number().int().nonnegative().safe().optional(),
+  vatIncludedMinor: z.number().int().nonnegative().safe().optional(),
+  grandTotalMinor: z.number().int().nonnegative().safe().optional(),
+  shippingMethodLabelSnapshot: z.string().trim().min(1).max(120).optional(),
   idempotencyKey: fingerprint,
   providerRequestKey: opaqueId,
   provider: z.enum(["stripe", "paypal"]).nullable(),
@@ -30,6 +36,15 @@ export const paymentAttemptDocumentSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
 }).strict().superRefine((document, context) => {
+  const financialFields = [document.merchandiseSubtotalMinor, document.shippingAmountMinor, document.discountAmountMinor, document.vatIncludedMinor, document.grandTotalMinor, document.shippingMethodLabelSnapshot];
+  const present = financialFields.filter((value) => value !== undefined).length;
+  if (present !== 0 && present !== financialFields.length) context.addIssue({ code: "custom", message: "Payment attempts require a complete financial snapshot or no legacy snapshot.", path: ["grandTotalMinor"] });
+  if (present === financialFields.length) {
+    if (document.grandTotalMinor !== document.amountMinor) context.addIssue({ code: "custom", message: "Payment attempt snapshot total must equal amountMinor.", path: ["grandTotalMinor"] });
+    if (document.grandTotalMinor !== undefined && document.merchandiseSubtotalMinor !== undefined && document.shippingAmountMinor !== undefined && document.discountAmountMinor !== undefined && document.grandTotalMinor !== document.merchandiseSubtotalMinor - document.discountAmountMinor + document.shippingAmountMinor) {
+      context.addIssue({ code: "custom", message: "Payment attempt snapshot totals are inconsistent.", path: ["grandTotalMinor"] });
+    }
+  }
   if (document.provider === "stripe" && !document.providerExternalId) {
     context.addIssue({ code: "custom", message: "Stripe payment attempts require an external ID.", path: ["providerExternalId"] });
   }
