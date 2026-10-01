@@ -86,6 +86,17 @@ deferred. No production implementation was required for Stage 9.2.
 Stage 9.2: **VERIFICATION-ONLY — COMPLETE**. Stage 9.3 transactional email
 has not started.
 
+## Stage 9.3 current status (closed / checkpointed / pushed)
+
+Stage 9.3 adds the immutable Order confirmation email contract and both plain
+text and HTML renderers. The recipient is the persisted `Order.contact.email`
+snapshot, and the server-only Brevo adapter uses `BREVO_SENDER_EMAIL` with
+`BREVO_SENDER_NAME` (defaulting to `ATHAR`). A non-production test-mail adapter
+and protected test route verify delivery shape without sending live mail.
+
+Automatic payment-to-email wiring, durable outbox/idempotency/retry, and live
+Brevo delivery remain outside this stage and are deferred to Stage 9.4.
+
 ## Stage 7.6 current status
 
 Stage 7.6 is **COMPLETE — READY FOR CHECKPOINT**. Phase 7 has been verified as

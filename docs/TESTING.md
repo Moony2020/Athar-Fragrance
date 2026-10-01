@@ -297,3 +297,15 @@ lookup/claim, pagination/search, or fulfillment timeline is required at this
 stage. These capabilities are optional/deferred. Stage 9.2 is
 **VERIFICATION-ONLY — COMPLETE**; transactional email remains deferred to
 Stage 9.3.
+
+## Stage 9.3 transactional Order email verification (closed / checkpointed / pushed)
+
+- Order email contract, HTML template, and plain-text template: **VERIFIED**.
+- Persisted contact-email recipient authority and immutable Order snapshot use:
+  **VERIFIED**.
+- Brevo server boundary and non-production test-mail adapter: **VERIFIED**.
+- Password-reset regression and dedicated `athar_stage55_test` Mongo regression:
+  **VERIFIED**.
+- Live Brevo Order delivery: **NOT YET VERIFIED**.
+- Automatic payment-to-email wiring and durable outbox/idempotency/retry:
+  **NOT STARTED**; these remain Stage 9.4 scope.

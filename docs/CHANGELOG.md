@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-01 — Stage 9.3 transactional Order email checkpoint
+
+- Added immutable Order confirmation email contract with HTML and plain-text
+  renderers using the persisted contact email and Order financial snapshot.
+- Added the server-only Brevo adapter and explicitly non-production test-mail
+  path; preserved password-reset delivery behavior.
+- Deferred live Brevo delivery, payment-to-email wiring, and durable
+  outbox/idempotency/retry to Stage 9.4.
+
 ## 2026-10-01 — Stage 9.2 customer Order read verification complete
 
 - Confirmed the authenticated `/account` Order history is launch-sufficient,
