@@ -1,12 +1,24 @@
 # Changelog
 
+## 2026-10-01 — Stage 9.2 customer Order read verification complete
+
+- Confirmed the authenticated `/account` Order history is launch-sufficient,
+  owner-scoped, newest-first, and limited to the latest 20 Orders.
+- Confirmed the read path uses persisted Order snapshots, including Stage 9.1
+  financial snapshots for new Orders, while legacy Orders remain readable
+  without fabricated VAT, shipping, or discount values.
+- Deferred a dedicated Order detail route, persistent guest Order lookup/claim,
+  pagination/search, and fulfillment timeline. No production implementation was
+  required; transactional email remains Stage 9.3 scope.
+- Recorded Stage 9.2 as **VERIFICATION-ONLY — COMPLETE**.
+
 ## 2026-10-01 — Stage 9.1 canonical Order snapshot implemented locally
 
 - Extended the existing trusted-finalization boundary with immutable financial
   snapshot fields sourced from server-authoritative checkout totals.
 - Preserved backward-compatible reads for legacy Orders without inventing VAT,
   shipping, or discount history. No email, guest lookup, or Order detail route
-  was added; Stage 9.1 remains checkpoint pending.
+  was added; Stage 9.1 is now closed, checkpointed, and pushed.
 
 ## 2026-10-01 — Trusted Payment Finalization verification complete — documentation closure
 

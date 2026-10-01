@@ -58,7 +58,7 @@ or capture/authorize decision is implemented. Focused contract/Mongo tests,
 affected Phase 7 regression, TypeScript, ESLint, and isolated Webpack build
 passed; the production build has an explicit durable exit code of `0`.
 
-## Stage 9.1 current status (implemented locally — checkpoint pending)
+## Stage 9.1 current status (closed / checkpointed / pushed)
 
 Stage 9.1 extends the Phase 8 Order boundary with an immutable financial
 snapshot captured from the server-authoritative checkout totals: merchandise,
@@ -69,6 +69,22 @@ current Cart or shipping policy. Existing legacy Orders remain readable without
 invented VAT, shipping, or discount history. Stage 9.1 adds no email delivery,
 outbox, retry, guest lookup, or independent Order detail route. Refund and
 Admin remain not started.
+
+## Stage 9.2 current status (verification-only — complete)
+
+Stage 9.2 confirms that the existing authenticated `/account` Order history is
+launch-sufficient. It is owner-scoped, newest-first, and limited to the latest
+20 Orders; the read path uses persisted Order and line-item snapshots. New
+Orders expose the Stage 9.1 financial snapshot, while legacy Orders remain
+readable without fabricated VAT, shipping, or discount values.
+
+The guest confirmation boundary remains the current short-lived,
+owner-verified confirmation cookie. A dedicated Order detail route, persistent
+guest Order lookup/claim flow, pagination/search, and a fulfillment timeline are
+deferred. No production implementation was required for Stage 9.2.
+
+Stage 9.2: **VERIFICATION-ONLY — COMPLETE**. Stage 9.3 transactional email
+has not started.
 
 ## Stage 7.6 current status
 

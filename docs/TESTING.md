@@ -275,12 +275,25 @@ project has no durable historical consumption ledger. Current inventory tests
 prove current engine behavior; PayPal replay proves no second mutation, but
 neither retrospectively proves the first decrement for that old transaction.
 
-## Stage 9.1 Order snapshot verification (implemented locally — checkpoint pending)
+## Stage 9.1 Order snapshot verification (closed / checkpointed / pushed)
 
 Stage 9.1 tests verify that new PaymentAttempts carry the complete trusted
 financial snapshot into Order finalization, including integer SEK amounts,
 server-derived VAT, shipping amount/label, explicit zero discount, and grand
 total consistency. They reject partial or tampered snapshots and preserve
-legacy Orders without fabricating missing historical values. No email is sent;
-Stage 9.2 Order detail/read-model work and all transactional email behavior
-remain deferred.
+legacy Orders without fabricating missing historical values. No email is sent.
+
+## Stage 9.2 customer Order read verification (verification-only — complete)
+
+The authenticated `/account` Order history is launch-sufficient: it enforces
+owner scope, sorts newest-first, and reads at most the latest 20 Orders from
+persisted Order snapshots. New Orders include the Stage 9.1 financial snapshot;
+legacy Orders remain readable without inventing VAT, shipping, or discount
+history. The confirmation page continues to use the short-lived verified cookie
+boundary for guest and authenticated confirmation lookup.
+
+No dedicated `/account/orders/[orderId]` route, persistent guest Order
+lookup/claim, pagination/search, or fulfillment timeline is required at this
+stage. These capabilities are optional/deferred. Stage 9.2 is
+**VERIFICATION-ONLY — COMPLETE**; transactional email remains deferred to
+Stage 9.3.
