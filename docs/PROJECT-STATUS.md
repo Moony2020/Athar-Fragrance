@@ -1,8 +1,8 @@
 # ATHAR Project Status
 
-**Last audited:** 2026-10-01
-**Current phase:** Phase 8 — Payments
-**Overall status:** **TRUSTED PAYMENT FINALIZATION VERIFIED — CHECKPOINT PENDING.** Stripe and PayPal Sandbox payment/webhook/replay evidence is closed operationally; the historical first PayPal inventory decrement remains explicitly unverified.
+**Last audited:** 2026-10-03
+**Current phase:** Phase 9 — Canonical Orders and Transactional Email
+**Overall status:** **STAGE 9.4 CLOSED / VERIFIED.** Trusted payment finalization and the live customer Order Confirmation delivery pipeline are verified; the historical first PayPal inventory decrement remains explicitly unverified.
 
 ## Trusted Payment Finalization closure (2026-10-01)
 
@@ -83,8 +83,8 @@ owner-verified confirmation cookie. A dedicated Order detail route, persistent
 guest Order lookup/claim flow, pagination/search, and a fulfillment timeline are
 deferred. No production implementation was required for Stage 9.2.
 
-Stage 9.2: **VERIFICATION-ONLY — COMPLETE**. Stage 9.3 transactional email
-has not started.
+Stage 9.2: **VERIFICATION-ONLY — COMPLETE**. Stages 9.3 and 9.4 are closed;
+premium template refinement remains deferred.
 
 ## Stage 9.3 current status (closed / checkpointed / pushed)
 
@@ -94,10 +94,10 @@ snapshot, and the server-only Brevo adapter uses `BREVO_SENDER_EMAIL` with
 `BREVO_SENDER_NAME` (defaulting to `ATHAR`). A non-production test-mail adapter
 and protected test route verify delivery shape without sending live mail.
 
-Automatic payment-to-email wiring remains disabled by default and is deferred
-to the Stage 9.4 runtime flag; live Brevo delivery remains deferred.
+Automatic payment-to-email wiring is implemented behind the Stage 9.4 runtime
+flag; live delivery is verified separately below.
 
-## Stage 9.4 current status (implemented locally — checkpoint pending)
+## Stage 9.4 current status (closed / verified)
 
 Stage 9.4 adds a Mongo-backed `email_deliveries` outbox with one logical
 `order_confirmation` record per Order, stable opaque delivery/idempotency
@@ -109,10 +109,32 @@ pending delivery record and never requires Brevo success.
 The Brevo transactional webhook route uses the documented Bearer-token notify
 URL authentication contract and correlates only through the opaque delivery tag
 and provider message ID. Automatic Order-to-delivery dispatch is implemented
-behind the explicit server-only `ATHAR_ORDER_EMAIL_DISPATCH_ENABLED=1` flag and
-is off by default; email failures cannot change payment truth. Live Brevo
-webhook configuration, provider acceptance, and live Order email delivery are
-not verified. Stage 9.4 remains checkpoint pending.
+behind the explicit server-only `ATHAR_ORDER_EMAIL_DISPATCH_ENABLED=1` flag;
+the flag was returned to `0` after the controlled live test and Render was
+redeployed successfully. Email failures cannot change payment truth.
+
+Controlled live E2E evidence for Order `ATH-B277923ECA1B`:
+
+- Stripe Sandbox payment, canonical Order creation, `paymentStatus = paid`,
+  and `fulfillmentStatus = pending`: **VERIFIED**.
+- Exactly one `order_confirmation` delivery record, `provider = brevo`,
+  `attemptCount = 1`, provider message ID present, and Mongo status
+  transitioned to `delivered`: **VERIFIED**.
+- Brevo Sent, Delivered, customer inbox receipt, and observed first opening:
+  **VERIFIED/OBSERVED**.
+- Brevo webhook delivery to ATHAR: **VERIFIED**; no duplicate email attempt
+  was observed.
+
+Earlier diagnostic Order `ATH-302D0E518312` created its pending delivery record
+with `attemptCount = 0` because the dispatch flag was `0` during that checkout;
+this was expected safety-flag behavior, not a payment or Brevo defect.
+
+Customer confirmation recipient authority remains the persisted
+`Order.contact.email` snapshot. Admin Order notification email is not
+implemented. The current functional template is intentionally unchanged;
+premium branding/layout refinement is deferred to a later stage.
+
+Stage 9.4: **CLOSED / VERIFIED**.
 
 ## Stage 7.6 current status
 

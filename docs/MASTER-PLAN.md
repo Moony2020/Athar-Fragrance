@@ -21,7 +21,7 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | 6 | Authentication and customer account | Phase 6 complete locally |
 | 7 | Checkout foundation | Stages 7.1–7.5 closed + pushed; Stage 7.6 complete — ready for Phase closure checkpoint |
 | 8 | Stripe cards, direct PayPal, webhooks | Trusted payment finalization verified; checkpoint pending; historical PayPal first-decrement evidence remains limited |
-| 9 | Canonical orders and transactional email | Stage 9.1 closed + pushed; Stage 9.2 verification-only complete; Stage 9.3 closed + pushed; Stage 9.4 implemented locally — checkpoint pending |
+| 9 | Canonical orders and transactional email | Stages 9.1–9.3 closed + pushed; Stage 9.4 closed / verified; premium email refinement deferred |
 | 10 | Admin platform | Planned |
 | 11 | Content, journal, legal, customer experience | Planned |
 | 12 | Security, performance, accessibility, SEO | Planned |

@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-10-03 — Stage 9.4 live Order email closure
+
+- Verified the controlled Stripe Sandbox Order Confirmation E2E path from
+  canonical Order creation through the Mongo `email_deliveries` record, Brevo
+  submission, Delivered webhook, and customer inbox receipt.
+- Verified one delivery attempt (`attemptCount = 1`), provider message ID
+  correlation, Mongo `delivered` state, and no observed duplicate email attempt.
+- Documented the earlier `ATH-302D0E518312` diagnostic: delivery creation was
+  correct, while dispatch was intentionally skipped because
+  `ATHAR_ORDER_EMAIL_DISPATCH_ENABLED=0` during that checkout.
+- Returned `ATHAR_ORDER_EMAIL_DISPATCH_ENABLED` to `0` and verified the Render
+  deployment is Live. Admin notifications and premium template redesign remain
+  deferred; the historical PayPal first-decrement evidence limitation remains
+  unchanged.
+
 ## 2026-10-01 — Stage 9.4 email delivery durability implemented locally
 
 - Added Mongo-backed `email_deliveries` records with one logical Order

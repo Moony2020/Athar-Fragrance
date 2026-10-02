@@ -306,13 +306,13 @@ Stage 9.3.
 - Brevo server boundary and non-production test-mail adapter: **VERIFIED**.
 - Password-reset regression and dedicated `athar_stage55_test` Mongo regression:
   **VERIFIED**.
-- Live Brevo Order delivery: **NOT YET VERIFIED**.
-- Automatic payment-to-email wiring: **IMPLEMENTED LOCALLY BEHIND AN EXPLICIT
-  SERVER-ONLY FLAG**, disabled by default; live dispatch is not authorized.
-- Durable outbox/idempotency/retry: **VERIFIED LOCALLY**; live Brevo delivery
-  remains deferred.
+- Live Brevo Order delivery: verified in Stage 9.4 below.
+- Automatic payment-to-email wiring: implemented behind an explicit server-only
+  flag and verified through the controlled Stage 9.4 E2E test.
+- Durable outbox/idempotency/retry: **VERIFIED LOCALLY** and closed in Stage
+  9.4.
 
-## Stage 9.4 email delivery verification (implemented locally — checkpoint pending)
+## Stage 9.4 email delivery verification (closed / verified)
 
 - Pure delivery identity/state-machine tests: **2/2 PASS**.
 - Dedicated `athar_stage55_test` Mongo uniqueness, concurrent creation/claim,
@@ -327,8 +327,25 @@ Stage 9.3.
   **PASS**.
 
 The Brevo webhook route follows documented Bearer-token notify URL
-authentication. Provider acceptance and local durable state are distinct from
-provider delivery; live Brevo configuration and live Order email delivery are
-**NOT YET VERIFIED**. Automatic Order-to-email dispatch is implemented behind
-the explicit `ATHAR_ORDER_EMAIL_DISPATCH_ENABLED=1` server-only flag and is off
-by default; trusted finalization remains independent of email success.
+authentication. The controlled live E2E test for Order `ATH-B277923ECA1B`
+passed: one `order_confirmation` delivery record, `attemptCount = 1`, Brevo
+provider message ID present, Brevo Sent and Delivered, customer inbox receipt,
+observed first opening, and Mongo transition to `delivered`. No duplicate email
+attempt was observed. The live Brevo webhook was accepted by ATHAR with zero
+failed deliveries and zero retries in the configured preflight.
+
+The earlier Order `ATH-302D0E518312` reached delivery-record creation but stayed
+`pending` with `attemptCount = 0`; the dispatch flag was `0` during that
+checkout. This is expected safety-flag behavior, not a payment or Brevo defect.
+After the controlled test, `ATHAR_ORDER_EMAIL_DISPATCH_ENABLED` was returned to
+`0` and Render reported Deploy succeeded / Live. Stage 9.4 is **CLOSED /
+VERIFIED**.
+
+Customer confirmation uses the persisted `Order.contact.email` snapshot. Admin
+Order notification email is not implemented, and premium template redesign is
+deferred. The historical PayPal limitation remains unchanged:
+
+```text
+Original PayPal inventory decrement exactly once:
+UNVERIFIED historically
+```
