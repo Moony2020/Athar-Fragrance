@@ -20,7 +20,7 @@ export function CustomerOrderDetails({ order }: { order: CustomerOrderReadModel 
     </header>
     <section aria-labelledby="order-items-heading"><h2 id="order-items-heading">Order items</h2>
       <ul className={styles.lines}>{order.lines.map((line) => <li key={`${line.productSlug}:${line.variantId}`}>
-        {line.imageSnapshot ? <div className={styles.lineImage}><Image alt={line.imageSnapshot.alt} height={96} sizes="(max-width: 520px) 5.5rem, 6rem" src={line.imageSnapshot.src} width={96} /></div> : null}
+        {line.imageSnapshot ? <div className={styles.lineImage}><Image alt={line.imageSnapshot.alt} height={104} sizes="(max-width: 520px) 5.5rem, 6rem" src={line.imageSnapshot.src} width={96} /></div> : null}
         <div className={styles.lineInformation}><strong>{line.productName}</strong><span>{[line.brandName, line.fragranceType, line.sizeMl ? `${line.sizeMl} ml` : null].filter(Boolean).join(" · ")}</span></div>
         <div className={styles.lineNumbers}><span>Qty {line.quantity}</span><strong>{formatMoneyMinor(line.subtotalMinor, line.currency)}</strong></div>
       </li>)}</ul>
