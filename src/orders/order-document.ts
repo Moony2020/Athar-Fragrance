@@ -12,6 +12,8 @@ export type OrderLineSnapshot = {
   currency: string;
   productName: string;
   brandName: string;
+  /** Product concentration captured at trusted finalization, e.g. Eau de Parfum. */
+  fragranceType?: string | null;
   sizeMl: number | null;
   mediaSrc: string | null;
   /** Optional for legacy Orders created before the immutable product-image snapshot. */

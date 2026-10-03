@@ -32,13 +32,15 @@ test("Stage 9.5 preserves legacy Orders without inventing a financial breakdown"
 
 test("Stage 9.5 exposes only a persisted product-image snapshot and preserves legacy lines without one", () => {
   const imageSnapshot = { src: "/images/catalog/cedar-study-v1.webp", alt: "BOSS Bottled front view" };
-  const withImage = toCustomerOrderReadModel(order({ lines: [{ ...order().lines[0], mediaSrc: "/not-exposed-to-customer-details.webp", imageSnapshot }] }));
+  const withImage = toCustomerOrderReadModel(order({ lines: [{ ...order().lines[0], mediaSrc: "/not-exposed-to-customer-details.webp", fragranceType: "Eau de Toilette", imageSnapshot }] }));
   assert.deepEqual(withImage.lines[0]?.imageSnapshot, imageSnapshot);
   assert.deepEqual(Object.keys(withImage.lines[0]?.imageSnapshot ?? {}).sort(), ["alt", "src"]);
   assert.equal("mediaSrc" in (withImage.lines[0] ?? {}), false);
+  assert.equal(withImage.lines[0]?.fragranceType, "Eau de Toilette");
 
   const legacy = toCustomerOrderReadModel(order({ lines: [{ ...order().lines[0], mediaSrc: null }] }));
   assert.equal(legacy.lines[0]?.imageSnapshot, undefined);
+  assert.equal(legacy.lines[0]?.fragranceType, undefined);
 });
 
 test("Stage 9.5 finalization derives product imagery from canonical server data, never browser input", () => {
@@ -49,11 +51,13 @@ test("Stage 9.5 finalization derives product imagery from canonical server data,
   };
   const canonicalProduct = {
     slug: "cedar-study", name: "BOSS Bottled", brand: { slug: "hugo-boss", name: "HUGO BOSS" },
+    fragranceType: "Eau de Toilette",
     variants: [{ id: "variant-75", sizeMl: 75, priceMinor: 149900, compareAtPriceMinor: null, availability: "available" as const }],
     media: [{ url: "https://fixtures.athar.test/catalog/cedar-study-front.jpg", alt: "BOSS Bottled front view", position: 0 }],
   };
   const snapshot = toOrderLineSnapshot(line, canonicalProduct);
   assert.deepEqual(snapshot.imageSnapshot, { src: "/images/catalog/cedar-study-v1.webp", alt: "BOSS Bottled front view" });
+  assert.equal(snapshot.fragranceType, "Eau de Toilette");
   assert.equal(snapshot.mediaSrc, "/images/catalog/cedar-study-v1.webp");
   assert.notEqual(snapshot.imageSnapshot?.src, line.imageSnapshot.src);
 });

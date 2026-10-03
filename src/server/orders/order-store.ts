@@ -22,7 +22,7 @@ import type { CatalogProductDetail } from "@/server/catalog/read-model";
 function ownerFilter(owner: CommerceOwner) { return { ownerType: owner.ownerType, ownerId: owner.ownerId }; }
 function orderId() { return `ATH-${randomBytes(6).toString("hex").toUpperCase()}`; }
 
-type SnapshotProduct = Pick<CatalogProductDetail, "slug" | "name" | "brand" | "variants" | "media">;
+type SnapshotProduct = Pick<CatalogProductDetail, "slug" | "name" | "brand" | "fragranceType" | "variants" | "media">;
 
 /** Builds a historical line from trusted server-side Cart and catalog data only. */
 export function toOrderLineSnapshot(line: ResolvedCartLine, product: SnapshotProduct | null) {
@@ -31,6 +31,7 @@ export function toOrderLineSnapshot(line: ResolvedCartLine, product: SnapshotPro
     ...line,
     productName: product?.name ?? line.productSlug,
     brandName: product?.brand.name ?? "ATHAR",
+    fragranceType: product?.fragranceType ?? null,
     sizeMl: product?.variants.find((variant) => variant.id === line.variantId)?.sizeMl ?? null,
     mediaSrc: imageSnapshot?.src ?? null,
     ...(imageSnapshot ? { imageSnapshot } : {}),

@@ -3,10 +3,10 @@ import { test, expect } from "@playwright/test";
 import { getConfirmationActions } from "../src/app/checkout/confirmation/confirmation-actions";
 
 test.describe("checkout confirmation actions", () => {
-  test("guest success uses sign in instead of account history", () => {
+  test("guest success provides the secure order lookup action", () => {
     expect(getConfirmationActions(false, true)).toEqual([
       { href: "/", label: "Continue shopping", kind: "primary" },
-      { href: "/account/sign-in", label: "Sign in", kind: "secondary" },
+      { href: "/orders/lookup", label: "View order details", kind: "secondary" },
     ]);
   });
 

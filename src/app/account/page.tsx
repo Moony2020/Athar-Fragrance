@@ -96,7 +96,7 @@ export default async function AccountPage() {
                           </Link>
                           <div className={styles.orderProduct}>
                             <Link className={styles.orderProductLink} href={`/products/${line.productSlug}`}>{line.productName}</Link>
-                            <small>{[line.brandName, line.sizeMl ? `${line.sizeMl} ml` : "Fragrance"].filter(Boolean).join(" · ")}</small>
+                            <small>{[line.brandName, line.fragranceType, line.sizeMl ? `${line.sizeMl} ml` : "Fragrance"].filter(Boolean).join(" · ")}</small>
                           </div>
                           <strong className={styles.orderLinePrice}>{formatMoneyMinor(line.subtotalMinor, line.currency)}</strong>
                         </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 
 import { CatalogShell } from "@/components/catalog/CatalogShell/CatalogShell";
 import { Container } from "@/components/ui/Container/Container";
@@ -14,6 +15,7 @@ import { getConfirmationActions } from "./confirmation-actions";
 export const instant = false;
 
 export default async function CheckoutConfirmationPage({ searchParams }: { searchParams: Promise<{ provider?: string; state?: string }> }) {
+  await connection();
   const { provider, state } = await searchParams;
   const successful = state === "success" && (provider === "stripe" || provider === "paypal");
   const session = await auth();
@@ -29,7 +31,7 @@ export default async function CheckoutConfirmationPage({ searchParams }: { searc
       <p className={styles.lede}>{successful ? "Your payment has been verified securely with the provider." : "No payment has been confirmed. Return to checkout to review your payment method."}</p>
       {successful ? <div className={styles.provider}><span>Paid securely with</span><strong>{provider === "paypal" ? "PayPal" : "Stripe"}</strong><span className={styles.dot} aria-hidden="true" /></div> : null}
       {successful && order ? <p className={styles.orderReference}>Order number: {order.orderId}</p> : null}
-      {successful && !session?.user?.id ? <p className={styles.guestNote}>Keep your order number for your records.</p> : null}
+      {successful && !session?.user?.id ? <p className={styles.guestNote}>Use your order number and checkout email to view your order details.</p> : null}
       <div className={styles.actions}>{actions.map((action) => <Link className={action.kind === "primary" ? styles.primary : styles.secondary} href={action.href} key={action.label}>{action.label}</Link>)}</div>
     </section>
   </main></Container></CatalogShell>;

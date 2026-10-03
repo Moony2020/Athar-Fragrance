@@ -12,6 +12,7 @@ export type CustomerOrderReadModel = {
     variantId: string;
     productName: string;
     brandName: string;
+    fragranceType?: string | null;
     sizeMl: number | null;
     imageSnapshot?: { src: string; alt: string };
     quantity: number;
@@ -47,7 +48,9 @@ export function toCustomerOrderReadModel(order: OrderDocument): CustomerOrderRea
     fulfillmentStatus: order.fulfillmentStatus,
     lines: order.lines.map((line) => ({
       productSlug: line.productSlug, variantId: line.variantId, productName: line.productName,
-      brandName: line.brandName, sizeMl: line.sizeMl,
+      brandName: line.brandName,
+      ...(line.fragranceType !== undefined ? { fragranceType: line.fragranceType } : {}),
+      sizeMl: line.sizeMl,
       ...(line.imageSnapshot ? { imageSnapshot: { src: line.imageSnapshot.src, alt: line.imageSnapshot.alt } } : {}),
       quantity: line.quantity, priceMinor: line.priceMinor, subtotalMinor: line.subtotalMinor, currency: line.currency,
     })),

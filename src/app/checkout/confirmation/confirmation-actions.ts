@@ -8,6 +8,6 @@ export function getConfirmationActions(authenticated: boolean, successful: boole
   if (!successful) return [{ href: "/checkout", label: "Return to checkout", kind: "primary" }];
   return [
     { href: "/", label: "Continue shopping", kind: "primary" },
-    authenticated ? { href: "/account", label: "View your account", kind: "secondary" } : { href: "/account/sign-in", label: "Sign in", kind: "secondary" },
+    authenticated ? { href: "/account", label: "View your account", kind: "secondary" } : { href: "/orders/lookup", label: "View order details", kind: "secondary" },
   ];
 }
