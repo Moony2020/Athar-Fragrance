@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { formatMoneyMinor } from "@/lib/money";
 import type { CustomerOrderReadModel } from "@/orders/customer-order-read-model";
+import { customerOrderStatusRows } from "./customer-order-presentation";
 import styles from "./CustomerOrderDetails.module.css";
 
 export function CustomerOrderDetails({ order }: { order: CustomerOrderReadModel }) {
@@ -10,14 +11,16 @@ export function CustomerOrderDetails({ order }: { order: CustomerOrderReadModel 
     <header className={styles.header}>
       <p className={styles.kicker}>ORDER DETAILS</p>
       <h1>{order.orderId}</h1>
-      <p className={styles.muted}>Placed {order.createdAt.toLocaleDateString("en-SE")}</p>
-      <dl className={styles.statuses}>
-        <div><dt>Payment</dt><dd>{order.paymentStatus}</dd></div><div><dt>Order status</dt><dd>Preparing your order</dd></div>
-      </dl>
+      <div className={styles.orderMeta}>
+        <p className={styles.muted}>Placed {order.createdAt.toLocaleDateString("en-SE")}</p>
+        <dl className={styles.statuses}>
+          {customerOrderStatusRows.map((status) => <div key={status.label}><dt>{status.label}:</dt><dd>{status.value}</dd></div>)}
+        </dl>
+      </div>
     </header>
     <section aria-labelledby="order-items-heading"><h2 id="order-items-heading">Order items</h2>
       <ul className={styles.lines}>{order.lines.map((line) => <li key={`${line.productSlug}:${line.variantId}`}>
-        {line.imageSnapshot ? <div className={styles.lineImage}><Image alt={line.imageSnapshot.alt} height={112} sizes="5rem" src={line.imageSnapshot.src} width={90} /></div> : null}
+        {line.imageSnapshot ? <div className={styles.lineImage}><Image alt={line.imageSnapshot.alt} height={96} sizes="(max-width: 520px) 5.5rem, 6rem" src={line.imageSnapshot.src} width={96} /></div> : null}
         <div className={styles.lineInformation}><strong>{line.productName}</strong><span>{[line.brandName, line.fragranceType, line.sizeMl ? `${line.sizeMl} ml` : null].filter(Boolean).join(" · ")}</span></div>
         <div className={styles.lineNumbers}><span>Qty {line.quantity}</span><strong>{formatMoneyMinor(line.subtotalMinor, line.currency)}</strong></div>
       </li>)}</ul>
