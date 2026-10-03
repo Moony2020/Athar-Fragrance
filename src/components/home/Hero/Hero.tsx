@@ -2,16 +2,18 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button/Button";
 import { Container } from "@/components/ui/Container/Container";
 import { HeroNotes } from "./HeroNotes";
+import { HeroMediaGate } from "./HeroMediaGate";
 import styles from "./Hero.module.css";
 
 export function Hero() {
-  return (
+  return <HeroMediaGate>
     <section className={styles.root} aria-labelledby="hero-title">
       <Image
         alt=""
         className={styles.background}
         fill
         priority
+        data-hero-required
         sizes="100vw"
         src="/images/hero/hero-Athar.png"
       />
@@ -35,6 +37,7 @@ export function Hero() {
             className={styles.bottle}
             height={1415}
             priority
+            data-hero-required
             sizes="(max-width: 47.99rem) 82vw, (max-width: 75rem) 48vw, 38vw"
             src="/images/hero/atharperfume-img.png"
             width={1202}
@@ -46,5 +49,5 @@ export function Hero() {
         <HeroNotes />
       </Container>
     </section>
-  );
+  </HeroMediaGate>;
 }

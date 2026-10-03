@@ -1,0 +1,5 @@
+.gate { position: relative; }
+.pending { opacity: 0; pointer-events: none; }
+.ready { animation: heroMediaReveal 260ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .ready { animation: none; } }
+@keyframes heroMediaReveal { from { opacity: 0; } to { opacity: 1; } }

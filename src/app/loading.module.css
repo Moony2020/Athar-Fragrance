@@ -11,6 +11,7 @@
   padding: 2rem;
   z-index: 9999;
 }
+.overlay { inset: 0; min-height: 100%; position: absolute; }
 
 /* Ambient luxury background glow */
 .ambientGlow {
@@ -140,6 +141,18 @@
   letter-spacing: 0.08em;
   font-style: italic;
   animation: textFade 2s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambientGlow,
+  .ringOne,
+  .ringTwo,
+  .iconCircle,
+  .brandTitle,
+  .loadingBar,
+  .statusText {
+    animation: none;
+  }
 }
 
 @keyframes glowPulse {
