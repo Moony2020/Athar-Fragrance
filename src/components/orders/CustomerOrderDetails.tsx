@@ -21,7 +21,11 @@ export function CustomerOrderDetails({ order }: { order: CustomerOrderReadModel 
     <section aria-labelledby="order-items-heading"><h2 id="order-items-heading">Order items</h2>
       <ul className={styles.lines}>{order.lines.map((line) => <li key={`${line.productSlug}:${line.variantId}`}>
         {line.imageSnapshot ? <div className={styles.lineImage}><Image alt={line.imageSnapshot.alt} height={104} sizes="(max-width: 520px) 5.5rem, 6rem" src={line.imageSnapshot.src} width={96} /></div> : null}
-        <div className={styles.lineInformation}><strong>{line.productName}</strong><span>{[line.brandName, line.fragranceType, line.sizeMl ? `${line.sizeMl} ml` : null].filter(Boolean).join(" · ")}</span></div>
+        <div className={styles.lineInformation}>
+          <span className={styles.lineBrand}>{line.brandName}</span>
+          <strong className={styles.lineProductName}>{line.productName}</strong>
+          <span className={styles.lineSpecs}>{[line.fragranceType, line.sizeMl ? `${line.sizeMl} ml` : null].filter(Boolean).join(" · ")}</span>
+        </div>
         <div className={styles.lineNumbers}><span>Qty {line.quantity}</span><strong>{formatMoneyMinor(line.subtotalMinor, line.currency)}</strong></div>
       </li>)}</ul>
     </section>
@@ -31,8 +35,8 @@ export function CustomerOrderDetails({ order }: { order: CustomerOrderReadModel 
         <div><dt>Shipping{financial.shippingMethodLabelSnapshot ? ` (${financial.shippingMethodLabelSnapshot})` : ""}</dt><dd>{formatMoneyMinor(financial.shippingAmountMinor, order.totals.currency)}</dd></div>
         {financial.discountAmountMinor > 0 ? <div><dt>Discount</dt><dd>-{formatMoneyMinor(financial.discountAmountMinor, order.totals.currency)}</dd></div> : null}
         <div><dt>VAT included</dt><dd>{formatMoneyMinor(financial.vatIncludedMinor, order.totals.currency)}</dd></div>
-        <div className={styles.total}><dt>Total</dt><dd>{formatMoneyMinor(financial.grandTotalMinor, order.totals.currency)}</dd></div>
-      </dl> : <dl><div className={styles.total}><dt>Total</dt><dd>{formatMoneyMinor(order.totals.totalMinor, order.totals.currency)}</dd></div></dl>}
+        <div className={styles.total}><dt>TOTAL</dt><dd>{formatMoneyMinor(financial.grandTotalMinor, order.totals.currency)}</dd></div>
+      </dl> : <dl><div className={styles.total}><dt>TOTAL</dt><dd>{formatMoneyMinor(order.totals.totalMinor, order.totals.currency)}</dd></div></dl>}
     </section>
     {order.shippingAddress ? <section aria-labelledby="delivery-address-heading" className={styles.address}><h2 id="delivery-address-heading">Delivery address</h2>
       <address>{order.shippingAddress.firstName} {order.shippingAddress.lastName}<br />{order.shippingAddress.addressLine1}{order.shippingAddress.addressLine2 ? `, ${order.shippingAddress.addressLine2}` : null}<br />{order.shippingAddress.postalCode} {order.shippingAddress.city}<br />{order.shippingAddress.countryCode}</address>
