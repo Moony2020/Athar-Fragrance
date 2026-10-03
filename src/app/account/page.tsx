@@ -111,6 +111,7 @@ export default async function AccountPage() {
                       <small>{order.lines.length > 1 ? `${order.lines.length} items · ` : ""}Delivery · PostNord · {order.provider === "paypal" ? "PayPal" : "Stripe"}</small>
                       <span className={styles.orderTotal}><b>Total</b><strong>{formatMoneyMinor(order.totalMinor, order.currency)}</strong></span>
                     </div>
+                    <Link className={styles.orderDetailLink} href={`/account/orders/${order.orderId}`}>View order details</Link>
                   </article>
                 ))}
               </div>

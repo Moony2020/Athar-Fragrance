@@ -21,11 +21,37 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | 6 | Authentication and customer account | Phase 6 complete locally |
 | 7 | Checkout foundation | Stages 7.1–7.5 closed + pushed; Stage 7.6 complete — ready for Phase closure checkpoint |
 | 8 | Stripe cards, direct PayPal, webhooks | Trusted payment finalization verified; checkpoint pending; historical PayPal first-decrement evidence remains limited |
-| 9 | Canonical orders and transactional email | Stages 9.1–9.3 closed + pushed; Stage 9.4 closed / verified; premium email refinement deferred |
+| 9 | Canonical orders and transactional email | Stages 9.1–9.4 closed / verified; Stage 9.5 Secure Order Access in progress; premium email refinement deferred |
 | 10 | Admin platform | Planned |
 | 11 | Content, journal, legal, customer experience | Planned |
 | 12 | Security, performance, accessibility, SEO | Planned |
 | 13 | Production readiness | Planned |
+
+### Phase 9 stage map
+
+| Stage | Scope | Status |
+| --- | --- | --- |
+| 9.1 | Canonical Order financial snapshot | Closed / checkpointed / pushed |
+| 9.2 | Customer Order read verification | Verification-only — complete |
+| 9.3 | Transactional Order confirmation email | Closed / checkpointed / pushed |
+| 9.4 | Durable Order email delivery | Closed / verified |
+| 9.5 | Secure Order Access | In progress — owner review required before checkpoint |
+
+#### Stage 9.5 fixed boundary
+
+- Authenticated customers can read only their own persisted Order snapshots at
+  `/account/orders/[orderId]`; a public Order number is never authorization.
+- Guest lookup uses Order number plus checkout email, then creates a fixed
+  30-minute, one-Order, HttpOnly session. The raw session secret is never
+  persisted; Mongo retains only its hash.
+- Guest lookup applies Mongo-backed, shared fixed-window limits before Order
+  lookup: pair 5/15 minutes, Order number 10/15 minutes, and normalized email
+  10/15 minutes. Every submitted lookup counts, including success. Identifiers
+  use server-only `ORDER_LOOKUP_HMAC_SECRET` HMACs; raw email, Order number,
+  and IP are never stored in rate-limit records.
+- Rate-limiter failure is fail-closed. IP/network limiting, Redis/KV, Order
+  ownership claims, premium email changes, invoice PDF, and carrier tracking
+  remain out of scope.
 
 ### Phase 6 stage map
 

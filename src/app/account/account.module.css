@@ -328,6 +328,8 @@
 .orderMeta > small { display: block; }
 .orderTotal { align-items: baseline; display: flex; gap: .55rem; justify-content: flex-end; }
 .orderTotal b,.orderTotal strong { color: var(--color-text); font-size: .82rem; }
+.orderDetailLink { color: var(--color-text); font-size: .78rem; font-weight: 700; text-decoration: underline; text-underline-offset: .2em; width: fit-content; }
+.orderDetailLink:hover { color: var(--color-accent); }
 .orderImage { aspect-ratio: 1; background: #f0eae1; overflow: hidden; position: relative; width: 3.5rem; border-radius: .2rem; }
 .orderImageLink { display: block; flex: 0 0 3.5rem; text-decoration: none; position: relative; }
 .imageBadge { position: absolute; top: -0.45rem; right: -0.45rem; background: var(--color-accent, #8d743d); color: #ffffff; font-family: var(--font-ui); font-size: 0.6875rem; font-weight: 700; min-width: 1.35rem; height: 1.35rem; border-radius: 999px; display: flex; align-items: center; justify-content: center; padding: 0 0.3rem; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); z-index: 10; border: 1.5px solid #ffffff; }

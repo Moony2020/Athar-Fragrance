@@ -15,6 +15,8 @@ export const databaseCollections = {
   passwordResetTokens: "password_reset_tokens",
   commerceMerges: "commerce_merges",
   emailDeliveries: "email_deliveries",
+  guestOrderAccessSessions: "guest_order_access_sessions",
+  orderLookupRateLimits: "order_lookup_rate_limits",
 } as const;
 
 export type DatabaseCollectionName = (typeof databaseCollections)[keyof typeof databaseCollections];

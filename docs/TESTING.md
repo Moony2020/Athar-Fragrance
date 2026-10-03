@@ -345,6 +345,21 @@ Customer confirmation uses the persisted `Order.contact.email` snapshot. Admin
 Order notification email is not implemented, and premium template redesign is
 deferred. The historical PayPal limitation remains unchanged:
 
+## Stage 9.5 Secure Order Access verification (in progress — owner review pending)
+
+- Focused tests: **5/5 PASS** for customer-safe persisted Order DTOs, legacy Order reads,
+  generic guest failures, fixed-window/HMAC primitives, authenticated owner
+  scope, and one-Order guest-session behavior.
+- Dedicated `athar_stage55_test` Mongo test: **1/1 PASS** for explicit session/rate-limit indexes,
+  concurrent shared counting, five-attempt pair enforcement, fixed-window
+  rollover, hash-only session persistence, and fixed 30-minute expiry. It runs
+  only when the resolved database is exactly `athar_stage55_test`.
+- Stage 9.1/9.3/9.4 affected regression bundle: **15/15 PASS**; with the
+  focused Stage 9.5 suite, **20/20 PASS**. TypeScript, affected ESLint,
+  production build, and `git diff --check`: **PASS**.
+- No live payment, email, dispatch, provider, or production Mongo verification
+  is part of Stage 9.5. Checkpoint/closure remain subject to owner review.
+
 ```text
 Original PayPal inventory decrement exactly once:
 UNVERIFIED historically

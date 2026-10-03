@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-10-03 — Stage 9.5 Secure Order Access implemented locally
+
+- Added owner-authorized authenticated Order detail, guest Order-number plus
+  checkout-email lookup, one-Order fixed 30-minute hash-only access sessions,
+  customer-safe persisted Order DTOs, and Mongo-backed HMAC rate limiting.
+- Guest lookup uses fixed 15-minute shared limits: pair 5, Order 10, and email
+  10. It fails closed and returns one generic unavailable response without
+  storing raw email, Order number, or IP in rate-limit records.
+- Stage 9.4 email delivery, payment finalization, providers, premium email,
+  invoice PDF, tracking, Admin, Redis/KV, and IP limiting remain untouched.
+- Stage 9.5 awaits focused verification and owner review; no checkpoint or push
+  was created.
+
 ## 2026-10-03 — Stage 9.4 live Order email closure
 
 - Verified the controlled Stripe Sandbox Order Confirmation E2E path from

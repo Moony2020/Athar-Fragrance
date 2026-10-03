@@ -2,7 +2,7 @@
 
 **Last audited:** 2026-10-03
 **Current phase:** Phase 9 — Canonical Orders and Transactional Email
-**Overall status:** **STAGE 9.4 CLOSED / VERIFIED.** Trusted payment finalization and the live customer Order Confirmation delivery pipeline are verified; the historical first PayPal inventory decrement remains explicitly unverified.
+**Overall status:** **STAGE 9.5 IN PROGRESS — OWNER REVIEW PENDING.** Stage 9.4 remains closed / verified; trusted payment finalization and the live customer Order Confirmation delivery pipeline remain unchanged.
 
 ## Trusted Payment Finalization closure (2026-10-01)
 
@@ -135,6 +135,30 @@ implemented. The current functional template is intentionally unchanged;
 premium branding/layout refinement is deferred to a later stage.
 
 Stage 9.4: **CLOSED / VERIFIED**.
+
+## Stage 9.5 current status (in progress — owner review pending)
+
+Stage 9.5 adds Secure Order Access without changing payment or email delivery.
+Authenticated customers use `/account/orders/[orderId]`, where the existing
+canonical session owner must match the persisted user-owned Order. Guest access
+uses `/orders/lookup` with Order number and checkout email, followed only on a
+successful match by a fixed 30-minute opaque HttpOnly cookie session bound to
+one guest-owned Order. Mongo persists only a hash of the random session secret.
+
+Guest lookup rate limiting is server-authoritative and shared through Mongo:
+fixed 15-minute windows permit five Order/email-pair attempts and ten attempts
+per Order number or normalized email. Every submission counts. Rate-limit keys
+are HMAC-SHA-256 values using required server-only
+`ORDER_LOOKUP_HMAC_SECRET`; no raw email, Order number, or IP is stored. Missing
+or unavailable limiter state fails closed with the same generic unavailable
+response used for malformed, mismatched, expired, and missing access.
+
+The customer read model exposes persisted Order snapshots only and excludes
+Mongo IDs, owner IDs, PaymentAttempt/provider IDs, webhook details, and
+email-delivery internals. No guest ownership claim, network/IP limiting, Redis,
+email redesign, invoice PDF, tracking, payment change, or Stage 9.4 change is
+included. **Stage 9.5 is implemented locally and awaits owner review; it is not
+closed or checkpointed.**
 
 ## Stage 7.6 current status
 

@@ -11,6 +11,7 @@ import type { InventoryReservationDocument } from "@/inventory/reservation-docum
 import type { PaymentAttemptDocument } from "@/payments/payment-attempt-document";
 import type { OrderDocument } from "@/orders/order-document";
 import type { EmailDelivery } from "@/server/email/email-delivery-document";
+import type { GuestOrderAccessSessionDocument, OrderLookupRateLimitDocument } from "@/server/orders/guest-order-access-document";
 
 /**
  * Idempotent catalog indexes. Invoke from a controlled deployment/migration
@@ -102,6 +103,21 @@ export async function ensureEmailDeliveryIndexes(): Promise<void> {
     { key: { deliveryId: 1 }, name: "email_delivery_public_id_unique", unique: true },
     { key: { status: 1, nextAttemptAt: 1, leaseExpiresAt: 1, createdAt: 1 }, name: "email_delivery_dispatch_claim" },
     { key: { providerMessageId: 1 }, name: "email_delivery_provider_message" },
+  ]);
+}
+
+/** Secure Order Access indexes are explicit deployment work, never request work. */
+export async function ensureSecureOrderAccessIndexes(): Promise<void> {
+  const database = await getDatabase();
+  await Promise.all([
+    database.collection<GuestOrderAccessSessionDocument>(databaseCollections.guestOrderAccessSessions).createIndexes([
+      { key: { sessionHash: 1 }, name: "guest_order_access_session_hash_unique", unique: true },
+      { key: { expiresAt: 1 }, name: "guest_order_access_session_expiry_ttl", expireAfterSeconds: 0 },
+    ]),
+    database.collection<OrderLookupRateLimitDocument>(databaseCollections.orderLookupRateLimits).createIndexes([
+      { key: { dimension: 1, identifierHmac: 1, windowStart: 1 }, name: "order_lookup_rate_limit_window_unique", unique: true },
+      { key: { expiresAt: 1 }, name: "order_lookup_rate_limit_expiry_ttl", expireAfterSeconds: 0 },
+    ]),
   ]);
 }
 
