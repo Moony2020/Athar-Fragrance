@@ -149,7 +149,6 @@
   .ringTwo,
   .iconCircle,
   .brandTitle,
-  .loadingBar,
   .statusText {
     animation: none;
   }
