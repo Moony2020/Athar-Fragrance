@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test:instant": "playwright test",
     "catalog:seed:dry": "tsx --conditions=react-server scripts/catalog-seed.ts",
-    "catalog:seed": "tsx --conditions=react-server scripts/catalog-seed.ts --write"
+    "catalog:seed": "tsx --conditions=react-server scripts/catalog-seed.ts --write",
+    "db:indexes:secure-order-access": "tsx --conditions=react-server scripts/ensure-secure-order-access-indexes.ts"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^6.12.0",
