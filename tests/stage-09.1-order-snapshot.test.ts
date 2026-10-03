@@ -80,7 +80,7 @@ test("Stage 9.1 replay reuses an existing Order without rewriting its snapshot",
     status: "confirmed" as const,
     paymentStatus: "paid" as const,
     fulfillmentStatus: "pending" as const,
-    lines: [], subtotalMinor: 59_900, totalMinor: 65_800, currency: "SEK",
+    lines: [{ productSlug: "cedar-study", variantId: "variant-75", quantity: 1, priceMinor: 59_900, subtotalMinor: 59_900, currency: "SEK", productName: "BOSS Bottled", brandName: "HUGO BOSS", sizeMl: 75, mediaSrc: "/images/catalog/cedar-study-v1.webp", imageSnapshot: { src: "/images/catalog/cedar-study-v1.webp", alt: "BOSS Bottled front view" } }], subtotalMinor: 59_900, totalMinor: 65_800, currency: "SEK",
     merchandiseSubtotalMinor: 59_900, shippingAmountMinor: 5_900, discountAmountMinor: 0,
     vatIncludedMinor: 13_160, grandTotalMinor: 65_800,
     shippingMethodId: "postnord-service-point-se", shippingMethodLabelSnapshot: "PostNord",
@@ -94,6 +94,7 @@ test("Stage 9.1 replay reuses an existing Order without rewriting its snapshot",
   try {
     const result = await new MongoOrderStore(database).finalizePayment({ ownerType: "guest", ownerId: "guest-1" }, attempt);
     assert.strictEqual(result, existing);
+    assert.deepEqual(result.lines[0]?.imageSnapshot, { src: "/images/catalog/cedar-study-v1.webp", alt: "BOSS Bottled front view" });
   } finally {
     if (previousPersistence === undefined) delete process.env.ATHAR_COMMERCE_PERSISTENCE;
     else process.env.ATHAR_COMMERCE_PERSISTENCE = previousPersistence;

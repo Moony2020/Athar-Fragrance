@@ -3,18 +3,12 @@
 import Image from "next/image";
 import { useState } from "react";
 import { WishlistButton } from "@/components/commerce/WishlistButton";
+import { getCustomerProductImageSource } from "@/lib/customer-product-image";
 import type { CatalogProductDetail } from "@/server/catalog/read-model";
 import styles from "./ProductGallery.module.css";
 
 type PublicMedia = CatalogProductDetail["media"][number];
 const placeholderSrc = "/images/catalog/product-placeholder.svg";
-const generatedMedia: Record<string, string> = {
-  "athar-test-no-01": "/images/catalog/athar-test-no-01-v1.webp",
-  "cedar-study": "/images/catalog/cedar-study-v1.webp",
-  "no-media-study": "/images/catalog/no-media-study-v1.webp",
-  "velvet-sillage": "/images/catalog/velvet-sillage-v1.webp",
-  "luminous-fig": "/images/catalog/luminous-fig-v1.webp",
-};
 
 /**
  * The PDP stays server-rendered. This smallest client island owns only the
@@ -28,7 +22,7 @@ export function ProductGallery({ media, productName, productSlug, initialWishlis
     return (
       <section className={styles.gallery} aria-label="Product media">
         <div className={styles.placeholder} role="img" aria-label={`${productName} media placeholder`}>
-          <Image src={generatedMedia[slugFromName(productName)] ?? placeholderSrc} alt="" fill priority sizes="(max-width: 760px) 100vw, 28rem" />
+          <Image src={getCustomerProductImageSource(productSlug) ?? placeholderSrc} alt="" fill priority sizes="(max-width: 760px) 100vw, 28rem" />
         </div>
       </section>
     );
@@ -50,7 +44,7 @@ export function ProductGallery({ media, productName, productSlug, initialWishlis
                 type="button"
               >
                 <span aria-hidden="true" className={`${styles.thumbnailImage} ${toneClass(item.position)}`}>
-                  <GalleryImage media={item} />
+                  <GalleryImage media={item} productSlug={productSlug} />
                 </span>
                 <span className={styles.thumbnailLabel}>{`Media ${index + 1}${isSelected ? ", selected" : ""}`}</span>
               </button>
@@ -59,7 +53,7 @@ export function ProductGallery({ media, productName, productSlug, initialWishlis
         </div>
       ) : null}
       <div className={`${styles.primary} ${toneClass(selected.position)}`} aria-live="polite">
-        <GalleryImage media={selected} priority={selectedIndex === 0} />
+        <GalleryImage media={selected} priority={selectedIndex === 0} productSlug={productSlug} />
         <WishlistButton className={styles.primaryWishlist} initialWishlisted={initialWishlisted} productName={productName} productSlug={productSlug} />
       </div>
     </section>
@@ -68,15 +62,11 @@ export function ProductGallery({ media, productName, productSlug, initialWishlis
 
 
 
-function GalleryImage({ media, priority = false }: { media: PublicMedia; priority?: boolean }) {
+function GalleryImage({ media, priority = false, productSlug }: { media: PublicMedia; priority?: boolean; productSlug: string }) {
   // Product visuals are project-local ATHAR assets. Remote canonical media stays
   // data-only until its provider/domain is owner-approved.
-  const generatedSlug = slugFromMedia(media.url);
-  return <Image src={generatedSlug ? generatedMedia[generatedSlug] : placeholderSrc} alt={media.alt} fill priority={priority} sizes="(max-width: 760px) 100vw, 28rem" />;
+  return <Image src={getCustomerProductImageSource(productSlug) ?? placeholderSrc} alt={media.alt} fill priority={priority} sizes="(max-width: 760px) 100vw, 28rem" />;
 }
-
-function slugFromMedia(url: string) { return Object.keys(generatedMedia).find((slug) => url.includes(slug)); }
-function slugFromName(name: string) { return name.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""); }
 
 function toneClass(position: number) {
   return position % 3 === 1 ? styles.toneOne : position % 3 === 2 ? styles.toneTwo : styles.toneZero;

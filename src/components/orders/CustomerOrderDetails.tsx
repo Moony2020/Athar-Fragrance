@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { formatMoneyMinor } from "@/lib/money";
 import type { CustomerOrderReadModel } from "@/orders/customer-order-read-model";
 import styles from "./CustomerOrderDetails.module.css";
@@ -15,7 +17,8 @@ export function CustomerOrderDetails({ order }: { order: CustomerOrderReadModel 
     </header>
     <section aria-labelledby="order-items-heading"><h2 id="order-items-heading">Order items</h2>
       <ul className={styles.lines}>{order.lines.map((line) => <li key={`${line.productSlug}:${line.variantId}`}>
-        <div><strong>{line.productName}</strong><span>{[line.brandName, line.sizeMl ? `${line.sizeMl} ml` : null].filter(Boolean).join(" · ")}</span></div>
+        {line.imageSnapshot ? <div className={styles.lineImage}><Image alt={line.imageSnapshot.alt} height={112} sizes="5rem" src={line.imageSnapshot.src} width={90} /></div> : null}
+        <div className={styles.lineInformation}><strong>{line.productName}</strong><span>{[line.brandName, line.sizeMl ? `${line.sizeMl} ml` : null].filter(Boolean).join(" · ")}</span></div>
         <div className={styles.lineNumbers}><span>Qty {line.quantity}</span><strong>{formatMoneyMinor(line.subtotalMinor, line.currency)}</strong></div>
       </li>)}</ul>
     </section>

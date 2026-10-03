@@ -11,17 +11,31 @@ import { getGuestCartStore } from "@/server/commerce/store";
 import { isMongoGuestCartStore } from "@/server/commerce/mongo-store";
 import { resolvePublicCommerceProduct } from "@/server/commerce/services";
 import { getProductDetailData } from "@/server/catalog/services";
+import { getCustomerProductImageSnapshot } from "@/lib/customer-product-image";
 import { MongoInventoryReservationStore } from "@/server/inventory/reservation-store";
 import { MongoCheckoutDraftStore } from "@/server/checkout/draft-store";
 import type { PaymentAttemptDocument } from "@/payments/payment-attempt-document";
 import type { OrderDocument } from "@/orders/order-document";
+import type { ResolvedCartLine } from "@/commerce/domain";
+import type { CatalogProductDetail } from "@/server/catalog/read-model";
 
 function ownerFilter(owner: CommerceOwner) { return { ownerType: owner.ownerType, ownerId: owner.ownerId }; }
 function orderId() { return `ATH-${randomBytes(6).toString("hex").toUpperCase()}`; }
-const orderMedia: Record<string, string> = {
-  "athar-test-no-01": "/images/catalog/athar-test-no-01-v1.webp", "cedar-study": "/images/catalog/cedar-study-v1.webp",
-  "no-media-study": "/images/catalog/no-media-study-v1.webp", "velvet-sillage": "/images/catalog/velvet-sillage-v1.webp", "luminous-fig": "/images/catalog/luminous-fig-v1.webp",
-};
+
+type SnapshotProduct = Pick<CatalogProductDetail, "slug" | "name" | "brand" | "variants" | "media">;
+
+/** Builds a historical line from trusted server-side Cart and catalog data only. */
+export function toOrderLineSnapshot(line: ResolvedCartLine, product: SnapshotProduct | null) {
+  const imageSnapshot = product ? getCustomerProductImageSnapshot(product) : undefined;
+  return {
+    ...line,
+    productName: product?.name ?? line.productSlug,
+    brandName: product?.brand.name ?? "ATHAR",
+    sizeMl: product?.variants.find((variant) => variant.id === line.variantId)?.sizeMl ?? null,
+    mediaSrc: imageSnapshot?.src ?? null,
+    ...(imageSnapshot ? { imageSnapshot } : {}),
+  };
+}
 
 export class MongoOrderStore {
   constructor(private readonly database: () => Promise<Db> = getDatabase) {}
@@ -45,7 +59,7 @@ export class MongoOrderStore {
     const now = new Date();
     const lines = await Promise.all(resolved.lines.map(async (line) => {
       const detail = await getProductDetailData(line.productSlug);
-      return { ...line, productName: detail.product?.name ?? line.productSlug, brandName: detail.product?.brand.name ?? "ATHAR", sizeMl: detail.product?.variants.find((variant) => variant.id === line.variantId)?.sizeMl ?? null, mediaSrc: orderMedia[line.productSlug] ?? null };
+      return toOrderLineSnapshot(line, detail.product);
     }));
     const document: OrderDocument = {
       orderId: orderId(), paymentAttemptId: attempt.paymentAttemptId, checkoutId: attempt.checkoutId,

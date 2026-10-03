@@ -13,7 +13,7 @@ export type CustomerOrderReadModel = {
     productName: string;
     brandName: string;
     sizeMl: number | null;
-    mediaSrc: string | null;
+    imageSnapshot?: { src: string; alt: string };
     quantity: number;
     priceMinor: number;
     subtotalMinor: number;
@@ -47,7 +47,8 @@ export function toCustomerOrderReadModel(order: OrderDocument): CustomerOrderRea
     fulfillmentStatus: order.fulfillmentStatus,
     lines: order.lines.map((line) => ({
       productSlug: line.productSlug, variantId: line.variantId, productName: line.productName,
-      brandName: line.brandName, sizeMl: line.sizeMl, mediaSrc: line.mediaSrc,
+      brandName: line.brandName, sizeMl: line.sizeMl,
+      ...(line.imageSnapshot ? { imageSnapshot: { src: line.imageSnapshot.src, alt: line.imageSnapshot.alt } } : {}),
       quantity: line.quantity, priceMinor: line.priceMinor, subtotalMinor: line.subtotalMinor, currency: line.currency,
     })),
     totals: {

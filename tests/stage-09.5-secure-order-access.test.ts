@@ -6,7 +6,7 @@ import { toCustomerOrderReadModel } from "../src/orders/customer-order-read-mode
 import { guestOrderAccessSessionTtlMs, genericOrderAccessMessage } from "../src/server/orders/guest-order-access-document";
 import { fixedOrderLookupWindow, hashGuestOrderAccessSession, hmacOrderLookupIdentifier } from "../src/server/orders/guest-order-access-store";
 import { lookupGuestOrder, readGuestOrderFromSession } from "../src/server/orders/guest-order-access-service";
-import { MongoOrderStore } from "../src/server/orders/order-store";
+import { MongoOrderStore, toOrderLineSnapshot } from "../src/server/orders/order-store";
 
 const order = (overrides: Partial<OrderDocument> = {}): OrderDocument => ({
   orderId: "ATH-ABCDEF123456", paymentAttemptId: "payment-attempt-internal", checkoutId: "checkout-internal",
@@ -28,6 +28,34 @@ test("Stage 9.5 customer Order model uses only customer-safe persisted snapshots
 test("Stage 9.5 preserves legacy Orders without inventing a financial breakdown", () => {
   const legacy = order({ merchandiseSubtotalMinor: undefined, shippingAmountMinor: undefined, discountAmountMinor: undefined, vatIncludedMinor: undefined, grandTotalMinor: undefined, shippingMethodId: undefined, shippingMethodLabelSnapshot: undefined });
   assert.equal(toCustomerOrderReadModel(legacy).totals.financialSnapshot, undefined);
+});
+
+test("Stage 9.5 exposes only a persisted product-image snapshot and preserves legacy lines without one", () => {
+  const imageSnapshot = { src: "/images/catalog/cedar-study-v1.webp", alt: "BOSS Bottled front view" };
+  const withImage = toCustomerOrderReadModel(order({ lines: [{ ...order().lines[0], mediaSrc: "/not-exposed-to-customer-details.webp", imageSnapshot }] }));
+  assert.deepEqual(withImage.lines[0]?.imageSnapshot, imageSnapshot);
+  assert.deepEqual(Object.keys(withImage.lines[0]?.imageSnapshot ?? {}).sort(), ["alt", "src"]);
+  assert.equal("mediaSrc" in (withImage.lines[0] ?? {}), false);
+
+  const legacy = toCustomerOrderReadModel(order({ lines: [{ ...order().lines[0], mediaSrc: null }] }));
+  assert.equal(legacy.lines[0]?.imageSnapshot, undefined);
+});
+
+test("Stage 9.5 finalization derives product imagery from canonical server data, never browser input", () => {
+  const line = {
+    productSlug: "cedar-study", variantId: "variant-75", quantity: 1,
+    priceMinor: 149900, subtotalMinor: 149900, currency: "SEK",
+    imageSnapshot: { src: "/forged-browser-image.webp", alt: "forged" },
+  };
+  const canonicalProduct = {
+    slug: "cedar-study", name: "BOSS Bottled", brand: { slug: "hugo-boss", name: "HUGO BOSS" },
+    variants: [{ id: "variant-75", sizeMl: 75, priceMinor: 149900, compareAtPriceMinor: null, availability: "available" as const }],
+    media: [{ url: "https://fixtures.athar.test/catalog/cedar-study-front.jpg", alt: "BOSS Bottled front view", position: 0 }],
+  };
+  const snapshot = toOrderLineSnapshot(line, canonicalProduct);
+  assert.deepEqual(snapshot.imageSnapshot, { src: "/images/catalog/cedar-study-v1.webp", alt: "BOSS Bottled front view" });
+  assert.equal(snapshot.mediaSrc, "/images/catalog/cedar-study-v1.webp");
+  assert.notEqual(snapshot.imageSnapshot?.src, line.imageSnapshot.src);
 });
 
 test("Stage 9.5 authenticated detail keeps Order lookup owner-scoped", async () => {

@@ -14,6 +14,11 @@ export type OrderLineSnapshot = {
   brandName: string;
   sizeMl: number | null;
   mediaSrc: string | null;
+  /** Optional for legacy Orders created before the immutable product-image snapshot. */
+  imageSnapshot?: {
+    src: string;
+    alt: string;
+  };
 };
 
 export type OrderFinancialSnapshot = {
