@@ -2,7 +2,7 @@
 
 **Last audited:** 2026-10-03
 **Current phase:** Phase 9 — Canonical Orders and Transactional Email
-**Overall status:** **STAGE 9.5 IN PROGRESS — OWNER REVIEW PENDING.** Stage 9.4 remains closed / verified; trusted payment finalization and the live customer Order Confirmation delivery pipeline remain unchanged.
+**Overall status:** **STAGE 9.5 CLOSED / VERIFIED / CHECKPOINTED / PUSHED.** Stage 9.4 remains closed / verified; trusted payment finalization and the live customer Order Confirmation delivery pipeline remain unchanged.
 
 ## Trusted Payment Finalization closure (2026-10-01)
 
@@ -136,29 +136,48 @@ premium branding/layout refinement is deferred to a later stage.
 
 Stage 9.4: **CLOSED / VERIFIED**.
 
-## Stage 9.5 current status (in progress — owner review pending)
+## Stage 9.5 Secure Order Access closure (2026-10-03)
 
-Stage 9.5 adds Secure Order Access without changing payment or email delivery.
-Authenticated customers use `/account/orders/[orderId]`, where the existing
-canonical session owner must match the persisted user-owned Order. Guest access
-uses `/orders/lookup` with Order number and checkout email, followed only on a
-successful match by a fixed 30-minute opaque HttpOnly cookie session bound to
-one guest-owned Order. Mongo persists only a hash of the random session secret.
+Stage 9.5 is **CLOSED / VERIFIED / CHECKPOINTED / PUSHED** at
+`8b50f7fe5d9c1e433a37b4b2361feedb904e19fd`. It adds secure customer Order
+access without changing payment finalization or Stage 9.4 email delivery.
 
-Guest lookup rate limiting is server-authoritative and shared through Mongo:
-fixed 15-minute windows permit five Order/email-pair attempts and ten attempts
-per Order number or normalized email. Every submission counts. Rate-limit keys
-are HMAC-SHA-256 values using required server-only
-`ORDER_LOOKUP_HMAC_SECRET`; no raw email, Order number, or IP is stored. Missing
-or unavailable limiter state fails closed with the same generic unavailable
-response used for malformed, mismatched, expired, and missing access.
+- Authenticated details at `/account/orders/[orderId]` remain scoped to the
+  canonical authenticated owner; a public Order number never authorizes access.
+- Guest lookup at `/orders/lookup` verifies Order number plus checkout email,
+  returns only generic failures, and redirects successful verification to
+  `/orders/guest` without placing an Order identifier or email in the URL.
+- The guest session is one opaque high-entropy browser secret in an HttpOnly,
+  `/orders`-scoped cookie. Mongo stores only its SHA-256 hash, binds it to one
+  verified guest Order, and enforces its fixed non-sliding 30-minute expiry.
+- Mongo-backed rate limiting is server-authoritative and fail-closed: five
+  Order/email-pair attempts, ten per Order number, and ten per normalized email
+  in shared fixed 15-minute windows. HMAC-SHA-256 identifiers prevent raw Order
+  numbers, emails, and IP addresses from being stored; every submission counts.
+- The customer read model exposes persisted customer-safe snapshots only. It
+  excludes Mongo IDs, owner IDs, PaymentAttempt/provider IDs, webhook details,
+  email-delivery internals, and all secure-access internals.
+- New Orders persist canonical server-side `imageSnapshot` and `fragranceType`
+  line snapshots. Customer detail routes use those snapshots only: no live
+  catalog fallback or backfill is performed, and legacy Orders remain readable
+  without a missing historical `fragranceType`.
+- Live evidence covered authenticated owner access, guest lookup/protected
+  display, generic failure gates, the Confirmation-to-lookup CTA, image and
+  fragrance display, address and status presentation, and Mongo persistence for
+  guest Order `ATH-A916CBAEBDCC` (`Eau de Toilette`, 75 ml). The customer-facing
+  statuses are `Payment status: Paid` and `Your order: Preparing`.
+- Mongo secure-access indexes, focused tests (7/7), TypeScript, ESLint,
+  production build, diff check, and secret scan passed. The guest route now
+  establishes a request-time `connection()` boundary before cookie/session
+  resolution, eliminating the Next prerender `new Date()` diagnostic without
+  changing session expiry or security semantics.
 
-The customer read model exposes persisted Order snapshots only and excludes
-Mongo IDs, owner IDs, PaymentAttempt/provider IDs, webhook details, and
-email-delivery internals. No guest ownership claim, network/IP limiting, Redis,
-email redesign, invoice PDF, tracking, payment change, or Stage 9.4 change is
-included. **Stage 9.5 is implemented locally and awaits owner review; it is not
-closed or checkpointed.**
+The audited Stage 9.5 checkpoint history is `a6ace9ba` (initial implementation),
+`d24eed36` (secure-access index bootstrap), `3a945162` (image snapshots),
+`01cdd3bb` (customer Order UX and fragrance snapshot), `b8669223`
+(presentation checkpoint), and `8b50f7fe` (final code checkpoint). There is no
+guest ownership claim, IP rate limiting, Redis/KV dependency, payment change,
+email redesign, invoice PDF, or carrier-tracking work in this Stage.
 
 ## Stage 7.6 current status
 

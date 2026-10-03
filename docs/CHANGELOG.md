@@ -1,17 +1,28 @@
 # Changelog
 
-## 2026-10-03 — Stage 9.5 Secure Order Access implemented locally
+## 2026-10-03 — Stage 9.5 Secure Order Access closure
 
-- Added owner-authorized authenticated Order detail, guest Order-number plus
-  checkout-email lookup, one-Order fixed 30-minute hash-only access sessions,
-  customer-safe persisted Order DTOs, and Mongo-backed HMAC rate limiting.
-- Guest lookup uses fixed 15-minute shared limits: pair 5, Order 10, and email
-  10. It fails closed and returns one generic unavailable response without
-  storing raw email, Order number, or IP in rate-limit records.
-- Stage 9.4 email delivery, payment finalization, providers, premium email,
-  invoice PDF, tracking, Admin, Redis/KV, and IP limiting remain untouched.
-- Stage 9.5 awaits focused verification and owner review; no checkpoint or push
-  was created.
+- Closed, verified, checkpointed, and pushed Secure Order Access at
+  `8b50f7fe5d9c1e433a37b4b2361feedb904e19fd`.
+- Verified authenticated owner-scoped details, generic guest Order-number plus
+  checkout-email lookup, protected `/orders/guest` display, and fixed,
+  non-sliding 30-minute one-Order hash-only guest sessions.
+- Verified Mongo-backed, HMAC-keyed, fail-closed fixed-window limits: pair 5,
+  Order 10, and normalized email 10 per 15 minutes; raw email, Order number,
+  and IP are not retained in limiter records.
+- Recorded historical customer Order snapshots: server-derived `imageSnapshot`
+  and `fragranceType`, no live catalog fallback or backfill, and legacy Orders
+  remain readable without a historical fragrance type. New live guest Order
+  `ATH-A916CBAEBDCC` persisted and displayed `Eau de Toilette · 75 ml`.
+- Recorded Confirmation-to-lookup discoverability, customer-safe Order DTOs,
+  address/status presentation, and the route-level `connection()` prerender
+  corrective. Focused tests, Mongo index verification, TypeScript, ESLint,
+  production build, diff check, and secret scan passed.
+- Preserved Stage 9.4 email delivery, payment finalization, providers, premium
+  email, invoice PDF, tracking, Admin, Redis/KV, and IP limiting as out of
+  scope. Stage 9.6 remains unstarted.
+- Stage 9.5 checkpoint chain: `a6ace9ba`, `d24eed36`, `3a945162`,
+  `01cdd3bb`, `b8669223`, and `8b50f7fe`.
 
 ## 2026-10-03 — Stage 9.4 live Order email closure
 
