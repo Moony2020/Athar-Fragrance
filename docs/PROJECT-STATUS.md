@@ -2,7 +2,12 @@
 
 **Last audited:** 2026-10-03
 **Current phase:** Phase 9 — Canonical Orders and Transactional Email
-**Overall status:** **STAGE 9.5 CLOSED / VERIFIED / CHECKPOINTED / PUSHED.** Stage 9.4 remains closed / verified; trusted payment finalization and the live customer Order Confirmation delivery pipeline remain unchanged.
+**Overall status:** **STAGE 9.5 CLOSED / VERIFIED / CHECKPOINTED / PUSHED.**
+Stage 9.6 Premium Order Confirmation Email Presentation is implemented and has
+passed owner visual review at Desktop 100% and Mobile 390px. One controlled
+live Brevo presentation verification remains pending. Stage 9.4 remains closed
+/ verified; trusted payment finalization and the live customer Order
+Confirmation delivery pipeline remain unchanged.
 
 ## Trusted Payment Finalization closure (2026-10-01)
 
