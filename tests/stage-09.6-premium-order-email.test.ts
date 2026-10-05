@@ -55,6 +55,8 @@ test("Stage 9.6 renders premium snapshot-only order content and a guest lookup C
   assert.match(message.htmlContent, /https:\/\/athar\.example\.test\/images\/catalog\/cedar-study-v1\.webp/);
   assert.match(message.htmlContent, />ATHAR<\/p>/);
   assert.match(message.htmlContent, />HAUTE PARFUMERIE<\/p>/);
+  assert.match(message.htmlContent, /Cinzel Decorative/);
+  assert.match(message.htmlContent, /fonts\.googleapis\.com\/css2\?family=Cinzel\+Decorative/);
   assert.doesNotMatch(message.htmlContent, /athar-email-wordmark(?:-light)?\.png/);
   assert.match(message.htmlContent, /@media only screen and \(max-width:520px\)/);
   assert.match(message.htmlContent, /Merchandise/);
