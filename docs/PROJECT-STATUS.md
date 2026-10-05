@@ -3,9 +3,12 @@
 **Last audited:** 2026-10-03
 **Current phase:** Phase 9 — Canonical Orders and Transactional Email
 **Overall status:** **STAGE 9.5 CLOSED / VERIFIED / CHECKPOINTED / PUSHED.**
-Stage 9.6 Premium Order Confirmation Email Presentation is implemented and has
-passed owner visual review at Desktop 100% and Mobile 390px. One controlled
-live Brevo presentation verification remains pending. Stage 9.4 remains closed
+Stage 9.6 Premium Order Confirmation Email Presentation is **CLOSED / VERIFIED**.
+Its implementation checkpoint is `77aae73366bb0b2fe86bf817e0ddd899b134b3ed`;
+controlled live Order `ATH-7678DB2848CB` passed Brevo delivery and Gmail visual
+review. HTML text branding remains the owner decision: Gmail used fallback
+typography, so exact cross-client logo-font parity is not guaranteed. Dispatch
+was returned to `0` after the test. Stage 9.4 remains closed
 / verified; trusted payment finalization and the live customer Order
 Confirmation delivery pipeline remain unchanged.
 

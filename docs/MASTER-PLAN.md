@@ -21,7 +21,7 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | 6 | Authentication and customer account | Phase 6 complete locally |
 | 7 | Checkout foundation | Stages 7.1–7.5 closed + pushed; Stage 7.6 complete — ready for Phase closure checkpoint |
 | 8 | Stripe cards, direct PayPal, webhooks | Trusted payment finalization verified; checkpoint pending; historical PayPal first-decrement evidence remains limited |
-| 9 | Canonical orders and transactional email | Stages 9.1–9.5 closed / verified; Stage 9.6 implemented and visually approved — controlled live Brevo presentation verification pending |
+| 9 | Canonical orders and transactional email | Stages 9.1–9.6 closed / verified |
 | 10 | Admin platform | Planned |
 | 11 | Content, journal, legal, customer experience | Planned |
 | 12 | Security, performance, accessibility, SEO | Planned |
@@ -36,7 +36,7 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | 9.3 | Transactional Order confirmation email | Closed / checkpointed / pushed |
 | 9.4 | Durable Order email delivery | Closed / verified |
 | 9.5 | Secure Order Access | Closed / verified / checkpointed / pushed at `8b50f7fe` |
-| 9.6 | Premium Order Confirmation Email Presentation | Implemented / owner visual review passed — controlled live Brevo presentation verification pending |
+| 9.6 | Premium Order Confirmation Email Presentation | Closed / verified; implementation checkpoint `77aae733` |
 
 #### Stage 9.5 fixed boundary
 
@@ -92,6 +92,14 @@ Verification will include renderer/contract coverage and one controlled live
 Brevo email after deployment to inspect presentation only. The Stage 9.4
 delivery, outbox, webhook, and inbox-receipt evidence is not repeated unless a
 change affects those semantics.
+
+Closure evidence: controlled Stripe Sandbox Order `ATH-7678DB2848CB` delivered
+through Brevo and rendered in Gmail. Product and financial snapshots, shipping,
+CTA, contact note, and footer passed visual review. ATHAR remains HTML text;
+Gmail used its fallback font rather than Cinzel Decorative, so exact
+cross-client logo-font parity is not guaranteed. The owner retained HTML text
+branding and rejected wordmark images. Dispatch was returned to `0`; no further
+live email is required.
 
 ### Phase 6 stage map
 
