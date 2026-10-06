@@ -1,8 +1,8 @@
 # ATHAR Project Status
 
-**Last audited:** 2026-10-03
+**Last audited:** 2026-10-06
 **Current phase:** Phase 10 — Admin Platform
-**Overall status:** **STAGE 10.1 GOAL CONTRACT APPROVED / CHECKPOINTED — IMPLEMENTATION NOT STARTED.**
+**Overall status:** **STAGE 10.1 CLOSED / VERIFIED / CHECKPOINTED.**
 Stage 9.6 Premium Order Confirmation Email Presentation is **CLOSED / VERIFIED**.
 Its implementation checkpoint is `77aae73366bb0b2fe86bf817e0ddd899b134b3ed`;
 controlled live Order `ATH-7678DB2848CB` passed Brevo delivery and Gmail visual
@@ -14,24 +14,59 @@ Confirmation delivery pipeline remain unchanged.
 
 ## Stage 10.1 planning status — Admin Identity & Server-Side Authorization Foundation
 
-Stage 10.1 has a **GOAL CONTRACT APPROVED / CHECKPOINTED — IMPLEMENTATION NOT
-STARTED** only. No Admin code, route, role field, authorization helper,
-bootstrap operation, audit-event collection, test, or migration is part of
-this planning checkpoint. The approved contract fixes two roles (`customer` and
+Stage 10.1 is **CLOSED / VERIFIED / CHECKPOINTED**. It now has a canonical
+role field, server-side authorization boundary, controlled bootstrap operation,
+append-only audit store/index contract, minimal protected `/admin` shell, and
+focused verification. The approved contract fixes two roles (`customer` and
 `admin`) persisted on the canonical User document; historical/missing/unknown/
 malformed roles fail closed to non-Admin and no bulk legacy backfill is
 authorized merely for this stage. The initial Admin is an existing account
 targeted by public `userId` through a one-off controlled server-only script;
 there is no endpoint, UI, browser path, or automatic email/environment
-promotion. Privileged checks use the current persisted role server-side, role
-or disable changes invalidate stale sessions through `securityVersion`, and
-`/admin` is only a protected minimal shell. Future privileged route handlers
-use `401` for unauthenticated and `403` for authenticated unauthorized callers;
-the shell sends authenticated non-Admins to a safe `403` Access Denied state.
-Audit events are append-only with allow-listed safe metadata and no sensitive
-request data; retention remains undecided. Dashboard, catalog/order/customer
-operations, refunds, provider operations, email administration, and all
-role-management UI/API remain out of scope pending later contracts.
+promotion. Privileged checks use the current persisted role server-side, and
+role changes invalidate stale sessions through `securityVersion`. Stage 10.1
+does not add a disable-account mutation; the existing persisted-`disabledAt`
+session rejection remains in place and must deny privileged access. `/admin`
+is only a protected minimal shell. Authenticated non-Admins receive a stable
+Access Denied presentation without Admin data; the stage does not enable
+experimental Next.js `authInterrupts` or assert transport-level HTTP `403` for
+that App Router shell. Future privileged route handlers use explicit `401` for
+unauthenticated and `403` for authenticated unauthorized callers. Audit events
+are append-only with allow-listed safe metadata and no sensitive request data;
+the controlled first-Admin bootstrap alone may use `actorType: system` with the
+fixed `actorId: admin-bootstrap`; all normal actors use public user IDs.
+Retention remains undecided. Dashboard, catalog/order/customer operations,
+refunds, provider operations, email administration, all role-management UI/API,
+and a new account-disable mutation remain out of scope pending later contracts.
+
+The approved ATHAR Admin Final Visual Reference is reserved for a later
+Dashboard stage: Swedish money format `128 450 kr`; inventory states `Low`,
+`Critical`, and `Out of Stock`; preserved dark sidebar, lower perfume image,
+strong dark gradient, and active state; and the hierarchy KPI cards → Revenue /
+Order Status → Recent Orders / Low Stock → compact Latest Reviews. Stage 10.1
+still implements only the security foundation and a minimal protected shell.
+Focused non-Mongo unit/auth regressions passed with **17 passed, 0 failed, and
+1 skipped**; the skip is the existing Stage 6.5 dedicated-Mongo test in the
+Codex process without usable Mongo connectivity. The dedicated Stage 10.1 Mongo
+transaction verification passed on the real local machine against
+`athar_stage55_test` (**1 passed, 0 failed**), covering transaction atomicity,
+role promotion, `securityVersion`, the constrained system actor, idempotent
+retry, nonexistent targets, audit index, secret safety, and fixture cleanup.
+
+Owner verification passed: unauthenticated `/admin` follows the sign-in flow;
+an authenticated customer receives safe Access Denied with no privileged data;
+and a fresh session for the temporary local/test-only fixture rendered the
+minimal protected Admin shell. The fixture is not a production Admin identity.
+No Render/live deployment, production account, or real Admin account was
+created or promoted. `u3811698473@gmail.com` was not used or modified in Stage
+10.1. The real local `npm run build` passed on Next.js 16.3.8:
+compilation, TypeScript, and static generation (36/36) all passed, with
+`/admin` included in the production route graph. The historical missing-Next
+and Codex build timeout were local environment/process issues, not Stage 10.1
+code failures.
+
+Stage 10.2 — Admin Provisioning, Activation & Dedicated Admin Login — remains
+separate and out of scope. It has not been implemented by Stage 10.1.
 
 ## Trusted Payment Finalization closure (2026-10-01)
 

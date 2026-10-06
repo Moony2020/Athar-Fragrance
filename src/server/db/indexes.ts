@@ -12,6 +12,7 @@ import type { PaymentAttemptDocument } from "@/payments/payment-attempt-document
 import type { OrderDocument } from "@/orders/order-document";
 import type { EmailDelivery } from "@/server/email/email-delivery-document";
 import type { GuestOrderAccessSessionDocument, OrderLookupRateLimitDocument } from "@/server/orders/guest-order-access-document";
+import type { PrivilegedAuditEventDocument } from "@/admin/privileged-audit-document";
 
 /**
  * Idempotent catalog indexes. Invoke from a controlled deployment/migration
@@ -146,4 +147,14 @@ export async function ensurePasswordResetIndexes(): Promise<void> {
 export async function ensureCommerceMergeIndexes(): Promise<void> {
   const database = await getDatabase();
   await database.collection(databaseCollections.commerceMerges).createIndex({ userId: 1, guestId: 1 }, { name: "commerce_merge_pair_unique", unique: true });
+}
+
+/** Privileged audit indexes are explicit deployment/bootstrap work and never request work. */
+export async function ensurePrivilegedAuditEventIndexes(): Promise<void> {
+  const database = await getDatabase();
+  await database.collection<PrivilegedAuditEventDocument>(databaseCollections.privilegedAuditEvents).createIndexes([
+    { key: { eventId: 1 }, name: "privileged_audit_event_id_unique", unique: true },
+    { key: { "target.id": 1, createdAt: -1 }, name: "privileged_audit_target_created" },
+    { key: { action: 1, createdAt: -1 }, name: "privileged_audit_action_created" },
+  ]);
 }

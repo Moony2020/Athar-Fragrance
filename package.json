@@ -11,7 +11,8 @@
     "test:instant": "playwright test",
     "catalog:seed:dry": "tsx --conditions=react-server scripts/catalog-seed.ts",
     "catalog:seed": "tsx --conditions=react-server scripts/catalog-seed.ts --write",
-    "db:indexes:secure-order-access": "tsx --conditions=react-server scripts/ensure-secure-order-access-indexes.ts"
+    "db:indexes:secure-order-access": "tsx --conditions=react-server scripts/ensure-secure-order-access-indexes.ts",
+    "admin:bootstrap": "tsx --conditions=react-server scripts/bootstrap-admin.ts"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^6.12.0",

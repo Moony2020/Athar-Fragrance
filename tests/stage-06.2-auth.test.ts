@@ -20,7 +20,7 @@ test("registration cleanup removes a newly created User if credential creation f
   let deletedUserId = "";
   await assert.rejects(() => registerCustomer({ email: "orphan@example.com", password: "Correct horse battery staple 42" }, {
     users: {
-      async create() { return { userId: "o".repeat(43), normalizedEmail: "orphan@example.com", createdAt: new Date(), updatedAt: new Date() }; },
+      async create() { return { userId: "o".repeat(43), normalizedEmail: "orphan@example.com", role: "customer", createdAt: new Date(), updatedAt: new Date() }; },
       async deleteByUserId(userId: string) { deletedUserId = userId; },
     },
     credentials: {
@@ -34,7 +34,7 @@ test("registration cleanup removes a newly created User if credential creation f
 
 test("Credentials authorization returns only public user identity and rejects disabled users", async () => {
   const passwordHash = await hashPassword("Correct horse battery staple 42");
-  const user = { userId: "u".repeat(43), normalizedEmail: "customer@example.com", createdAt: new Date(), updatedAt: new Date() };
+  const user = { userId: "u".repeat(43), normalizedEmail: "customer@example.com", role: "customer" as const, createdAt: new Date(), updatedAt: new Date() };
   const credential = { userId: user.userId, passwordHash, disabledAt: null, securityVersion: 0, createdAt: new Date(), updatedAt: new Date() };
   const repositories = {
     users: { findByNormalizedEmail: async (email: string) => email === user.normalizedEmail ? user : null },

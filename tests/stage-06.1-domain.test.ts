@@ -14,6 +14,7 @@ function document(overrides: Partial<UserDocument> = {}): UserDocument {
     _id: new ObjectId(),
     userId: "u".repeat(43),
     normalizedEmail: "customer@example.com",
+    role: "customer",
     createdAt: now,
     updatedAt: now,
     ...overrides,
@@ -26,10 +27,14 @@ test("normalizes customer email and keeps a public opaque identity", () => {
   assert.deepEqual(userPublicSchema.parse(toPublicUser(document())), toPublicUser(document()));
 });
 
-test("strict User parser accepts Mongo identity and rejects unexpected fields", () => {
+test("User role parser fails closed for legacy, malformed and unknown role values", () => {
   const parsed = parseUserDocument(document());
   assert.ok(parsed._id instanceof ObjectId);
-  assert.throws(() => parseUserDocument({ ...document(), role: "admin" } as UserDocument & { role: string }));
+  assert.equal(parseUserDocument({ ...document(), role: "admin" }).role, "admin");
+  assert.equal(parseUserDocument({ ...document(), role: undefined } as unknown).role, "customer");
+  assert.equal(parseUserDocument({ ...document(), role: "operator" } as unknown).role, "customer");
+  assert.equal(parseUserDocument({ ...document(), role: { role: "admin" } } as unknown).role, "customer");
+  assert.throws(() => parseUserDocument({ ...document(), unexpected: true }));
   assert.throws(() => parseUserDocument({ ...document(), normalizedEmail: "not-an-email" }));
   assert.throws(() => parseUserDocument({ ...document(), normalizedEmail: "Customer@example.com" }));
 });
@@ -44,7 +49,7 @@ test("customer creation service enforces normalized-email uniqueness and hides p
   const repository = {
     findByNormalizedEmail: async (email: string) => records.find((record) => record.normalizedEmail === normalizeEmail(email)) ?? null,
     create: async ({ email }: { email: string }) => {
-      const created = document({ userId: "x".repeat(43), normalizedEmail: normalizeEmail(email) });
+      const created = document({ userId: "x".repeat(43), normalizedEmail: normalizeEmail(email), role: "customer" });
       records.push(created);
       return created;
     },

@@ -22,7 +22,7 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | 7 | Checkout foundation | Stages 7.1–7.5 closed + pushed; Stage 7.6 complete — ready for Phase closure checkpoint |
 | 8 | Stripe cards, direct PayPal, webhooks | Trusted payment finalization verified; checkpoint pending; historical PayPal first-decrement evidence remains limited |
 | 9 | Canonical orders and transactional email | Stages 9.1–9.6 closed / verified |
-| 10 | Admin platform | Stage 10.1 Goal Contract approved / checkpointed — implementation not started |
+| 10 | Admin platform | Stage 10.1 closed / verified / checkpointed |
 | 11 | Content, journal, legal, customer experience | Planned |
 | 12 | Security, performance, accessibility, SEO | Planned |
 | 13 | Production readiness | Planned |
@@ -105,7 +105,7 @@ live email is required.
 
 | Stage | Scope | Status |
 | --- | --- | --- |
-| 10.1 | Admin Identity & Server-Side Authorization Foundation | Goal Contract approved / checkpointed; implementation not started |
+| 10.1 | Admin Identity & Server-Side Authorization Foundation | Closed / verified / checkpointed |
 
 #### Stage 10.1 Goal Contract — Admin Identity & Server-Side Authorization Foundation
 
@@ -132,9 +132,12 @@ payment, or dashboard tool.
 - Every privileged request verifies the authenticated identity and its current
   persisted privilege on the server. Hiding `/admin`, a React condition, or a
   JWT/browser role by itself is never authorization.
-- A role change or account disable increments the existing private
-  `securityVersion`, invalidating prior sessions through the existing session
-  validation mechanism.
+- A role change increments the existing private `securityVersion`,
+  invalidating prior sessions through the existing session-validation
+  mechanism. Stage 10.1 does not introduce an account-disable mutation,
+  service, API, or UI; it preserves the existing `disabledAt` session-rejection
+  behavior and verifies that a persisted disabled credential cannot retain
+  privileged access.
 - The stage establishes a minimal append-only privileged audit-event
   foundation, but not an audit viewer or dashboard.
 - `/admin` is a protected shell/minimal landing page only. It contains no
@@ -165,10 +168,14 @@ existing user; a nonexistent target fails without creating a user, credential,
 or Admin record. It must not contain an Admin email, raw secret, or automatic-
 promotion rule in source, frontend configuration, environment configuration,
 or documentation. The operation is idempotent: retrying an already-Admin
-target does not perform a second privilege mutation. Its success, no-op, and
-failure outcomes are auditable through the privileged-event foundation when
-that foundation is implemented. Bootstrap implementation itself is out of
-scope for this documentation-only stage.
+target does not perform a second privilege mutation. Its bootstrap event may
+use the single constrained system actor `actorType: system` and
+`actorId: admin-bootstrap`; this actor is permitted only for this controlled
+first-Admin bootstrap, never for arbitrary operator strings, email addresses,
+or Windows usernames. The target remains the explicit existing public
+`userId`. Its success, no-op, and failure outcomes are auditable through the
+privileged-event foundation when that foundation is implemented. Bootstrap
+implementation itself is out of scope for this documentation-only stage.
 
 **Server-side authorization contract.** A single future server-only
 authorization boundary must be usable by Server Components, Route Handlers,
@@ -177,16 +184,20 @@ from the current authenticated session, confirm that the credential/session is
 currently valid, then read and validate the current persisted role before
 allowing privileged data or mutations. The JWT can identify a session but is
 not the privilege source of truth. Unauthenticated `/admin` requests follow
-the established sign-in flow; authenticated non-Admins receive a safe `403`
-Access Denied response with no privileged data. Future privileged Route
-Handlers return `401` for unauthenticated callers and `403` for authenticated
+the established sign-in flow; authenticated non-Admins receive a stable safe
+Access Denied presentation with no privileged data. Stage 10.1 does not enable
+experimental Next.js `authInterrupts` merely to produce `forbidden()`, and it
+does not claim a transport-level HTTP `403` for the App Router shell unless a
+stable supported mechanism is identified. Future privileged Route Handlers
+return explicit `401` for unauthenticated callers and `403` for authenticated
 but unauthorized callers; neither response exposes privileged records.
 
-**Session invalidation contract.** Any future role mutation or account-disable
-operation must increment the affected credential's private `securityVersion`
-within the same authoritative transition. The existing Auth.js JWT validation
-then rejects older sessions. A stale JWT must not retain Admin access after
-demotion, and a disabled Admin must not retain privileged access.
+**Session invalidation contract.** Any role mutation must increment the
+affected credential's private `securityVersion` within the same authoritative
+transition. The existing Auth.js JWT validation then rejects older sessions.
+A stale JWT must not retain Admin access after demotion, and the existing
+persisted-`disabledAt` validation must continue to deny privileged access for a
+disabled Admin. Creating a disable transition is deferred beyond Stage 10.1.
 
 **Protected `/admin` contract.** `/admin` is introduced only after the
 server-side authorization boundary exists. The route itself performs the
@@ -195,27 +206,70 @@ only presentation. It must not render data, controls, or operational metrics
 beyond the proof of an authorized boundary.
 
 **Privileged audit-event contract.** The future append-only event has an
-opaque event ID, actor public `userId`, action, optional target type and target
-ID, timestamp, outcome, and only explicit allow-listed safe metadata. Stage
-10.1 defines only actions that arise from its own bootstrap, role-security
-transition, and authorization-sensitive scope; it does not create a general
-taxonomy for later Admin operations. Events never store passwords, credential
-hashes, reset tokens, cookies, session secrets, provider secrets, raw request
-bodies, unnecessary email values, or arbitrary developer-supplied metadata.
-Retention remains explicitly undecided; analytics and an audit viewer are out
-of scope.
+opaque event ID; a discriminated actor; action; optional target type and target
+ID; timestamp; outcome; and only explicit allow-listed safe metadata. A normal
+actor is `actorType: user` with a public `userId`. The sole system actor is the
+fixed `actorType: system`, `actorId: admin-bootstrap`, permitted only for the
+controlled first-Admin bootstrap. Stage 10.1 defines only actions that arise
+from its own bootstrap, role-security transition, and authorization-sensitive
+scope; it does not create a general taxonomy for later Admin operations.
+Events never store passwords, credential hashes, reset tokens, cookies, session
+secrets, provider secrets, raw request bodies, unnecessary email values, or
+arbitrary developer-supplied metadata. Retention remains explicitly undecided;
+analytics and an audit viewer are out of scope.
 
 **In scope.** Role compatibility/closed-value contract; controlled initial
 Admin bootstrap contract; server-only authorization boundary; security-version
 revocation contract; protected `/admin` shell; minimal append-only privileged
 audit-event foundation; and focused contract/integration verification.
 
+**Admin Final Visual Reference (future dashboard only).** The approved visual
+reference uses Swedish money formatting such as `128 450 kr`; the inventory
+states `Low`, `Critical`, and `Out of Stock`; and a dark sidebar with its lower
+perfume image, strong dark gradient, and active state preserved. Its future
+dashboard hierarchy is KPI cards, then Revenue / Order Status, then Recent
+Orders / Low Stock, then compact Latest Reviews. This reference does not
+authorize dashboard implementation in Stage 10.1.
+
+**Implementation-boundary ledger (closed / verified / checkpointed).** The initial
+bootstrap audit event alone may use the constrained
+`system/admin-bootstrap` actor; no experimental Next.js configuration is
+authorized for the `/admin` denial presentation; and Stage 10.1 adds no
+account-disable transition. The implementation must preserve the existing
+persisted-`disabledAt` rejection behavior. The implemented scope creates the
+role field, authorization modules, audit collection/index contract, bootstrap
+script, minimal `/admin` route, and focused tests; it creates no production
+configuration, Dashboard, or operational Admin capability.
+
+**Verification evidence.** Focused non-Mongo contract/regression coverage passed
+with 17 passed, 0 failed, and one existing dedicated-Mongo test skipped only in
+the Codex process that lacks usable Mongo connectivity. The dedicated Stage 10.1
+Mongo transaction test passed on the real local machine against
+`athar_stage55_test` (1 passed, 0 failed): transactional bootstrap, customer to
+Admin role transition, `securityVersion` increment, constrained
+`system/admin-bootstrap` audit actor, idempotent retry, nonexistent-target
+handling, rollback atomicity, audit index, secret safety, and fixture cleanup
+were verified. Owner verification passed for unauthenticated `/admin` sign-in,
+customer Access Denied with no privileged data, and a fresh local test-only
+Admin fixture session rendering the minimal protected shell. The real local
+production build passed on Next.js 16.3.8, including TypeScript and static
+generation (36/36); `/admin` is present in the production route graph. No
+Render/live deployment or production Admin account was created or promoted. The
+fixture was local/test-only in `athar_stage55_test`; `u3811698473@gmail.com`
+was not used or modified by Stage 10.1.
+
+**Next-stage boundary.** Stage 10.2 — Admin Provisioning, Activation & Dedicated
+Admin Login — remains separate and out of scope. It may later define
+company-controlled provisioning, invitation activation, and dedicated Admin
+login/recovery UX, but none of that is implemented by Stage 10.1.
+
 **Out of scope.** Dashboard analytics; Product/catalog CRUD; media
 administration; Brand/Collection administration; inventory adjustments; Order
 fulfillment or Admin mutations; customer administration; Admin-management UI;
 role-management UI/API; refunds; Stripe/PayPal privileged operations; email
 resend/delivery administration; discounts; journal; homepage merchandising;
-site settings; tracking; and staff notifications.
+site settings; tracking; staff notifications; and a new account-disable
+mutation/service/API/UI.
 
 **Security invariants.** Admin privilege is explicit, persisted, and checked
 on the server for every privileged boundary. Legacy/missing/malformed role data
@@ -230,7 +284,10 @@ forged/client roles cannot grant access; stale JWTs cannot retain Admin access
 after persisted demotion; disabled Admins lose privileged access; legacy,
 missing, and malformed roles fail closed; bootstrap rejects nonexistent targets
 and is controlled/idempotent; authorization is server-side across every stated
-boundary; and audit events contain the required safe fields and no secrets.
+boundary; and audit events contain the required safe fields and no secrets. The
+stable `/admin` denial presentation must not expose Admin data; its
+transport-level HTTP status is not asserted by this stage absent a stable
+supported App Router mechanism.
 
 **Completion gate.** This approved contract is checkpointed, but Stage 10.1 is
 not complete until implementation stays within it, focused and relevant

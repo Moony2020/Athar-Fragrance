@@ -39,6 +39,7 @@ export class MongoUserRepository {
       userId: createPublicUserId(),
       normalizedEmail: normalizeEmail(input.email),
       displayName: input.displayName?.trim() || normalizeEmail(input.email).split("@")[0],
+      role: "customer",
       createdAt: now,
       updatedAt: now,
     };
