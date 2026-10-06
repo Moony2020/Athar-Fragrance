@@ -22,7 +22,7 @@ Each phase has a goal contract, implementation ledger, evidence, documentation, 
 | 7 | Checkout foundation | Stages 7.1–7.5 closed + pushed; Stage 7.6 complete — ready for Phase closure checkpoint |
 | 8 | Stripe cards, direct PayPal, webhooks | Trusted payment finalization verified; checkpoint pending; historical PayPal first-decrement evidence remains limited |
 | 9 | Canonical orders and transactional email | Stages 9.1–9.6 closed / verified |
-| 10 | Admin platform | Planned |
+| 10 | Admin platform | Stage 10.1 Goal Contract approved / checkpointed — implementation not started |
 | 11 | Content, journal, legal, customer experience | Planned |
 | 12 | Security, performance, accessibility, SEO | Planned |
 | 13 | Production readiness | Planned |
@@ -100,6 +100,143 @@ Gmail used its fallback font rather than Cinzel Decorative, so exact
 cross-client logo-font parity is not guaranteed. The owner retained HTML text
 branding and rejected wordmark images. Dispatch was returned to `0`; no further
 live email is required.
+
+### Phase 10 stage map
+
+| Stage | Scope | Status |
+| --- | --- | --- |
+| 10.1 | Admin Identity & Server-Side Authorization Foundation | Goal Contract approved / checkpointed; implementation not started |
+
+#### Stage 10.1 Goal Contract — Admin Identity & Server-Side Authorization Foundation
+
+**Goal.** Establish the minimal, server-authoritative identity, authorization,
+session-revocation, protected-route, and privileged-audit foundations required
+before ATHAR exposes any operational Admin capability. The stage creates the
+lock and key only; it does not create an Admin product, order, customer,
+payment, or dashboard tool.
+
+**Baseline.** `87a46994156cf5381a30e25aab9e7d3b432ee413`.
+
+**Owner decisions.**
+
+- The only roles in this stage are `customer` and `admin`. No manager, editor,
+  support, or generalized RBAC role is introduced.
+- The initial Admin is an existing account only. A one-off controlled
+  server-only operational script explicitly targets its public `userId`; there
+  is no Admin self-registration, endpoint, Admin UI, browser-selected
+  privilege, automatic promotion from an email address, or
+  environment-variable-driven automatic promotion.
+- Stage 10.1 contains no Admin-management UI and no public or private
+  promotion API. Creating additional Admins is deferred to a separately
+  contracted stage.
+- Every privileged request verifies the authenticated identity and its current
+  persisted privilege on the server. Hiding `/admin`, a React condition, or a
+  JWT/browser role by itself is never authorization.
+- A role change or account disable increments the existing private
+  `securityVersion`, invalidating prior sessions through the existing session
+  validation mechanism.
+- The stage establishes a minimal append-only privileged audit-event
+  foundation, but not an audit viewer or dashboard.
+- `/admin` is a protected shell/minimal landing page only. It contains no
+  operational dashboard or CRUD surface.
+
+**Identity and role contract.** The canonical `User` document persists one
+explicit closed role value: `customer` or `admin`. Existing users that have no
+historical role, and any missing, unknown, malformed, or otherwise invalid
+persisted role, must fail closed as non-Admin. A legacy record therefore cannot
+become Admin by default, omission, parser fallback, JWT claim, or browser
+input. New customer identity creation must persist `customer` explicitly.
+Privilege is never derived from an email address, a frontend value, a route
+parameter, or an environment variable.
+
+**Data and migration compatibility.** The implementation must preserve all
+existing customer identities and authentication behavior. It may introduce the
+role field and any technically necessary explicit migration/index work, but no
+request-time read may silently promote a legacy user. No bulk legacy backfill
+is authorized merely for Stage 10.1; an implementation audit may report a real
+technical need without inventing that migration. No existing User ID,
+credential, password hash, customer profile, Cart, Wishlist, Checkout,
+payment, or Order authority changes.
+
+**Initial Admin bootstrap contract.** A later implementation provides one
+one-off server-only operational script which receives an operator-chosen
+existing public `userId` outside browser input. It must first resolve a real
+existing user; a nonexistent target fails without creating a user, credential,
+or Admin record. It must not contain an Admin email, raw secret, or automatic-
+promotion rule in source, frontend configuration, environment configuration,
+or documentation. The operation is idempotent: retrying an already-Admin
+target does not perform a second privilege mutation. Its success, no-op, and
+failure outcomes are auditable through the privileged-event foundation when
+that foundation is implemented. Bootstrap implementation itself is out of
+scope for this documentation-only stage.
+
+**Server-side authorization contract.** A single future server-only
+authorization boundary must be usable by Server Components, Route Handlers,
+Server Actions, and privileged services. It must derive the candidate identity
+from the current authenticated session, confirm that the credential/session is
+currently valid, then read and validate the current persisted role before
+allowing privileged data or mutations. The JWT can identify a session but is
+not the privilege source of truth. Unauthenticated `/admin` requests follow
+the established sign-in flow; authenticated non-Admins receive a safe `403`
+Access Denied response with no privileged data. Future privileged Route
+Handlers return `401` for unauthenticated callers and `403` for authenticated
+but unauthorized callers; neither response exposes privileged records.
+
+**Session invalidation contract.** Any future role mutation or account-disable
+operation must increment the affected credential's private `securityVersion`
+within the same authoritative transition. The existing Auth.js JWT validation
+then rejects older sessions. A stale JWT must not retain Admin access after
+demotion, and a disabled Admin must not retain privileged access.
+
+**Protected `/admin` contract.** `/admin` is introduced only after the
+server-side authorization boundary exists. The route itself performs the
+server-side check before rendering its minimal shell; client-side hiding is
+only presentation. It must not render data, controls, or operational metrics
+beyond the proof of an authorized boundary.
+
+**Privileged audit-event contract.** The future append-only event has an
+opaque event ID, actor public `userId`, action, optional target type and target
+ID, timestamp, outcome, and only explicit allow-listed safe metadata. Stage
+10.1 defines only actions that arise from its own bootstrap, role-security
+transition, and authorization-sensitive scope; it does not create a general
+taxonomy for later Admin operations. Events never store passwords, credential
+hashes, reset tokens, cookies, session secrets, provider secrets, raw request
+bodies, unnecessary email values, or arbitrary developer-supplied metadata.
+Retention remains explicitly undecided; analytics and an audit viewer are out
+of scope.
+
+**In scope.** Role compatibility/closed-value contract; controlled initial
+Admin bootstrap contract; server-only authorization boundary; security-version
+revocation contract; protected `/admin` shell; minimal append-only privileged
+audit-event foundation; and focused contract/integration verification.
+
+**Out of scope.** Dashboard analytics; Product/catalog CRUD; media
+administration; Brand/Collection administration; inventory adjustments; Order
+fulfillment or Admin mutations; customer administration; Admin-management UI;
+role-management UI/API; refunds; Stripe/PayPal privileged operations; email
+resend/delivery administration; discounts; journal; homepage merchandising;
+site settings; tracking; and staff notifications.
+
+**Security invariants.** Admin privilege is explicit, persisted, and checked
+on the server for every privileged boundary. Legacy/missing/malformed role data
+fails closed. Browser input, route visibility, and JWT claims alone cannot
+grant privilege. Promotion/demotion and disable transitions revoke stale
+sessions through `securityVersion`. Privileged actions are auditable without
+recording secrets or sensitive request bodies.
+
+**Required verification.** Later implementation must prove: unauthenticated
+and customer users cannot access `/admin`; an explicit persisted Admin can;
+forged/client roles cannot grant access; stale JWTs cannot retain Admin access
+after persisted demotion; disabled Admins lose privileged access; legacy,
+missing, and malformed roles fail closed; bootstrap rejects nonexistent targets
+and is controlled/idempotent; authorization is server-side across every stated
+boundary; and audit events contain the required safe fields and no secrets.
+
+**Completion gate.** This approved contract is checkpointed, but Stage 10.1 is
+not complete until implementation stays within it, focused and relevant
+regression tests pass, the required security/compatibility evidence passes,
+documentation is updated, and the owner signs off. No Admin operational stage
+begins automatically.
 
 ### Phase 6 stage map
 

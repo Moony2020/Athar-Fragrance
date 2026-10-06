@@ -1,8 +1,8 @@
 # ATHAR Project Status
 
 **Last audited:** 2026-10-03
-**Current phase:** Phase 9 — Canonical Orders and Transactional Email
-**Overall status:** **STAGE 9.5 CLOSED / VERIFIED / CHECKPOINTED / PUSHED.**
+**Current phase:** Phase 10 — Admin Platform
+**Overall status:** **STAGE 10.1 GOAL CONTRACT APPROVED / CHECKPOINTED — IMPLEMENTATION NOT STARTED.**
 Stage 9.6 Premium Order Confirmation Email Presentation is **CLOSED / VERIFIED**.
 Its implementation checkpoint is `77aae73366bb0b2fe86bf817e0ddd899b134b3ed`;
 controlled live Order `ATH-7678DB2848CB` passed Brevo delivery and Gmail visual
@@ -11,6 +11,27 @@ typography, so exact cross-client logo-font parity is not guaranteed. Dispatch
 was returned to `0` after the test. Stage 9.4 remains closed
 / verified; trusted payment finalization and the live customer Order
 Confirmation delivery pipeline remain unchanged.
+
+## Stage 10.1 planning status — Admin Identity & Server-Side Authorization Foundation
+
+Stage 10.1 has a **GOAL CONTRACT APPROVED / CHECKPOINTED — IMPLEMENTATION NOT
+STARTED** only. No Admin code, route, role field, authorization helper,
+bootstrap operation, audit-event collection, test, or migration is part of
+this planning checkpoint. The approved contract fixes two roles (`customer` and
+`admin`) persisted on the canonical User document; historical/missing/unknown/
+malformed roles fail closed to non-Admin and no bulk legacy backfill is
+authorized merely for this stage. The initial Admin is an existing account
+targeted by public `userId` through a one-off controlled server-only script;
+there is no endpoint, UI, browser path, or automatic email/environment
+promotion. Privileged checks use the current persisted role server-side, role
+or disable changes invalidate stale sessions through `securityVersion`, and
+`/admin` is only a protected minimal shell. Future privileged route handlers
+use `401` for unauthenticated and `403` for authenticated unauthorized callers;
+the shell sends authenticated non-Admins to a safe `403` Access Denied state.
+Audit events are append-only with allow-listed safe metadata and no sensitive
+request data; retention remains undecided. Dashboard, catalog/order/customer
+operations, refunds, provider operations, email administration, and all
+role-management UI/API remain out of scope pending later contracts.
 
 ## Trusted Payment Finalization closure (2026-10-01)
 
