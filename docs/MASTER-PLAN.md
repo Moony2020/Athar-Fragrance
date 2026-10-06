@@ -106,6 +106,7 @@ live email is required.
 | Stage | Scope | Status |
 | --- | --- | --- |
 | 10.1 | Admin Identity & Server-Side Authorization Foundation | Closed / verified / checkpointed |
+| 10.2 | Admin Provisioning, Activation & Dedicated Admin Login | Goal contract owner-approved / final verification passed — implementation not started |
 
 #### Stage 10.1 Goal Contract — Admin Identity & Server-Side Authorization Foundation
 
@@ -263,37 +264,161 @@ Admin Login — remains separate and out of scope. It may later define
 company-controlled provisioning, invitation activation, and dedicated Admin
 login/recovery UX, but none of that is implemented by Stage 10.1.
 
-**Out of scope.** Dashboard analytics; Product/catalog CRUD; media
-administration; Brand/Collection administration; inventory adjustments; Order
-fulfillment or Admin mutations; customer administration; Admin-management UI;
-role-management UI/API; refunds; Stripe/PayPal privileged operations; email
-resend/delivery administration; discounts; journal; homepage merchandising;
-site settings; tracking; staff notifications; and a new account-disable
-mutation/service/API/UI.
+#### Stage 10.2 Goal Contract — Admin Provisioning, Activation & Dedicated Admin Login
 
-**Security invariants.** Admin privilege is explicit, persisted, and checked
-on the server for every privileged boundary. Legacy/missing/malformed role data
-fails closed. Browser input, route visibility, and JWT claims alone cannot
-grant privilege. Promotion/demotion and disable transitions revoke stale
-sessions through `securityVersion`. Privileged actions are auditable without
-recording secrets or sensitive request bodies.
+**Status.** Goal contract owner-approved; all seven owner decisions are locked
+and final contract verification passed. Implementation has not started and is
+not authorized by this documentation checkpoint. The baseline is
+`fb3240b5085576b792fefecae5d6f18bb7014b81`.
 
-**Required verification.** Later implementation must prove: unauthenticated
-and customer users cannot access `/admin`; an explicit persisted Admin can;
-forged/client roles cannot grant access; stale JWTs cannot retain Admin access
-after persisted demotion; disabled Admins lose privileged access; legacy,
-missing, and malformed roles fail closed; bootstrap rejects nonexistent targets
-and is controlled/idempotent; authorization is server-side across every stated
-boundary; and audit events contain the required safe fields and no secrets. The
-stable `/admin` denial presentation must not expose Admin data; its
-transport-level HTTP status is not asserted by this stage absent a stable
-supported App Router mechanism.
+**Goal.** Provide a company-controlled way to provision a future Admin without
+customer registration, let that person activate the identity using a one-time
+expiring link and their own password, and provide separate Admin-only login and
+password recovery UX. This stage extends the Stage 10.1 persisted-role,
+security-version, server authorization, and privileged-audit foundations; it
+does not add operational Admin capabilities.
 
-**Completion gate.** This approved contract is checkpointed, but Stage 10.1 is
-not complete until implementation stays within it, focused and relevant
-regression tests pass, the required security/compatibility evidence passes,
-documentation is updated, and the owner signs off. No Admin operational stage
-begins automatically.
+**Owner operational interface (intended, not implemented by this contract).**
+
+```text
+npm run admin:provision -- --email <admin-email>
+npm run admin:provision -- --email <admin-email> --reissue
+```
+
+The first command creates a pending invitation only. The reissue form is an
+explicit owner operation that replaces an invitation. Neither command accepts a
+password argument. These are the future documented interfaces, not commands
+available or to be run before Stage 10.2 implementation is approved.
+
+**Pending Admin model and collision policy.** The stage uses a separate pending
+Admin invitation document. Before activation there is no canonical User, no
+Credential, no session, and no Admin privilege. Normal customer registration is
+never part of Admin onboarding. Provisioning a normalized email that belongs to
+an existing customer is rejected: it never promotes, merges, overwrites, or
+converts that customer. A real Admin identity therefore requires an unused,
+separate email. Provisioning an existing active Admin is rejected with no state
+mutation: it creates no new invitation and changes no User, Credential, or
+privilege.
+
+**Invitation lifetime and reissue.** An invitation is valid for 24 hours. After
+expiry activation is rejected and cannot create a privilege; a new explicit
+invitation is required. Reissue atomically invalidates the former invitation
+and creates one successor, so at most one valid invitation exists for a
+normalized email. Any old activation link must fail after successful reissue.
+
+**Activation and identity creation.** A cryptographically random activation
+token is issued only for the activation link. Its raw value is never persisted;
+the server stores only a SHA-256 or equivalent established secure digest,
+`expiresAt`, and durable `consumedAt` or equivalent authoritative consumption
+state. Activation conditionally consumes one unexpired, unconsumed invitation.
+In one Mongo transaction it creates `User(role: admin)`, creates the Admin's
+Argon2id Credential using the chosen password, consumes the invitation, and
+appends safe privileged audit events. Invalid, expired, consumed, replayed, or
+concurrently consumed tokens fail safely and create no partial Admin identity.
+TTL cleanup may remove expired records later but must never be treated as the
+expiry authorization decision.
+
+Activation URL handling is mandatory: implementation must prevent raw tokens
+from reaching server request URLs or query strings, server logs, audit
+metadata, analytics, referrers, and error reporting. The intended activation
+link is `/admin/activate#token=<raw-token>`; the fragment is read client-side
+and removed from the visible/history URL as early as practical before the
+controlled activation submission. The raw token may be submitted only through
+that controlled operation and is never persisted raw. Successful activation
+never creates a logged-in session; the new Admin must perform a fresh login at
+`/admin/login`.
+
+**Portal separation and authorization.** `/account/sign-in` accepts only
+customers. `/admin/login` accepts only active Admins. Credentials presented in
+the wrong portal receive a generic safe failure and grant no privilege.
+Dedicated Admin login reuses the existing credential hashing, credential
+validation, session-current, and Auth.js foundation; it does not create a
+second password system. It must verify the current persisted role server-side.
+Every `/admin` request and future privileged request continues to re-read the
+current persisted Admin role; JWT role claims and client-side routing are never
+authorization. Disabled credentials and stale security-version sessions fail
+safely. Admin login redirects use fixed safe destinations, not arbitrary
+callback URLs.
+
+**Admin-only password recovery.** Stage 10.2 includes `/admin/forgot-password`
+and an Admin-only reset flow. Customer recovery accepts customers only; Admin
+recovery accepts active Admins only. Cross-portal recovery fails generically.
+Admin recovery uses a random one-time expiring token, persists its hash only,
+uses Argon2id for the new password, and increments `securityVersion` on a
+successful reset so prior sessions are invalidated. The final persistence design
+must preserve this role separation; a dedicated Admin reset-token boundary is
+expected if the existing customer reset-token model cannot enforce it safely.
+
+**Persistent Admin authentication rate limiting.** MongoDB-backed, shared
+rate limits are required for `/admin/login`, `/admin/forgot-password`, and
+`/admin/activate`. Persisted email and IP identifiers use server-only HMAC
+representations where stored. Responses remain generic, and an unavailable
+limiter fails closed for these privileged flows. The contract intentionally
+does not invent thresholds; implementation must use a documented security
+policy and established ATHAR conventions where applicable.
+
+**Email delivery boundary.** Admin invitation email and Admin password-recovery
+email must use ATHAR's existing server-only Brevo transactional-email
+foundation. A non-production test-mail adapter is allowed only under the
+project's established test conventions. Admin invitation and recovery delivery
+must not reuse or couple to Phase 9's order-specific `email_deliveries`
+records. The provisioning workflow must send an activation invitation through
+this Admin email boundary; it is not an optional conceptual step. If durable
+invitation delivery is introduced, it uses a purpose-scoped Admin delivery
+model with its own idempotency, lease/retry, recipient-safety, and
+secret-safety semantics. Raw activation tokens, passwords, sessions, cookies,
+secrets, request bodies, and full activation URLs never enter persistent audit
+or delivery metadata.
+
+**Persistence, indexes, and audit.** Expected new persistence boundaries are
+Admin invitations, persistent Admin-auth rate limits, an Admin recovery-token
+boundary if required by the final role-separated design, and purpose-scoped
+invitation delivery state if durable delivery is included. Their implementation
+requires uniqueness, expiry/TTL, lookup, idempotency, concurrency, and
+transaction invariants before indexes are created. The privileged audit taxonomy
+must safely support at least `admin.invitation.provisioned`,
+`admin.invitation.reissued`, `admin.invitation.activation_succeeded`,
+`admin.password_reset_requested`, and `admin.password_reset_completed`.
+Failure events contain only a safe category/reason; they never retain raw
+tokens, passwords, hashes, cookies, sessions, request bodies, or secrets.
+
+**Implementation ledger (proposed; no files created by this contract).**
+
+- **Create:** invitation document/parser/repository and provisioning service;
+  owner provisioning script; Admin login, activation, and recovery pages/forms;
+  focused Stage 10.2 unit and Mongo integration tests.
+- **Modify:** Auth.js provider composition; credential and password-reset
+  services; User/Credential transaction boundaries as needed; database
+  collections/index definitions; privileged audit schema/store; `/admin`
+  unauthenticated redirect; Brevo adapter boundary; canonical plan/status docs.
+- **Review only:** existing order email outbox, existing password-reset ADR and
+  tests, customer sign-in behavior, and Stage 10.1 authorization boundary.
+
+**Required verification.** Future implementation must cover unused-email
+provisioning; absence of User/Credential before activation; customer and active
+Admin collisions; duplicate provisioning; explicit reissue and prior-token
+invalidation; 24-hour expiry; invalid/consumed/replayed/concurrent activation;
+transaction rollback; password policy and Argon2id; persisted Admin role and
+security-version authority; audit/token secrecy; Admin/customer cross-portal
+login rejection; disabled/stale session behavior; all `/admin` access states;
+Admin/customer recovery separation; persistent and fail-closed rate limits;
+TypeScript; focused automated tests; Mongo integration tests; production build;
+and owner browser verification.
+
+**Out of scope.** Admin Dashboard implementation; catalog, inventory, order,
+payment, refund, analytics, customer, and general role-management operations;
+public Admin registration or request-access; MFA/passkeys; production
+deployment or Render changes; Git remote changes; and `package-lock.json`
+cleanup.
+
+**Completion gate.** Goal Contract approval or checkpointing does not complete
+Stage 10.2. The stage remains incomplete until implementation stays within this
+contract; focused automated tests pass; Mongo integration, concurrency, and
+transaction verification pass; TypeScript and production build pass;
+security/secret-safety verification passes; owner browser verification passes;
+documentation records the evidence; and the owner explicitly closes and signs
+off Stage 10.2. No later Admin operational or Dashboard stage begins
+automatically.
 
 ### Phase 6 stage map
 

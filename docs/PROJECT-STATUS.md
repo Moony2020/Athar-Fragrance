@@ -65,8 +65,30 @@ compilation, TypeScript, and static generation (36/36) all passed, with
 and Codex build timeout were local environment/process issues, not Stage 10.1
 code failures.
 
-Stage 10.2 — Admin Provisioning, Activation & Dedicated Admin Login — remains
-separate and out of scope. It has not been implemented by Stage 10.1.
+## Stage 10.2 planning status — Admin Provisioning, Activation & Dedicated Admin Login
+
+Stage 10.2 is **GOAL CONTRACT OWNER APPROVED — SEVEN OWNER DECISIONS LOCKED —
+FINAL CONTRACT VERIFICATION PASS — IMPLEMENTATION NOT STARTED**. Implementation
+is not authorized by this documentation checkpoint. Its baseline is
+`fb3240b5085576b792fefecae5d6f18bb7014b81`. It will provision a separate
+pending Admin invitation, not a customer account: before activation there is no
+User, Credential, session, or Admin privilege. A successful one-time,
+24-hour activation creates the persisted Admin User and Argon2id Credential,
+consumes the invitation, and appends safe audit events in one transaction.
+
+The intended future owner interfaces are `npm run admin:provision -- --email
+<admin-email>` and the explicit reissue form `npm run admin:provision --
+--email <admin-email> --reissue`; neither is implemented or executable yet.
+Existing customer emails are rejected rather than promoted, merged, or
+overwritten. Stage 10.2 will add separate Admin login and recovery UX at
+`/admin/login` and `/admin/forgot-password`; customer and Admin credentials
+and recovery remain role-separated with generic safe cross-portal failures.
+Mongo-backed fail-closed rate limiting is required for Admin login, recovery,
+and activation. The existing persisted-role server authorization,
+`securityVersion` session invalidation, disabled-credential rejection, and
+safe privileged audit foundation remain mandatory. No Dashboard, operational
+Admin tools, real Admin provisioning, production deployment, Render change, or
+`package-lock.json` change is authorized by this planning status.
 
 ## Trusted Payment Finalization closure (2026-10-01)
 
