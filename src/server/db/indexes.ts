@@ -13,6 +13,7 @@ import type { OrderDocument } from "@/orders/order-document";
 import type { EmailDelivery } from "@/server/email/email-delivery-document";
 import type { GuestOrderAccessSessionDocument, OrderLookupRateLimitDocument } from "@/server/orders/guest-order-access-document";
 import type { PrivilegedAuditEventDocument } from "@/admin/privileged-audit-document";
+import type { AdminInvitationDocument } from "@/admin/admin-invitation-document";
 
 /**
  * Idempotent catalog indexes. Invoke from a controlled deployment/migration
@@ -156,5 +157,22 @@ export async function ensurePrivilegedAuditEventIndexes(): Promise<void> {
     { key: { eventId: 1 }, name: "privileged_audit_event_id_unique", unique: true },
     { key: { "target.id": 1, createdAt: -1 }, name: "privileged_audit_target_created" },
     { key: { action: 1, createdAt: -1 }, name: "privileged_audit_action_created" },
+  ]);
+}
+
+/** Admin invitation indexes are explicit Owner provisioning work, never request work. */
+export async function ensureAdminInvitationIndexes(): Promise<void> {
+  const database = await getDatabase();
+  await database.collection<AdminInvitationDocument>(databaseCollections.adminInvitations).createIndexes([
+    { key: { invitationId: 1 }, name: "admin_invitation_id_unique", unique: true },
+    { key: { tokenHash: 1 }, name: "admin_invitation_token_hash_unique", unique: true },
+    {
+      key: { normalizedEmail: 1 },
+      name: "admin_invitation_pending_email_unique",
+      unique: true,
+      partialFilterExpression: { status: "pending" },
+    },
+    { key: { normalizedEmail: 1, createdAt: -1 }, name: "admin_invitation_email_created" },
+    { key: { purgeAt: 1 }, name: "admin_invitation_cleanup_ttl", expireAfterSeconds: 0 },
   ]);
 }

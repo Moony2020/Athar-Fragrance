@@ -18,6 +18,7 @@ export const databaseCollections = {
   guestOrderAccessSessions: "guest_order_access_sessions",
   orderLookupRateLimits: "order_lookup_rate_limits",
   privilegedAuditEvents: "privileged_audit_events",
+  adminInvitations: "admin_invitations",
 } as const;
 
 export type DatabaseCollectionName = (typeof databaseCollections)[keyof typeof databaseCollections];

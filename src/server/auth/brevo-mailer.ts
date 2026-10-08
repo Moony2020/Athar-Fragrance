@@ -3,9 +3,14 @@ import "server-only";
 import type { RenderedOrderConfirmationEmail } from "@/server/email/order-confirmation-email";
 
 type ResetEmail = { to: string; resetUrl: string; expiresMinutes: number };
+export type AdminInvitationEmail = { to: string; activationUrl: string; expiresHours: number };
 
 export interface PasswordResetMailer {
   sendPasswordReset(message: ResetEmail): Promise<void>;
+}
+
+export interface AdminInvitationMailer {
+  sendAdminInvitation(message: AdminInvitationEmail): Promise<void>;
 }
 
 export function isBrevoConfigured(): boolean {
@@ -51,5 +56,16 @@ export class BrevoOrderConfirmationMailer implements OrderConfirmationMailer {
 export class BrevoPasswordResetMailer implements PasswordResetMailer {
   async sendPasswordReset(message: ResetEmail): Promise<void> {
     await sendBrevoMessage({ to: message.to, subject: "Reset your ATHAR password", textContent: `We received a request to reset your ATHAR password. Use this link within ${message.expiresMinutes} minutes: ${message.resetUrl}\n\nIf you did not request this, you can ignore this email.`, htmlContent: `<main style="font-family:Arial,sans-serif;color:#191817"><h1>Reset your ATHAR password</h1><p>Use the button below within ${message.expiresMinutes} minutes to choose a new password.</p><p><a href="${message.resetUrl}" style="display:inline-block;padding:14px 22px;background:#191817;color:#fff;text-decoration:none">Reset password</a></p><p>If you did not request this, ignore this email. Your password will not change.</p></main>` });
+  }
+}
+
+export class BrevoAdminInvitationMailer implements AdminInvitationMailer {
+  async sendAdminInvitation(message: AdminInvitationEmail): Promise<void> {
+    await sendBrevoMessage({
+      to: message.to,
+      subject: "Activate your ATHAR Admin account",
+      textContent: `You have been invited to the ATHAR Admin Platform. Use this link within ${message.expiresHours} hours to choose your password: ${message.activationUrl}\n\nIf you were not expecting this invitation, you can ignore this email.`,
+      htmlContent: `<main style="font-family:Arial,sans-serif;color:#191817"><h1>Activate your ATHAR Admin account</h1><p>Use the button below within ${message.expiresHours} hours to choose your password.</p><p><a href="${message.activationUrl}" style="display:inline-block;padding:14px 22px;background:#191817;color:#fff;text-decoration:none">Activate Admin account</a></p><p>If you were not expecting this invitation, ignore this email.</p></main>`,
+    });
   }
 }
