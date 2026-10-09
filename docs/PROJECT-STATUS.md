@@ -1,8 +1,9 @@
 # ATHAR Project Status
 
-**Last audited:** 2026-10-06
+**Last audited:** 2026-10-09
 **Current phase:** Phase 10 — Admin Platform
-**Overall status:** **STAGE 10.1 CLOSED / VERIFIED / CHECKPOINTED.**
+**Overall status:** **STAGE 10.2 GATE 1 CHECKPOINTED; GATE 2 GOAL CONTRACT V2
+OWNER-APPROVED — IMPLEMENTATION NOT AUTHORIZED.**
 Stage 9.6 Premium Order Confirmation Email Presentation is **CLOSED / VERIFIED**.
 Its implementation checkpoint is `77aae73366bb0b2fe86bf817e0ddd899b134b3ed`;
 controlled live Order `ATH-7678DB2848CB` passed Brevo delivery and Gmail visual
@@ -65,30 +66,48 @@ compilation, TypeScript, and static generation (36/36) all passed, with
 and Codex build timeout were local environment/process issues, not Stage 10.1
 code failures.
 
-## Stage 10.2 planning status — Admin Provisioning, Activation & Dedicated Admin Login
+## Stage 10.2 status — Admin Provisioning, Activation & Dedicated Admin Login
 
-Stage 10.2 is **GOAL CONTRACT OWNER APPROVED — SEVEN OWNER DECISIONS LOCKED —
-FINAL CONTRACT VERIFICATION PASS — IMPLEMENTATION NOT STARTED**. Implementation
-is not authorized by this documentation checkpoint. Its baseline is
-`fb3240b5085576b792fefecae5d6f18bb7014b81`. It will provision a separate
-pending Admin invitation, not a customer account: before activation there is no
-User, Credential, session, or Admin privilege. A successful one-time,
-24-hour activation creates the persisted Admin User and Argon2id Credential,
-consumes the invitation, and appends safe audit events in one transaction.
+Stage 10.2 has seven locked Owner decisions. Gate 1 — Pending Admin Invitation
+& Controlled Provisioning Foundation — is **VERIFIED / CHECKPOINTED / PUSHED**
+at `f4ae2c1cd93b7295b1149560039ad989de76cbd7`. Gate 2 — Admin Invitation
+Activation & Password Setup — has an **OWNER-APPROVED v2 GOAL CONTRACT** using
+that checkpoint as its baseline. The complete contract is recorded in
+`docs/STAGE-10.2-GATE-2-GOAL-CONTRACT.md`. This documentation write/review does
+not authorize Gate 2 implementation, staging, checkpointing, production
+exposure, or any Render change.
 
-The intended future owner interfaces are `npm run admin:provision -- --email
+Gate 1 provisions a separate pending Admin invitation, not a customer account:
+before activation there is no User, Credential, session, or Admin privilege.
+Gate 2 contracts a successful one-time, 24-hour activation that creates the
+persisted Admin User and Argon2id Credential, consumes the invitation, and
+appends one safe privileged audit event in one Mongo transaction. It creates no
+automatic Admin session.
+
+The Gate 1 owner interfaces are `npm run admin:provision -- --email
 <admin-email>` and the explicit reissue form `npm run admin:provision --
---email <admin-email> --reissue`; neither is implemented or executable yet.
+--email <admin-email> --reissue`; neither accepts a password argument.
 Existing customer emails are rejected rather than promoted, merged, or
 overwritten. Stage 10.2 will add separate Admin login and recovery UX at
 `/admin/login` and `/admin/forgot-password`; customer and Admin credentials
 and recovery remain role-separated with generic safe cross-portal failures.
 Mongo-backed fail-closed rate limiting is required for Admin login, recovery,
-and activation. The existing persisted-role server authorization,
+and activation. Gate 2 locks Activation to five token-HMAC attempts and ten
+IP-HMAC attempts per fixed 15-minute window. Both counters and a stable attempt
+identity must be persisted atomically; bounded write-conflict retries must not
+double-count or permit either limit to be bypassed, and uncertain outcomes fail
+closed before password hashing or activation. The existing persisted-role server authorization,
 `securityVersion` session invalidation, disabled-credential rejection, and
 safe privileged audit foundation remain mandatory. No Dashboard, operational
 Admin tools, real Admin provisioning, production deployment, Render change, or
 `package-lock.json` change is authorized by this planning status.
+
+Gate 2 contract approval and any future isolated checkpoint are not production
+deployment authorization. Public Activation remains disabled or fail-closed
+until Render's actual trusted proxy/header behavior and client-IP provenance are
+verified, arbitrary forwarding headers are rejected, the production HMAC secret
+and Mongo limiter are ready, fail-closed tests pass, and the owner separately
+authorizes production exposure. Documentation alone does not satisfy this gate.
 
 ## Trusted Payment Finalization closure (2026-10-01)
 

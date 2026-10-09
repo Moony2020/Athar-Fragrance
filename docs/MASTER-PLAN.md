@@ -106,7 +106,7 @@ live email is required.
 | Stage | Scope | Status |
 | --- | --- | --- |
 | 10.1 | Admin Identity & Server-Side Authorization Foundation | Closed / verified / checkpointed |
-| 10.2 | Admin Provisioning, Activation & Dedicated Admin Login | Goal contract owner-approved / final verification passed — implementation not started |
+| 10.2 | Admin Provisioning, Activation & Dedicated Admin Login | Gate 1 verified / checkpointed / pushed; Gate 2 v2 contract owner-approved — Gate 2 implementation not started / not authorized |
 
 #### Stage 10.1 Goal Contract — Admin Identity & Server-Side Authorization Foundation
 
@@ -266,10 +266,15 @@ login/recovery UX, but none of that is implemented by Stage 10.1.
 
 #### Stage 10.2 Goal Contract — Admin Provisioning, Activation & Dedicated Admin Login
 
-**Status.** Goal contract owner-approved; all seven owner decisions are locked
-and final contract verification passed. Implementation has not started and is
-not authorized by this documentation checkpoint. The baseline is
-`fb3240b5085576b792fefecae5d6f18bb7014b81`.
+**Status.** The overall Stage 10.2 Goal Contract is owner-approved and all seven
+owner decisions remain locked. Gate 1 — Pending Admin Invitation & Controlled
+Provisioning Foundation — is verified, checkpointed, and pushed at
+`f4ae2c1cd93b7295b1149560039ad989de76cbd7`. Gate 2 — Admin Invitation
+Activation & Password Setup — now has an owner-approved v2 Goal Contract, with
+that Gate 1 checkpoint as its baseline. The complete Gate 2 contract is recorded
+in [STAGE-10.2-GATE-2-GOAL-CONTRACT.md](./STAGE-10.2-GATE-2-GOAL-CONTRACT.md).
+Gate 2 implementation, its checkpoint, and production exposure are not
+authorized by this documentation write/review gate.
 
 **Goal.** Provide a company-controlled way to provision a future Admin without
 customer registration, let that person activate the identity using a one-time
@@ -278,7 +283,7 @@ password recovery UX. This stage extends the Stage 10.1 persisted-role,
 security-version, server authorization, and privileged-audit foundations; it
 does not add operational Admin capabilities.
 
-**Owner operational interface (intended, not implemented by this contract).**
+**Owner operational interface.**
 
 ```text
 npm run admin:provision -- --email <admin-email>
@@ -287,8 +292,9 @@ npm run admin:provision -- --email <admin-email> --reissue
 
 The first command creates a pending invitation only. The reissue form is an
 explicit owner operation that replaces an invitation. Neither command accepts a
-password argument. These are the future documented interfaces, not commands
-available or to be run before Stage 10.2 implementation is approved.
+password argument. This Gate 1 interface is implemented and checkpointed; its
+use with a real Admin identity, live email, or production data remains outside
+the Gate 2 documentation authorization.
 
 **Pending Admin model and collision policy.** The stage uses a separate pending
 Admin invitation document. Before activation there is no canonical User, no
@@ -351,11 +357,23 @@ expected if the existing customer reset-token model cannot enforce it safely.
 
 **Persistent Admin authentication rate limiting.** MongoDB-backed, shared
 rate limits are required for `/admin/login`, `/admin/forgot-password`, and
-`/admin/activate`. Persisted email and IP identifiers use server-only HMAC
-representations where stored. Responses remain generic, and an unavailable
-limiter fails closed for these privileged flows. The contract intentionally
-does not invent thresholds; implementation must use a documented security
-policy and established ATHAR conventions where applicable.
+`/admin/activate`. Gate 2 locks Activation to a fixed 15-minute window, five
+attempts per token-HMAC and ten attempts per IP-HMAC. The two counters and a
+stable server-generated attempt identity must be handled atomically; bounded
+write-conflict retries must remain the same logical attempt, double-counting and
+partial-counter allow decisions are forbidden, and exhausted or uncertain
+outcomes fail closed. Persisted identifiers use a dedicated server-only HMAC
+secret and never retain raw token, IP, or email values. Login and Recovery
+thresholds remain future-gate work.
+
+**Gate 2 production boundary.** Contract approval, isolated implementation
+verification, and checkpointing never authorize production exposure. The
+Activation endpoint must remain disabled or fail closed in production until the
+actual Render proxy/header contract and trustworthy client-IP provenance are
+proven, arbitrary `X-Forwarded-For` input is rejected, the dedicated production
+HMAC secret and Mongo limiter are verified, fail-closed security tests pass,
+and the owner grants a separate deployment authorization. Documentation alone
+is not sufficient evidence.
 
 **Email delivery boundary.** Admin invitation email and Admin password-recovery
 email must use ATHAR's existing server-only Brevo transactional-email
