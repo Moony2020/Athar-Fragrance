@@ -119,7 +119,7 @@ Password validation + Argon2id
         ↓
 Atomic activation transaction
         ↓
-Generic success state and link to future /admin/login
+Generic success state and future Admin sign-in guidance
 ```
 
 The raw token never enters a query string, SSR HTML, browser storage, logs,
@@ -306,7 +306,12 @@ recheck the persisted Admin role server-side.
 The minimal page provides ATHAR text branding, password and confirmation
 fields, visibility control, policy feedback, loading state, accessible
 announcements, generic invalid/expired/used and unavailable states, success
-state, responsive behavior, and a link to the future `/admin/login`.
+state, responsive behavior, and future Admin sign-in guidance.
+
+**Owner-approved success-UI clarification.** Until `/admin/login` is implemented
+in its separate gate, this guidance is informational text, not a clickable link
+or navigation to an unavailable route. This narrows only the Gate 2 success
+presentation; Admin Login remains excluded and activation creates no session.
 
 It provides no sign-up, register-as-Admin, request-access, customer-registration
 link, Dashboard preview, token display, or invited-email display.

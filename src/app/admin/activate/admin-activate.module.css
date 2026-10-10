@@ -1,0 +1,21 @@
+.page { min-height: 100vh; display: grid; place-items: center; padding: 2rem 1.25rem; background: radial-gradient(ellipse at 18% 82%, #e9dfcc 0, transparent 38%), #f7f4ed; color: #211d18; }
+.card { width: min(100%, 30rem); padding: clamp(2rem, 6vw, 3.5rem); border: 1px solid #e6dfd3; border-radius: 1.1rem; background: rgba(255,255,255,.88); box-shadow: 0 20px 70px #35251512; }
+.brand { margin: 0 0 2.6rem; color: #1c1916; font-family: var(--font-logo), Georgia, serif; font-size: 1.45rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
+.kicker { margin: 0; color: #a17b44; font-size: .68rem; font-weight: 700; letter-spacing: .2em; }
+.card h1 { margin: .55rem 0 .7rem; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2rem, 8vw, 2.8rem); font-weight: 500; }
+.intro, .policy { color: #6a6258; line-height: 1.65; }
+.intro { margin: 0 0 1.8rem; }
+.form { display: grid; gap: .65rem; }
+.form label { margin-top: .35rem; font-size: .9rem; font-weight: 600; }
+.form input { width: 100%; min-height: 3rem; padding: .7rem 3.35rem .7rem .85rem; border: 1px solid #d9d0c3; border-radius: .45rem; background: #fff; color: #211d18; font: inherit; }
+.form input:focus-visible, .submit:focus-visible, .passwordToggle:focus-visible, .link:focus-visible { outline: 3px solid #b88d4d; outline-offset: 2px; }
+.passwordField { position: relative; }
+.passwordToggle { position: absolute; top: 50%; right: .35rem; display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; padding: .45rem; border: 0; border-radius: .4rem; background: transparent; color: #211d18; cursor: pointer; transform: translateY(-50%); }
+.passwordToggle:hover { background: #211d1812; }
+.passwordToggle svg { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+.policy { margin: .3rem 0 .5rem; font-size: .83rem; }
+.submit { min-height: 3.1rem; margin-top: .3rem; border: 0; border-radius: .45rem; background: #35271c; color: #fff9ee; font: inherit; font-weight: 650; cursor: pointer; }
+.notice { color: #4b443a; line-height: 1.65; }
+.error { margin: 0; color: #a12828; }
+.link { display: inline-block; margin-top: 1rem; color: #795526; }
+@media (max-width: 480px) { .page { padding: 1rem; } .card { padding: 1.7rem 1.35rem; } }

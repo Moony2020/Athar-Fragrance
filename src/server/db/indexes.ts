@@ -14,6 +14,7 @@ import type { EmailDelivery } from "@/server/email/email-delivery-document";
 import type { GuestOrderAccessSessionDocument, OrderLookupRateLimitDocument } from "@/server/orders/guest-order-access-document";
 import type { PrivilegedAuditEventDocument } from "@/admin/privileged-audit-document";
 import type { AdminInvitationDocument } from "@/admin/admin-invitation-document";
+import type { AdminAuthRateLimitDocument, AdminAuthRateLimitAttemptDocument } from "@/admin/admin-auth-rate-limit-document";
 
 /**
  * Idempotent catalog indexes. Invoke from a controlled deployment/migration
@@ -174,5 +175,20 @@ export async function ensureAdminInvitationIndexes(): Promise<void> {
     },
     { key: { normalizedEmail: 1, createdAt: -1 }, name: "admin_invitation_email_created" },
     { key: { purgeAt: 1 }, name: "admin_invitation_cleanup_ttl", expireAfterSeconds: 0 },
+  ]);
+}
+
+/** Activation limiter indexes are explicit deployment work, never request work. */
+export async function ensureAdminActivationIndexes(): Promise<void> {
+  const database = await getDatabase();
+  await Promise.all([
+    database.collection<AdminAuthRateLimitDocument>(databaseCollections.adminAuthRateLimits).createIndexes([
+      { key: { dimension: 1, identifierHmac: 1, windowStart: 1 }, name: "admin_auth_rate_limit_window_unique", unique: true },
+      { key: { expiresAt: 1 }, name: "admin_auth_rate_limit_expiry_ttl", expireAfterSeconds: 0 },
+    ]),
+    database.collection<AdminAuthRateLimitAttemptDocument>(databaseCollections.adminAuthRateLimitAttempts).createIndexes([
+      { key: { attemptId: 1 }, name: "admin_auth_rate_limit_attempt_unique", unique: true },
+      { key: { expiresAt: 1 }, name: "admin_auth_rate_limit_attempt_expiry_ttl", expireAfterSeconds: 0 },
+    ]),
   ]);
 }

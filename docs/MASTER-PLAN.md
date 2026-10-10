@@ -106,7 +106,7 @@ live email is required.
 | Stage | Scope | Status |
 | --- | --- | --- |
 | 10.1 | Admin Identity & Server-Side Authorization Foundation | Closed / verified / checkpointed |
-| 10.2 | Admin Provisioning, Activation & Dedicated Admin Login | Gate 1 verified / checkpointed / pushed; Gate 2 v2 contract owner-approved — Gate 2 implementation not started / not authorized |
+| 10.2 | Admin Provisioning, Activation & Dedicated Admin Login | Gate 1 verified / checkpointed / pushed; Gate 2 implemented locally, Final Recheck PASS and Owner Signoff APPROVED — no Gate 2 staging, implementation checkpoint, commit, push, or production exposure authorized |
 
 #### Stage 10.1 Goal Contract — Admin Identity & Server-Side Authorization Foundation
 
@@ -273,8 +273,22 @@ Provisioning Foundation — is verified, checkpointed, and pushed at
 Activation & Password Setup — now has an owner-approved v2 Goal Contract, with
 that Gate 1 checkpoint as its baseline. The complete Gate 2 contract is recorded
 in [STAGE-10.2-GATE-2-GOAL-CONTRACT.md](./STAGE-10.2-GATE-2-GOAL-CONTRACT.md).
-Gate 2 implementation, its checkpoint, and production exposure are not
-authorized by this documentation write/review gate.
+The documentation write/review gate itself did not authorize implementation,
+checkpointing, or production exposure. Separate Owner authorization later
+permitted Gate 2 implementation locally. Focused tests (8/8), Gate 2 Mongo
+(2/2 against `athar_stage55_test`), Owner browser activation, TypeScript,
+ESLint (0 errors; 2 unrelated warnings), and production build (38/38) were
+observed PASS before the final success-UI correction. The final blocker
+corrections are implemented: success guidance is non-clickable, status evidence
+is reconciled, and the fixture cleanup command is PowerShell-safe. The Owner
+reported post-correction Playwright 1/1, TypeScript, ESLint (0 errors; known
+unrelated warnings), production build (38/38), and Gate 1 / Stage 10.1
+non-Mongo regressions 11/11 PASS; see `tests/STAGE-10.2-GATE-2.md`. The
+historical Stage 10.1 dedicated Mongo test passed 1/1 and was not rerun for
+Gate 2. The Final Recheck passed and the Owner approved Gate 2 Signoff.
+Staging, an implementation checkpoint, commit, push, and production exposure
+remain unauthorized. Gate 2 is not yet checkpointed or closed. Admin Login and
+Recovery remain future gates, not implemented or authorized by Gate 2.
 
 **Goal.** Provide a company-controlled way to provision a future Admin without
 customer registration, let that person activate the identity using a one-time

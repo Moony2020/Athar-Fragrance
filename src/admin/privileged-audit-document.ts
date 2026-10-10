@@ -5,6 +5,7 @@ import { publicUserIdSchema } from "@/identity/contracts";
 
 const systemBootstrapActor = z.object({ actorType: z.literal("system"), actorId: z.literal("admin-bootstrap") }).strict();
 const systemProvisioningActor = z.object({ actorType: z.literal("system"), actorId: z.literal("admin-provisioning") }).strict();
+const systemActivationActor = z.object({ actorType: z.literal("system"), actorId: z.literal("admin-activation") }).strict();
 const userActor = z.object({ actorType: z.literal("user"), actorId: publicUserIdSchema }).strict();
 
 export const privilegedAuditActorSchema = z.union([userActor, systemBootstrapActor, systemProvisioningActor]);
@@ -39,7 +40,22 @@ const invitationEventSchema = z.object({
   metadata: z.object({ reason: z.enum(["new_pending_invitation", "explicit_reissue"]) }).strict(),
 }).strict();
 
-export const privilegedAuditEventSchema = z.discriminatedUnion("action", [bootstrapEventSchema, invitationEventSchema]);
+const activationEventSchema = z.object({
+  ...sharedEventFields,
+  actor: systemActivationActor,
+  action: z.literal("admin.invitation.activation_succeeded"),
+  target: z.object({
+    type: z.literal("admin_invitation"),
+    id: z.string().regex(/^[A-Za-z0-9_-]{32,128}$/),
+  }).strict(),
+  outcome: z.literal("succeeded"),
+  metadata: z.object({
+    reason: z.literal("invitation_consumed"),
+    createdUserId: publicUserIdSchema,
+  }).strict(),
+}).strict();
+
+export const privilegedAuditEventSchema = z.discriminatedUnion("action", [bootstrapEventSchema, invitationEventSchema, activationEventSchema]);
 
 export type PrivilegedAuditEventDocument = z.infer<typeof privilegedAuditEventSchema>;
 
